@@ -57,6 +57,49 @@ Defined in `app/globals.css` (see `TECHNICAL.md` §3.2). Figma currently has **n
 | Story progress, Stepper, chips, inputs, checkboxes, segmented, tabs, cards | `segmented-progress.tsx`, `stepper.tsx`, `badge.tsx`, `input.tsx`, `checkbox.tsx`, `toggle-group.tsx`, `tabs.tsx`, `card.tsx` | Built as plain frames in Figma; componentised in code |
 | House controls | `components/house/controls.tsx` | Back 92, Pause 124, Return 76, Heart 230 |
 
+### 4.1 Component specs (read through the Figma MCP server, 2026-11-14)
+
+Values taken from `get_design_context` on frames 20-624 (Memory playing), 20-668 (Send love) and 23-580 (Approve every scene). F5 builds from this table. "→ token" is the token from `TECHNICAL.md` §3.2 the value maps to; **bold** marks a value with no token yet.
+
+| Component | Figma values | Code mapping / deviation |
+|---|---|---|
+| Button primary | pill (999), px 30 · py 18, Nunito Bold 18, bg `#D9734E`, white text | `bg-primary`, `rounded-full` |
+| Button secondary | pill, px 30 · py 18, bg `#FFFCF6`, border 1.5 `ink/0.14`, text `#2B2420` | `bg-surface`, text `ink` (`#2B2420` merged into `ink`) |
+| Pill link "Next memory" | pill, pl 24 · pr 16 · py 14, Bold 18, bg surface, chevron 34, shadow `0 12 32 -4 rgba(58,32,16,0.10)` | Button secondary variant `with-icon`, no border |
+| IconButton (Studio Close) | 64, radius 32, bg `#FFFCF6`, icon 24, drop-shadow `0 8 12 rgba(58,44,30,0.12)` | `shadow-round-button` (token blur 24 vs Figma 12: keep token, softer) |
+| IconButton (House) | Return 76 (icon 34), Back 92 (icon 34), Pause 124 (icon 40, bg primary), bg `rgba(255,252,246,0.92)`, shadow `0 12 32 -4 rgba(58,32,16,0.18)` | **new token `--shadow-house-control`**; bg `surface/92` |
+| HeartButton | 230, gradient `#EE9475 → #D2603D` (top→bottom), border 6 `surface/0.8`, heart icon 96, shadow `0 18 50 rgba(217,115,78,0.45)`, glow 440 behind | `heart-from/to`, `shadow-heart`; glow = radial gradient in CSS, not an image |
+| Badge · status | pill, px 10 · py 4, Nunito Bold 12; approved bg `#E3ECD9` text `#4F7A44`; check bg primary text white | `success-surface` / `success-text`; "check" variant = `primary` |
+| Chip (House, over photo) | pill, pl 14 · pr 16 · py 9, gap 8, dot 10, Nunito SemiBold 17, bg `overlay/0.45` + blur 7, border 1.5 `surface/0.3`, text `#FFFCF6` | Badge variant `on-media` |
+| Card | radius 24, bg surface, shadow `0 12 32 -4 rgba(122,74,42,0.07)`, padding 14 (list) / 24 (panel) | `rounded-card shadow-card bg-surface` |
+| List row (selected) | radius 14, px 10 · py 8, thumb 52 radius 10, Bold 15; selected bg `#FBE6D8` | `warning-surface`, `rounded-lg`, thumb `rounded-md` |
+| Warning banner | radius 14, px 16 · py 12, bg `#FBE6D8`, icon 22, Bold 15 | `warning-surface`; icon AlertCircle in `danger` |
+| Stepper | gap 28 between steps, dot 30 radius 15, gap 10 to label; done = `success` + ✓, current = `primary` + number, todo = border 1.5 `ink/0.2`; labels SemiBold 16 | Figma labels at `ink/0.75` (done) and `ink/0.45` (todo) → **todo raised to 0.7** for AA; ✓ glyph was DM Sans → lucide Check |
+| SegmentedProgress | 7 × (73 × 6, radius 3), gap 8; on photo: current `surface/0.6`, rest `surface/0.25`; on cream: done `ink/0.95`, current `ink/0.6`, rest `ink/0.25` | variants `on-media` / `on-cream`, `rounded-xs` |
+| AvatarGroup | 40 (Studio) or 30 (House pill); border 3 (2.25) `#FFF8EE`; overlap −10 (−7.5); Nunito Bold 16 (12) white; colours honey / sage / rose | **`#FFF8EE` has no token** → add `--color-avatar-ring` |
+| "Watching together" pill | pill, pl 8 · pr 16 · py 6, gap 10, bg `surface/0.9`, Bold 15 ink | House zone (uses AvatarGroup size 30) |
+| Logo | mark 36 + gap 10 + Fraunces SemiBold 26, tracking −0.16, "AI" in primary | `public/brand/memorai-logo.svg` (text outlined, no font needed) |
+| Headings | Fraunces SemiBold 40 (screen title), Italic 32 lh 1.25 (Memory caption), Caveat 28 (signature `surface/0.85`) | `font-display`, `font-hand` |
+| Body secondary | Nunito Regular 18 at `ink/0.6` (subtitle), SemiBold 18 at `ink/0.65` (Send love) | **raised to `ink/0.7`** (AA rule) |
+
+Fraunces is used with variation settings `"SOFT" 0, "WONK" 1` in every Figma text layer: set them once on `.font-display`.
+
+Not in these frames, still to read for F5: Toggle (State=On/Off), Polaroid (20-219), Input, Checkbox, Tabs, ToggleGroup (Create frames 20-331 / 20-377 / 20-451).
+
+### 4.2 Exported assets
+
+Exported through the MCP server (`download_assets`, SVG) from the v5 instances, then cleaned: the exporter wraps each node in its parent frame (grey `#F5F5F5` rect + the room background), so those two rects were removed; room backgrounds also lost the 28 px frame corner radius so they can fill the screen.
+
+| File | Node | Size |
+|---|---|---|
+| `public/brand/memorai-logo.svg` | 20:172 | 164 × 36 |
+| `public/rooms/garden.svg` · `kitchen.svg` · `living-room.svg` | 20:177 · 20:257 · 20:308 | 1194 × 834 |
+| `public/objects/watering-can.svg` · `flower.svg` · `sun-hat.svg` | 20:201 · 20:252 · 20:211 | room scale |
+| `public/objects/teapot.svg` · `mug.svg` · `apple.svg` | 20:299 · 20:300 · 20:301 | room scale |
+| `public/objects/record.svg` · `radio.svg` · `camera.svg` | 20:323 · 20:324 · 20:325 | room scale |
+
+Objects keep their soft ground shadow and their in-room tilt (radio, camera) because Objects never move: the SVG is exactly what sits on the Slot.
+
 **Icons (Figma custom → lucide-react):** home → Home · back → ChevronLeft · next → ChevronRight · pause → Pause · heart → Heart · close → X · rooms → LayoutGrid · camera → Camera · generate → Sparkles · gear → Settings · play → Play · warning → AlertCircle · check → Check.
 
 ## 5. Gaps (frames still to design — SH7)
@@ -69,8 +112,13 @@ Accessibility gap: secondary text at 0.45–0.55 opacity on cream likely fails W
 
 _Fill in as you go (for the presentation):_ which frames were read through MCP, what it produced (layout, values, screenshots), what we changed by hand, time saved.
 
+- **2026-11-14 — spec extraction.** `get_metadata` on page 20:66 listed every frame and instance (no manual node hunting). `get_design_context` on 20-624, 20-668, 23-580 returned exact paddings, radii, shadows, opacities and font weights → §4.1 table in minutes instead of inspecting layers one by one. It also surfaced the Figma gaps we fix in code: leftover `#2B2420` and DM Sans in the Stepper, secondary text at 0.45–0.65 opacity (fails AA), avatar ring colour with no token.
+- **2026-11-14 — asset export.** `download_assets` exported the logo, 3 rooms and 9 Objects as SVG (13 files). By hand: removed the parent-frame rects the exporter adds, squared the room corners. Checked every file renders on its own.
+
 ## 7. Evidence log
 
 | Date/time | Frame | Route | Figma image | Code image | MCP used? | Deviations |
 |---|---|---|---|---|---|---|
-| | | | `docs/design-evidence/...-figma.png` | `docs/design-evidence/...-code.png` | | |
+| 2026-11-14 | Story · Memory playing (20-624) | `MemoryPlayer` | `docs/design-evidence/20-624-memory-playing-figma.png` | _after H-tasks_ | yes (get_design_context) | — |
+| 2026-11-14 | Story · Send love (20-668) | `HeartScreen` | `docs/design-evidence/20-668-send-love-figma.png` | _after H-tasks_ | yes | subtitle opacity 0.65 → 0.7 |
+| 2026-11-14 | Create · 3b Approve every scene (23-580) | `/studio/memories/[id]/approve` | `docs/design-evidence/23-580-approve-scenes-figma.png` | _after S-tasks_ | yes | stepper todo label 0.45 → 0.7, subtitle 0.6 → 0.7 |

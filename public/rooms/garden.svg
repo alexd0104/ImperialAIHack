@@ -1,0 +1,72 @@
+<svg width="1194" height="834" viewBox="0 0 1194 834" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g id="Room &#194;&#183; Garden">
+<g clip-path="url(#clip0_20_66)">
+<rect width="1194" height="834" fill="#EFEDDA"/>
+<g id="Background &#194;&#183; Garden" clip-path="url(#clip1_20_66)">
+<rect id="Sky" width="1194" height="834" fill="url(#paint0_linear_20_66)"/>
+<circle id="Sun" cx="990" cy="150" r="60" fill="#FFF4DA" fill-opacity="0.9"/>
+<ellipse id="Hill far" cx="290" cy="590" rx="550" ry="160" fill="#DCE5C9"/>
+<ellipse id="Hill far 2" cx="1000" cy="600" rx="500" ry="150" fill="#D4E0C0"/>
+<ellipse id="Bush" cx="140" cy="555" rx="100" ry="55" fill="#BFD3A1"/>
+<ellipse id="Bush_2" cx="245" cy="565" rx="75" ry="45" fill="#B3CA93"/>
+<ellipse id="Bush_3" cx="1070" cy="560" rx="110" ry="55" fill="#BFD3A1"/>
+<ellipse id="Bush_4" cx="1155" cy="570" rx="75" ry="45" fill="#B3CA93"/>
+<g id="Grass">
+<path id="Vector" d="M0 590C200 560 400 600 600 582C800 566 1000 594 1194 574V860H0V590Z" fill="url(#paint1_linear_20_66)"/>
+</g>
+<g id="Tuft" clip-path="url(#clip2_20_66)">
+<path id="Vector_2" d="M142 713C144 708 145 705 144 701M151 713C151 708 151 704 151 700M160 713C158 708 157 705 158 701" stroke="#A3BE83" stroke-width="2" stroke-linecap="round"/>
+</g>
+<g id="Tuft_2" clip-path="url(#clip3_20_66)">
+<path id="Vector_3" d="M422 653C424 648 425 645 424 641M431 653C431 648 431 644 431 640M440 653C438 648 437 645 438 641" stroke="#A3BE83" stroke-width="2" stroke-linecap="round"/>
+</g>
+<g id="Tuft_3" clip-path="url(#clip4_20_66)">
+<path id="Vector_4" d="M692 773C694 768 695 765 694 761M701 773C701 768 701 764 701 760M710 773C708 768 707 765 708 761" stroke="#A3BE83" stroke-width="2" stroke-linecap="round"/>
+</g>
+<g id="Tuft_4" clip-path="url(#clip5_20_66)">
+<path id="Vector_5" d="M882 673C884 668 885 665 884 661M891 673C891 668 891 664 891 660M900 673C898 668 897 665 898 661" stroke="#A3BE83" stroke-width="2" stroke-linecap="round"/>
+</g>
+<g id="Tuft_5" clip-path="url(#clip6_20_66)">
+<path id="Vector_6" d="M1042 753C1044 748 1045 745 1044 741M1051 753C1051 748 1051 744 1051 740M1060 753C1058 748 1057 745 1058 741" stroke="#A3BE83" stroke-width="2" stroke-linecap="round"/>
+</g>
+<g id="Tuft_6" clip-path="url(#clip7_20_66)">
+<path id="Vector_7" d="M302 803C304 798 305 795 304 791M311 803C311 798 311 794 311 790M320 803C318 798 317 795 318 791" stroke="#A3BE83" stroke-width="2" stroke-linecap="round"/>
+</g>
+</g>
+</g>
+</g>
+<defs>
+<linearGradient id="paint0_linear_20_66" x1="597" y1="0" x2="597" y2="834" gradientUnits="userSpaceOnUse">
+<stop stop-color="#F8ECDD"/>
+<stop offset="1" stop-color="#E9F0E1"/>
+</linearGradient>
+<linearGradient id="paint1_linear_20_66" x1="0" y1="574" x2="0" y2="860" gradientUnits="userSpaceOnUse">
+<stop stop-color="#CADCB0"/>
+<stop offset="1" stop-color="#B6CD97"/>
+</linearGradient>
+<clipPath id="clip0_20_66">
+<rect width="1194" height="834" fill="white"/>
+</clipPath>
+<clipPath id="clip1_20_66">
+<rect width="1194" height="834" fill="white"/>
+</clipPath>
+<clipPath id="clip2_20_66">
+<rect width="22" height="14" fill="white" transform="translate(140 700)"/>
+</clipPath>
+<clipPath id="clip3_20_66">
+<rect width="22" height="14" fill="white" transform="translate(420 640)"/>
+</clipPath>
+<clipPath id="clip4_20_66">
+<rect width="22" height="14" fill="white" transform="translate(690 760)"/>
+</clipPath>
+<clipPath id="clip5_20_66">
+<rect width="22" height="14" fill="white" transform="translate(880 660)"/>
+</clipPath>
+<clipPath id="clip6_20_66">
+<rect width="22" height="14" fill="white" transform="translate(1040 740)"/>
+</clipPath>
+<clipPath id="clip7_20_66">
+<rect width="22" height="14" fill="white" transform="translate(300 790)"/>
+</clipPath>
+</defs>
+</svg>
