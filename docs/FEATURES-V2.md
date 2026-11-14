@@ -29,8 +29,7 @@ Order = the team's priority. Owners and dependencies are machine-readable in `do
 | API | `PATCH /api/scenes/:id` | `{ motion?, soundMode? }` before generation |
 | API | `PATCH /api/rooms/:id`, `DELETE /api/rooms/:id`, `POST /api/houses/:id/rooms` | name, background (style or photo → `room_edit` job), cascade delete |
 | API | `PATCH /api/stories/:id` | adds `position?` |
-| API | `POST /api/auth/login` | `{ email, password }` (demo account) |
-| Env | `DEMO_EMAIL`, `DEMO_PASSWORD`, `SOUND_MODE_DEFAULT`, `ENABLE_LAB` | added to `.env.example` and `pnpm env:check` |
+| Env | `SOUND_MODE_DEFAULT`, `ENABLE_LAB` | added to `.env.example` and `pnpm env:check` |
 
 ---
 
@@ -95,17 +94,18 @@ Order = the team's priority. Owners and dependencies are machine-readable in `do
 - **Do:** refetch the bundle every 30 s (skip while a Memory is playing); if `version` changed, preload new files, then objects that moved fade out and fade in at the new place (~1.2 s), new objects fade in, removed ones fade out. Rooms with a new background cross-fade. Never interrupt playback.
 - **Done when:** demo:check green; manual test: move an object in the Studio → House updates within 30 s with a fade.
 
-### S14 — Default objects (3 GLBs)
-- **Owner:** Raphaël · **Order:** 10 · **Deps:** none · **Requires files:** `public/objects/glb/*.glb` (the team adds them)
-- **Files:** `public/objects/glb/`, `public/objects/thumbs/`, `components/studio/object-library.ts`, House object renderer (GLB path only).
-- **Do:** compress each GLB (`gltf-transform optimize`, ≤ 3 MB), export a PNG thumbnail, list them first in the library (available in every room); House renders GLB with the existing floor shadow/float; SVG objects stay as fallback.
-- **Done when:** the 3 objects are selectable in the Studio and render in the House.
+### S14 — Default 3D objects from 3 images
+- **Owner:** Timoté (autopilot) · **Order:** 10 · **Deps:** none · **Requires files:** `public/objects/src/*.{png,jpg}` (the team adds 3 photos of objects)
+- **Files:** new `scripts/make-objects.mts` (`pnpm objects:make`), `public/objects/glb/`, `public/objects/thumbs/`, `components/studio/object-library.ts`, House object renderer (GLB path only).
+- **Do:** the script runs each source image through the existing 3D chain (`lib/ai`: cutout → Rodin → GLB compress, same as P5), writes `public/objects/glb/<name>.glb` (≤ 3 MB) and a PNG thumbnail. In mock mode it writes the mock GLB so everything is testable. List the defaults first in the object library (available in every room); the House renders them with the existing shadow/float; SVG objects stay as fallback.
+- **Human:** the live run (`AI_MODE=live pnpm objects:make`, ≈ $1.50, ~5 min), then commit the 3 GLBs + thumbs.
+- **Done when:** mock run produces 3 files, library lists them, House renders them; test for the script's file naming.
 
-### S13 — Demo login and logout
-- **Owner:** Alexandre · **Order:** 11 · **Deps:** F7
-- **Files:** `app/studio/login/**`, `app/api/auth/**`, `lib/session.ts`, Studio header (logout button).
-- **Do:** login form with email + password against `DEMO_EMAIL`/`DEMO_PASSWORD` (credentials shown on the page for the demo), keep the brute-force throttle; Log out button in the Studio header → existing logout route → back to login.
-- **Done when:** login/logout tested; protected routes still guarded.
+### S13 — Studio logout button
+- **Owner:** Alexandre · **Order:** 11 · **Deps:** none
+- **Files:** Studio header component, `lib/copy.ts` (one string).
+- **Do:** keep the existing studio password login (`STUDIO_PASSWORD`, no new account). Add a "Log out" button in the Studio header calling the existing `POST /api/auth/logout`, then go to `/studio/login`.
+- **Done when:** logout works and protected Studio pages redirect to login afterwards (test).
 
 ### Q5 — Prompting experiment (which non-technical approach gives the best prompts?)
 - **Owner:** Yasir · **Order:** 12 · **Deps:** F7, P7

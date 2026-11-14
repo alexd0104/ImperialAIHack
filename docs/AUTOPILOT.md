@@ -21,7 +21,6 @@
 | Timoté (after F7 is pushed) | `pnpm autopilot timote --total-usd 20` |
 | Yasir (now) | `pnpm autopilot yasir --total-usd 20` |
 | Alexandre (now) | `pnpm autopilot alexandre --total-usd 20` |
-| Raphaël (only the GLB task; SH8 is done by hand) | `pnpm autopilot raphael --only S14 --wait-hours 10` |
 
 Options: `--engine claude|codex|dry` · `--model sonnet` (default; `opus` for hard tasks) · `--only P7,P8` · `--max-tasks 8` · `--task-usd 4` (per task cap) · `--total-usd 25` (night cap) · `--wait-hours 8` · `--minutes 50` (per task time cap) · `--all` (include first-round leftovers).
 
@@ -48,4 +47,4 @@ Stops when: `--max-tasks` reached, night budget reached, the agent errors twice 
 
 ## Rules the autopilot keeps
 
-Mock mode only (`AI_MODE=mock` is forced) · `main` only gets green commits · no secrets read · no force-push · only v2 tasks and `B<n>` bug tasks unless `--all` · a task needing files (S14 → `public/objects/glb/`) waits until they land.
+Mock mode only (`AI_MODE=mock` is forced) · `main` only gets green commits · no secrets read · no force-push · only v2 tasks and `B<n>` bug tasks unless `--all` · a task needing files (S14 → `public/objects/src/`) waits until they land.

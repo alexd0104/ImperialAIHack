@@ -767,26 +767,24 @@
     },
     {
       "id": "S14",
-      "title": "Default objects (3 GLBs)",
-      "owner": "raphael",
+      "title": "Default 3D objects from 3 images",
+      "owner": "timote",
       "priority": "V2",
       "release": "v2",
       "order": 10,
       "deps": [],
       "soft": [],
       "brief": "docs/FEATURES-V2.md#S14",
-      "requiresFiles": "public/objects/glb"
+      "requiresFiles": "public/objects/src"
     },
     {
       "id": "S13",
-      "title": "Demo login and logout",
+      "title": "Studio logout button",
       "owner": "alexandre",
       "priority": "V2",
       "release": "v2",
       "order": 11,
-      "deps": [
-        "F7"
-      ],
+      "deps": [],
       "soft": [],
       "brief": "docs/FEATURES-V2.md#S13"
     },
