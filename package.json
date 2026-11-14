@@ -16,7 +16,7 @@
     "db:indexes": "node --env-file-if-exists=.env.local scripts/db-indexes.mts",
     "db:ping": "node --env-file-if-exists=.env.local scripts/db-ping.mts",
     "demo": "node scripts/todo.mjs demo",
-    "demo:check": "node scripts/todo.mjs demo:check",
+    "demo:check": "node --env-file-if-exists=.env.local scripts/demo-check.mts",
     "seed:demo": "node --conditions=react-server --env-file-if-exists=.env.local scripts/seed-demo.mts",
     "export:demo": "node --conditions=react-server --env-file-if-exists=.env.local scripts/export-demo.mts",
     "prepare": "husky"
