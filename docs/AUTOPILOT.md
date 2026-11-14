@@ -10,7 +10,7 @@
    cp .env.local ../mh-autopilot/.env.local      # you copy it, agents never read it
    cd ../mh-autopilot && pnpm install
    ```
-2. **Pay with the API key** (optional, recommended for long nights): in *this terminal only*, `export ANTHROPIC_API_KEY=...` (never in a file in the repo). Without it, Claude Code uses your subscription.
+2. **Pay with the API key** (everyone, all night): in *this terminal only*, `export ANTHROPIC_API_KEY=...` (never in a file in the repo). Default model Sonnet keeps a task around $1–3.
 3. **Check it works:** `pnpm autopilot <you> --check` → `✅ claude works unattended`.
 4. Mac: plugged in, lid open (the runner calls `caffeinate`). Linux: `systemd-inhibit pnpm autopilot <you>`.
 
@@ -18,9 +18,9 @@
 
 | Person | Command (from `../mh-autopilot`) |
 |---|---|
-| Timoté (after F7 is pushed) | `pnpm autopilot timote --total-usd 25` |
+| Timoté (after F7 is pushed) | `pnpm autopilot timote --total-usd 20` |
 | Yasir (now) | `pnpm autopilot yasir --total-usd 20` |
-| Alexandre (Codex) | `pnpm autopilot alexandre --engine codex` |
+| Alexandre (from 01:00) | `pnpm autopilot alexandre --total-usd 20` |
 | Raphaël (only the GLB task; SH8 is done by hand) | `pnpm autopilot raphael --only S14 --wait-hours 10` |
 
 Options: `--engine claude|codex|dry` · `--model sonnet` (default; `opus` for hard tasks) · `--only P7,P8` · `--max-tasks 8` · `--task-usd 4` (per task cap) · `--total-usd 25` (night cap) · `--wait-hours 8` · `--minutes 50` (per task time cap) · `--all` (include first-round leftovers).
