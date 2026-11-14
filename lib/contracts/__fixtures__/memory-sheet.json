@@ -1,0 +1,15 @@
+{
+  "title": "Brighton beach, 1968",
+  "people": ["Frank", "Margaret", "Sarah"],
+  "place": "Brighton beach",
+  "when": "summer 1968",
+  "soundOfPlace": "waves on pebbles, seagulls, children laughing",
+  "songAssetId": "6650a1f0c0ffee0000000013",
+  "message": "Dad, this is the day you taught me to skim stones.",
+  "voiceAssetId": "6650a1f0c0ffee0000000014",
+  "colour": "keep_bw",
+  "restore": true,
+  "motion": "gentle",
+  "okAlone": true,
+  "source": "form"
+}
