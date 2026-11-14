@@ -23,6 +23,7 @@ Async coordination. **Append only; never edit someone else's lines.** Newest ent
 
 _(newest first: date — what changed — who)_
 
+- 2026-11-14 — **`BundleScene.stillUrl` added (B10)** — Yasir, approved by Timoté. `lib/contracts/house-bundle.ts`: optional `stillUrl` (the scene's chosen still: colourised, restored or original photo), set on clip scenes by `lib/house/bundle.ts`. A failed clip shows it, then the Memory's `polaroidUrl` only if missing. Additive only.
 - 2026-11-14 — **`Job.assetId` added (P5)** — Raphaël for Timoté. `lib/contracts/jobs.ts`: optional `assetId` = the Object photo Asset of an `object_3d` job (the job had no way to find its source photo). Additive only; `JobView` carries it too (an id, no path).
 
 - 2026-11-14 — **`GenerationCacheEntry` added (F4)** — Timoté. `lib/contracts/jobs.ts`: {id, key, model, outputPath, costUsd, createdAt}, the `generation_cache` document of TECHNICAL.md §6. Additive only.
@@ -35,6 +36,7 @@ _(newest first: date — what changed — who)_
 
 ## Requests
 
+- 2026-11-14 22:30 — Yasir → Timoté / Alexandre — e2e runs with `STUDIO_MOCK_STORE=true`, but `POST /api/memories/:id/generate` (`mongoGenerationStore`) and the House bundle (`lib/house/load-bundle.ts`) read MongoDB only, so Studio → generate → House can't chain in e2e (CI has no Mongo service either). Q2 seeds the finished scene file in the mock store and plays the House from `e2e/fixtures/demo-assets` in demo mode. Ask: a mock-store generation store (and bundle loader), or a Mongo service in CI, so Q2 can drop the seeding.
 - 2026-11-14 22:00 — Raphaël → Yasir — Q4 found (Studio): (1) after `POST /api/scenes/:id/choice` on every scene the Memory stays `ready_for_review`; the choice route should call `refreshMemoryStatusById` (`lib/jobs/generation.ts`) so it becomes `approved`. (2) Place (`components/studio/PlaceStory.tsx:133`) draws Slots on a plain box: Figma 20-536 shows the Room SVG with its Objects, room tabs and "Send to Mum's house". (3) Studio screens lack the 4-step stepper and family avatars of Figma; full list in `docs/DESIGN.md` §7.
 - 2026-11-14 22:00 — Raphaël → Yasir — Q4 found (House): Choose a room shows style ids ("garden", "living") instead of Room names; alone mode doesn't fade Stories that aren't OK alone (Figma 20-701). Details in `docs/DESIGN.md` §7.
 - 2026-11-14 20:20 — Raphaël → Alexandre — Kitchen/living Slot positions changed in `components/studio/room-styles.ts` (ids unchanged): Objects now sit on the counter top / floor. Please check your Room preview still looks right.
@@ -62,6 +64,13 @@ _(newest first: date — from → to — what)_
 - ~~2026-11-14 — Raphaël → Timoté — The Tasks workflow rejected `(ID-wip)` PR titles although its error message recommends them (`.github/workflows/tasks.yml:47`). Fixed in `fix/shared-tasks-wip-title`; please review. Not registered as a B task because `tasks.mjs add` needs Node, which is not set up on my machine yet: please add it if you want it on the board.~~ Resolved by #9.
 
 ## Log
+
+### 2026-11-14 22:35 — Yasir (house, Q2 + B10)
+- Done: Q2 `e2e/create-publish-play.spec.ts`: Studio start Memory → photo → answers → sheet → approve → publish, then House Choose a room → Object → polaroid → Memory plays (still fallback). B10 `BundleScene.stillUrl`: bundle fills it, it's preloaded and tokenised, the player falls back stillUrl → polaroidUrl (`lib/house/scene-still.ts`). `pnpm verify`, `pnpm test:e2e` (13/13) and `pnpm demo:check` all green.
+- In progress: nothing. Avatars stay `[]` until Timoté says where family members live.
+- Blocked: Q2 seeds scenes and uses the fixture bundle (Request above). `demo:check` locally needs `DEMO_ASSETS_DIR=e2e/fixtures/demo-assets` (no demo-assets/ here) and a warm dev server: a cold `next dev` misses its 90 s Choose-a-room wait.
+- Contract changes: `BundleScene.stillUrl` (above). Out-of-zone/shared: `playwright.config.ts` (webServer env: HOUSE_DEMO_MODE, DEMO_HOUSE_TOKEN=e2e-demo, DEMO_ASSETS_DIR), `docs/tasks.json` (B10), `scripts/demo/export.ts` (Raphaël: strip the token from `stillUrl` too, one line).
+- Next: Raphaël's House findings (Room names on Choose a room, alone-mode fading). His Studio finding (1) about the choice route status is Studio zone now (left for Alexandre).
 
 ### 2026-11-14 22:00 — Raphaël (design, Q4)
 - Done: Q4. 14 Figma frames captured through the MCP (`get_screenshot`) and 8 new Studio code captures, all in `docs/design-evidence/`; `docs/DESIGN.md` §6 (MCP usage), §7 (13 new rows with deviations), §8 (axe WCAG 2.2 AA: 0 violations on 9 Studio screens; House already 0 on 8).
