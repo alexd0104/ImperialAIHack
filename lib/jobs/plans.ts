@@ -43,7 +43,7 @@ export function roomBackgroundPlan(): JobStep[] {
   );
 }
 
-type JobRefs = Pick<Job, "houseId" | "memoryId" | "sceneId" | "storyId" | "roomId">;
+type JobRefs = Pick<Job, "houseId" | "memoryId" | "sceneId" | "storyId" | "roomId" | "assetId">;
 
 /** A queued job ready for `db.jobs.insert` (P4 / P5 / SH1 create them). */
 export function newJob(
@@ -64,4 +64,16 @@ export function newJob(
     createdAt: now,
     updatedAt: now,
   };
+}
+
+/** The `object_3d` job of a Story made from an Object photo (P5). */
+export function newObjectJob(input: {
+  houseId: string;
+  roomId: string;
+  storyId: string;
+  assetId: string;
+  falKeyLabel: string;
+  now: string;
+}): NewEntity<Job> {
+  return newJob({ ...input, type: "object_3d", steps: object3dPlan() });
 }

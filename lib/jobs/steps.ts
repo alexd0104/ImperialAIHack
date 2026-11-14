@@ -8,6 +8,7 @@ import { CompiledPrompts } from "@/lib/ai/prompt-types";
 import type { Asset, Job, JobStep, MemorySheet, SceneOutputs } from "@/lib/contracts";
 import { db } from "@/lib/db/collections";
 import { openReadStream, saveFile, sha256File } from "@/lib/storage";
+import { compressGlb, GLB_TARGET_BYTES } from "./compress-glb";
 import { mongoGenerationStore, refreshMemoryStatusById } from "./generation";
 import type { FalPlan, StepContext, StepHandlers } from "./types";
 
@@ -57,8 +58,11 @@ async function loadSource(job: Job): Promise<Source> {
     if (room?.source !== "photo") throw nonRetryable(`Room job ${job.id} has no photo`);
     return { path: room.backgroundPath, sha256: await sha256File(room.backgroundPath), mime: "" };
   }
-  // The Job contract carries no asset id for object_3d (reported as a contract gap).
-  throw nonRetryable(`Object job ${job.id} has no source photo reference`);
+  const asset = job.assetId ? await db.assets.findById(job.assetId) : null;
+  if (!asset || asset.houseId !== job.houseId) {
+    throw nonRetryable(`Object job ${job.id} has no source photo`);
+  }
+  return { path: asset.path, sha256: asset.sha256, mime: asset.mime, asset };
 }
 
 async function loadSheet(job: Job): Promise<MemorySheet> {
@@ -198,18 +202,35 @@ export const defaultHandlers: StepHandlers = {
     kind: "fal",
     async plan(ctx): Promise<FalPlan> {
       const cut = ctx.outputs.cutout;
-      // TODO(P5): check Rodin's input field name/shape in the playground.
+      // Rodin takes `image_urls: string[]` (verified 2026-11-14). The cutout is
+      // mandatory in practice: busy backgrounds bleed into the mesh (Test 4).
       const input = cut
-        ? { field: "image_url", sha256: await sha256File(cut), read: () => blobOf(cut, "") }
-        : await imageInput(ctx);
-      return { model: "model3d", params: {}, input };
+        ? { field: "image_urls", sha256: await sha256File(cut), read: () => blobOf(cut, "") }
+        : { ...(await imageInput(ctx)), field: "image_urls" };
+      return { model: "model3d", params: {}, input: { ...input, list: true } };
     },
   },
 
   compress: {
     kind: "local",
-    // P5 adds gltf-transform; until then the raw GLB is kept (its documented fallback).
-    run: async ({ outputs }) => (outputs.model3d ? { output: outputs.model3d } : { skipped: true }),
+    async run({ job, outputs }) {
+      const raw = outputs.model3d;
+      if (!raw) return { skipped: true };
+      const bytes = await readBuffer(raw);
+      try {
+        const small = await compressGlb(bytes);
+        // Never worse than the raw file: keep whichever is lighter.
+        if (small.byteLength >= bytes.byteLength) return { output: raw };
+        if (small.byteLength > GLB_TARGET_BYTES) {
+          console.warn(`[jobs] ${job.id} GLB still ${small.byteLength} bytes after compress`);
+        }
+        return { output: (await saveFile(job.houseId, `${job.id}/compress.glb`, small)).path };
+      } catch (error) {
+        // Documented fallback (TECHNICAL.md §7.1): keep the raw GLB.
+        console.warn(`[jobs] ${job.id} compress failed, keeping raw GLB: ${String(error)}`);
+        return { output: raw };
+      }
+    },
   },
 
   room_edit: {

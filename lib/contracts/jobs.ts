@@ -55,6 +55,8 @@ export const Job = z.object({
   sceneId: Id.optional(),
   storyId: Id.optional(),
   roomId: Id.optional(),
+  /** Source photo of an `object_3d` job (the Object photo Asset). Added in P5. */
+  assetId: Id.optional(),
   steps: z.array(JobStep).min(1),
   current: z.number().int().nonnegative(),
   status: JobStatus,

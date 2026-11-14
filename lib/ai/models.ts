@@ -66,17 +66,18 @@ export const MODELS = {
     output: { path: ["audio", "url"], mime: "audio/flac" },
   },
   cutout: {
-    // TODO verify: background-removal model ID (BiRefNet) and price.
+    // Verified 2026-11-14: `image_url` in, `image.url` (PNG) out. TODO verify: price (not on the API page).
     id: "fal-ai/birefnet/v2",
     defaults: {},
     price: { unit: "image", usd: 0.005, verified: false },
     output: { path: ["image", "url"], mime: "image/png" },
   },
   model3d: {
-    // TODO verify: Rodin param names (tier, format) against the playground.
+    // Verified 2026-11-14: `image_urls` (list), `tier` and `geometry_file_format` enums,
+    // `model_mesh.url` out. Price $0.10 from the fal usage export of Test 4.
     id: "fal-ai/hyper3d/rodin/v2.5/fast",
     defaults: { tier: "Gen-2.5-Extreme-Low", geometry_file_format: "glb" },
-    price: { unit: "generation", usd: 0.4, verified: true },
+    price: { unit: "generation", usd: 0.1, verified: true },
     output: { path: ["model_mesh", "url"], mime: "model/gltf-binary" },
   },
   model3dFallback: {

@@ -23,6 +23,8 @@ Async coordination. **Append only; never edit someone else's lines.** Newest ent
 
 _(newest first: date — what changed — who)_
 
+- 2026-11-14 — **`Job.assetId` added (P5)** — Raphaël for Timoté. `lib/contracts/jobs.ts`: optional `assetId` = the Object photo Asset of an `object_3d` job (the job had no way to find its source photo). Additive only; `JobView` carries it too (an id, no path).
+
 - 2026-11-14 — **`GenerationCacheEntry` added (F4)** — Timoté. `lib/contracts/jobs.ts`: {id, key, model, outputPath, costUsd, createdAt}, the `generation_cache` document of TECHNICAL.md §6. Additive only.
 - 2026-11-14 — **Contracts v1 published (F2)** — Timoté. `import { … } from "@/lib/contracts"`; types are `z.infer`. Fixtures in `lib/contracts/__fixtures__/` (Frank, garden room, one Memory with 2 scenes, a bundle).
   1. Entities (`entities.ts`): `House`, `Room` with embedded `Slot` {id, x, y, scale normalised 0..1 on 1194×834, storyId?}, `Story` {object {kind glb|svg, path, jobId?}, memoryOrder}, `Memory` {answers, freeText?, sheet?, okAlone, status draft|generating|ready_for_review|approved|published}, `Asset`, `Scene` {outputs {restored?, colourised?, clip?, ambience?} as storage paths, choice? {use, colour, restored}, status pending|generating|done|fallback|failed}, `Event`. String ids, ISO date strings.
@@ -58,6 +60,13 @@ _(newest first: date — from → to — what)_
 - ~~2026-11-14 — Raphaël → Timoté — The Tasks workflow rejected `(ID-wip)` PR titles although its error message recommends them (`.github/workflows/tasks.yml:47`). Fixed in `fix/shared-tasks-wip-title`; please review. Not registered as a B task because `tasks.mjs add` needs Node, which is not set up on my machine yet: please add it if you want it on the board.~~ Resolved by #9.
 
 ## Log
+
+### 2026-11-14 20:55 — Raphaël for Timoté (pipeline, P5)
+- Done: P5 object_3d job. Source photo via new `Job.assetId`; cutout (BiRefNet, `image_url`) → Rodin v2.5 fast with `image_urls: [url]` (verified on fal's API page; price $0.10 from Test 4) → compress in process with gltf-transform (WebP textures ≤ 1024 px; keeps the raw GLB if compress fails or is not lighter) → `settleJob` sets the Story's GLB; on failure the Story keeps its library object. Engine: `FalPlan.input.list` sends a one-URL array.
+- In progress: nothing.
+- Blocked: nothing.
+- Contract changes: `Job.assetId` (see Contract changes). Done outside Raphaël's zone, for Timoté. Studio zone touched (Alexandre): `app/api/rooms/[id]/stories/route.ts` now inserts a real `object_3d` job (live allowed), `app/api/stories/[id]/object-job/route.ts` advances it with `advanceJob`. The S2 synthetic progress stays only for the offline file store (`STUDIO_MOCK_STORE=true`, label `studio-mock`), which has no engine. New deps: `@gltf-transform/core|extensions|functions` (GLB compress), `sharp` (WebP encoder for gltf-transform).
+- Next: Alexandre: the Object step can poll `/api/stories/:id/object-job` unchanged. BiRefNet price still unverified in `models.ts`.
 
 ### 2026-11-14 20:35 — Raphaël for Timoté (pipeline, P4)
 - Done: P4 routes. `POST /api/memories/:id/generate` makes one Scene per photo and one scene Job each (idempotent: scenes with a job keep it), `GET /api/jobs/:id` advances and returns `JobView`, `POST /api/scenes/:id/retry` starts a `bypassCache` job (reuses a running one; 429 `rate_limited` after 5 retries per House per 10 min, in-memory). Memory status is computed (`memoryStatusOf`, §5.2) on generate/retry and when a scene job settles. Logic in `lib/jobs/generation.ts` with unit tests.
