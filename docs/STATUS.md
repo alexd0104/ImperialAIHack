@@ -52,6 +52,14 @@ _(newest first: date — from → to — what)_
 
 ## Log
 
+### 2026-11-14 19:40 — Alexandre (studio)
+- Verification: Combined S1/F3/F4 tree passes pnpm verify (232 tests) and production build. No new S1 application behavior changed by the F3 integration.
+- Done: Final S1 production browser checks pass (4/4), with MongoDB integration covered separately by collection tests. Integrated concurrent F3 0e664fc as well; dependency conflicts retain both AI SDKs and the Studio form/query packages. All pipeline source and media are preserved unchanged.
+- In progress: Final combined-tree verification and GitHub CI for #18; merge explicitly authorized.
+- Blocked: None locally; concurrent main updates required fresh conflict resolution before GitHub could run PR checks.
+- Contract changes: None by S1. Shared handoffs and both package/lockfile additions retained.
+- Next: Merge #18 once the combined tree is green. Figma comparison and Slot review remain documented follow-ups; MongoDB wiring is complete.
+
 ### 2026-11-14 19:37 — Alexandre (studio)
 - Done: Integrated concurrent F4 fa2b4c4, preserving dependencies, contracts and all handoffs. S1 now uses F4 MongoDB collections by default, including in AI_MODE=mock. Added collection-level integration tests for ObjectId mapping, private tokens, duplicate-key replay, parent lookup and no fallback on DB failure. Offline browser testing requires an explicit STUDIO_MOCK_STORE=true; documented in TECHNICAL.md and enabled by Playwright.
 - In progress: Final browser regression and CI for PR #18, then merge as requested. pnpm verify passes with 195 tests; production build passes (existing F4 storage tracing warning).
@@ -94,6 +102,14 @@ _(newest first: date — from → to — what)_
 - Blocked: `node scripts/tasks.mjs check S1` exits 1 for F2 and F6; F5 is only a soft warning. `node scripts/tasks.mjs next alexandre` reports nothing ready. Application scaffold, `lib/contracts/`, `components/ui/` and `package.json` are absent, so implementation and `pnpm verify` have not started. No push or PR; only this local handoff changed.
 - Contract changes: None. Reuse merged Zod API/entity schemas; any required contract change needs Timoté review. No application code, task dependencies or design evidence changed.
 - Next: Enable Figma access, read node 22-546 design context + screenshot, and finish the verified mapping. After F2/F6 merge, update from main and rerun `check S1`; show the concrete implementation plan, then build `/studio/house/new`, `POST /api/houses` and style-only `POST /api/houses/:id/rooms` with required consent. Validate in mock mode, capture 1194 × 834 evidence, run `pnpm verify` before any push, and open `feat(studio): create the House (S1)` with all shared/out-of-zone files listed.
+
+### 2026-11-14 19:30 — Timoté (pipeline)
+- Done: F3 mock layer. `lib/ai/`: `models.ts` (every §7.1 model: id, defaults, price, output path; unverified ones marked `// TODO verify`, Kling ID awaits Test 2), `fal.ts` (`getFal()` → `FalGateway` {upload, submit, status, result} + `extractOutput()`; live = fal queue API + 1 h lifecycle header; mock = 2–5 s delay, `MOCK_FAIL_RATE`, fixtures from `mocks/fal/`), `claude.ts` + `prompt-compiler.ts` + `prompt-templates.ts` (never throws, template fallback, default negative prompt + "no music" + family's colour choice enforced). `mocks/` = 10 fal fixtures, Claude fixture, generated placeholder media (248 KB, no photos). New deps: `@fal-ai/client`, `@anthropic-ai/sdk` (AI integrations, AGENTS.md §4), `server-only` already added by F4. 180 tests green.
+- In progress: nothing.
+- Blocked: nothing.
+- Contract changes: none (`CompiledPrompts` schema lives in `lib/ai/prompt-types.ts`, pipeline-only).
+- Next: P1 job engine. Notes for everyone: mock outputs are `file://…/mocks/media/*` URLs, so the engine's download step copies them from disk (`isMockUrl`). Mock request IDs carry their own state and survive a dev-server restart. Errors are `AiRequestError { code, retryable }` in both modes. Decision: live Claude uses structured outputs instead of a forced tool call, because forced `tool_choice` is rejected by `claude-sonnet-5-5` (our quality fallback). Details in TECHNICAL.md §7.4. Live smoke test of the compiler still to do (P3).
+
 ### 2026-11-14 19:25 — Timoté (pipeline)
 - Done: F4. `lib/db` (`import { db, findHouseByToken, deleteHouseDocuments } from "@/lib/db"`): client singleton on `globalThis`, env read lazily; `db.houses|rooms|stories|memories|assets|scenes|jobs|events|generationCache` with `insert/findById/findOne/find/update/deleteById/deleteMany/raw`, all parsed with the contracts. `lib/storage`: `saveFile(houseId, name, bytes|stream) → {path, bytes, sha256}`, `statFile`, `openReadStream`, `sha256File`, `deleteHouseFolder`, `contentTypeFor`, traversal-safe. `GET/HEAD /api/files/<houseId>/...` with Range (206/416), access = Studio session or `?t=<House token>` of the House owning the folder. `pnpm db:ping`, `pnpm db:indexes`. Checked on real Atlas (`mh_timote`): ping, the 5 indexes, typed insert/read/update/delete OK.
 - In progress: nothing.

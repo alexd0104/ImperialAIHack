@@ -436,6 +436,14 @@ Not in MUST. Go/no-go at 02:00 Sunday (see `PLAN.md`). If go: an ElevenLabs conv
 
 `AI_MODE=mock` (default in dev, CI, tests): `lib/ai/fal.ts` returns fixtures from `mocks/fal/<model>.json` pointing at CC0 files in `mocks/media/` after a 2–5 s fake delay; 1 call in 10 fails (set `MOCK_FAIL_RATE=0` to disable). `lib/ai/claude.ts` returns `mocks/claude/prompt-compiler.json`. The mock implements exactly the same interface as live.
 
+Implementation notes (F3):
+- Interface `FalGateway` from `getFal()`: `upload(blob) → url`, `submit(modelKey, input) → requestId`, `status(modelKey, requestId) → IN_QUEUE|IN_PROGRESS|COMPLETED`, `result(modelKey, requestId) → { requestId, data }`. `extractOutput(modelKey, data)` returns `{ url, mime }` using the output path declared in `models.ts`. Live merges the model defaults from `models.ts` under the caller's input; the mock ignores inputs.
+- Errors from both modes are `AiRequestError { code, retryable }`. Like fal, a failed mock request reports `COMPLETED` and then `result()` throws; `result()` before completion throws `not_ready`.
+- Mock request IDs carry their own state (`mock_<submittedAt>_<delay>_<fail>_<nonce>`), so mock jobs survive a dev-server restart like live ones.
+- Mock outputs are `file://…/mocks/media/<file>` URLs: the engine's download step must copy them from disk (`isMockUrl(url)`). Mock uploads return a fake `https://mock.fal.media/...` URL.
+- `AI_MODE` is live only when exactly `live`. Fixture files are named after the model ID with `/` → `__`; mock paths resolve from the process working directory, so run the app from the repo root. A mock request ID replayed in live mode (or the reverse) fails as non-retryable `unknown_request`.
+- Live Claude uses structured outputs (`output_config.format` with the `CompiledPrompts` Zod schema) rather than a forced tool call, because forced `tool_choice` is rejected by `claude-sonnet-5-5`. `compilePrompts()` never throws: any failure or invalid output falls back to `lib/ai/prompt-templates.ts`, and the default negative prompt (extra terms capped at 500 chars), "no music" and `colourStyle: "none"` unless the family chose to colourise are always enforced.
+
 ---
 
 ## 8. Environments & secrets

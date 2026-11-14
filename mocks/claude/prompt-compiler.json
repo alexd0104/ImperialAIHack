@@ -1,0 +1,7 @@
+{
+  "motionPrompt": "Very subtle natural motion of what is already in the photo: gentle breathing, a slight movement of hair, soft shifting daylight. Every person, object and place stays exactly as in the photo. Static camera, no cuts.",
+  "negativePrompt": "new people, extra people, new objects, face change, morphing, distorted face, fast motion, camera cut, text, watermark",
+  "ambiencePrompt": "quiet garden in summer, birds in the distance, light breeze in the leaves, no music",
+  "colourStyle": "contemporary color",
+  "refusedRequests": []
+}
