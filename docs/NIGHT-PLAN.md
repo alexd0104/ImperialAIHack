@@ -18,7 +18,7 @@ cp .env.local ../mh-autopilot/
 export ANTHROPIC_API_KEY=sk-ant-...      # typed here only, never in a file or in chat
 claude
 ```
-Then paste: `Do my part of tonight's plan: node scripts/doc.mjs docs/NIGHT-PLAN.md <Name>` (Name = Timoté, Yasir, Alexandre or Raphaël). Raphaël does not need the worktree, key export is enough. Approve the commands it asks for.
+Then paste: `Do my part of tonight's plan: node scripts/doc.mjs docs/NIGHT-PLAN.md <Name>` (Name = Timoté, Yasir, Alexandre or Raphaël). Approve the commands it asks for.
 
 **Claude does** "Start the autopilot" (same for everyone, `<name>` in lowercase):
 1. `cd ../mh-autopilot && pnpm install`
@@ -31,12 +31,12 @@ Then paste: `Do my part of tonight's plan: node scripts/doc.mjs docs/NIGHT-PLAN.
 
 ## Timoté
 
-Tasks: F7 (by hand, now) → autopilot P7 movement · P8 sound prompts · P9 ambience sounds · S14 3D objects from the team's 3 images · P10 sound in parallel.
+Tasks: F7 (by hand, now) → autopilot P7 movement · P8 sound prompts · P9 ambience sounds · P10 sound in parallel.
 
 1. **Claude does F7 now, interactively:** `/start F7`; brief `node scripts/doc.mjs docs/FEATURES-V2.md F7`; every shape of the "Contracts v2" table as Zod schemas + DB mapping + fixtures + tests + env vars (`.env.example`, `check-env`); no route handlers; additive. `pnpm verify`, commit `feat(contracts): contracts v2 (F7)`, push, 5-line "Contract changes" note in `docs/STATUS.md`. This unblocks 7 tasks of the team: do it first, fast.
 2. **Claude does** "Start the autopilot" after `cd ../mh-autopilot && git pull --rebase origin main`, options `--total-usd 20`.
 3. **You do:** tell the team in the chat "F7 is pushed".
-4. **Morning (you do, with Claude):** live beach test of the new sound prompts (P8, `AI_MODE=live` on one photo, ≈ $0.50) and note the result in STATUS; `pnpm beds:make` live (P9, ≈ $0.05) then commit the 6 sounds; listen in the House. `AI_MODE=live pnpm objects:make` (S14, ≈ $1.50) then commit the 3 GLBs + thumbs; check them in the House.
+4. **Morning (you do, with Claude):** live beach test of the new sound prompts (P8, `AI_MODE=live` on one photo, ≈ $0.50) and note the result in STATUS; `pnpm beds:make` live (P9, ≈ $0.05) then commit the 6 sounds; listen in the House.
 
 ## Yasir
 
@@ -54,18 +54,17 @@ Tasks (autopilot): S10 back navigation · S11 room management (after F7) · S12 
 
 ## Raphaël
 
-Raphaël owns **Figma and the UI**: SH8, the redesign, interactive with Claude (no autopilot: design needs his eyes).
+Tonight: only the autopilot for S14 (3D objects from the team's 3 images). **Figma and the UI redesign (SH8) are tomorrow morning**, interactive.
 
-1. **Claude does SH8 with you, in your normal folder:** `/start SH8`; brief `node scripts/doc.mjs docs/FEATURES-V2.md SH8`; Figma page "v5 · Full flow · memorAI" (or the new page you made) is the source; restyle with `app/globals.css` and `components/ui` only, no logic/props changes; pull every 30 min (features land in the same screens); small commits `(SH8-wip)`, last one `(SH8)`; `pnpm verify`; push. Large → split with `node scripts/tasks.mjs add`.
-2. **Before sleeping:** push a runnable `(SH8-wip)` and write where you stopped at the top of `docs/status/raphael.md`.
-3. **Morning (you do):** visual pass on every screen (new features landed overnight in the old style: restyle them), 3D objects in the House, update Figma-vs-code evidence in `docs/DESIGN.md`.
+1. **Claude does** "Start the autopilot", options `--only S14 --wait-hours 10` (`--only` matters: it keeps SH8 for tomorrow). It waits for the photos in `public/objects/src/`.
+2. **Morning (you do, with Claude):** `AI_MODE=live pnpm objects:make` (≈ $1.50, ~5 min), commit the 3 GLBs + thumbs, check them in the House. Then **SH8, interactive:** `/start SH8`; brief `node scripts/doc.mjs docs/FEATURES-V2.md SH8`; Figma is the source; restyle with `app/globals.css` and `components/ui` only (no logic/props changes), including every screen added overnight; small commits `(SH8-wip)`, last one `(SH8)`; `pnpm verify`; push; update Figma-vs-code evidence in `docs/DESIGN.md`.
 
 ## Team — the 3 object images
 
-Anyone: put 3 photos of objects (one object each, plain background, your own photos) in `public/objects/src/` as `name.jpg`, commit `chore: default object images`, push. Timoté's autopilot then builds S14 automatically.
+Anyone: put 3 photos of objects (one object each, plain background, your own photos) in `public/objects/src/` as `name.jpg`, commit `chore: default object images`, push. Raphaël's autopilot then builds S14 automatically.
 
 ## Everyone — morning (paste into Claude)
 
 `Morning check: git pull, show ../mh-autopilot/.autopilot/summary-<name>.md and the top of docs/status/<name>.md, list my Human TODOs and Requests for me, then help me do them one by one.`
 
-Then: fix what is broken before 09:00 freeze; after 09:00 only bug fixes, demo rehearsal (`pnpm demo:check`), Devpost by 12:00.
+Sunday: 08:00–09:00 Human TODOs and fixes · **09:00 feature freeze** (no new features; UI restyle SH8 and bug fixes only) · **11:00 code freeze** · 11:00–12:00 demo rehearsal (`pnpm demo:check`) and Devpost (closes 12:00).

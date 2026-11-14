@@ -768,7 +768,7 @@
     {
       "id": "S14",
       "title": "Default 3D objects from 3 images",
-      "owner": "timote",
+      "owner": "raphael",
       "priority": "V2",
       "release": "v2",
       "order": 10,
@@ -813,7 +813,8 @@
       "order": 13,
       "deps": [],
       "soft": [],
-      "brief": "docs/FEATURES-V2.md#SH8"
+      "brief": "docs/FEATURES-V2.md#SH8",
+      "note": "Tomorrow morning, interactive (not autopilot)."
     },
     {
       "id": "P10",

@@ -95,7 +95,7 @@ Order = the team's priority. Owners and dependencies are machine-readable in `do
 - **Done when:** demo:check green; manual test: move an object in the Studio → House updates within 30 s with a fade.
 
 ### S14 — Default 3D objects from 3 images
-- **Owner:** Timoté (autopilot) · **Order:** 10 · **Deps:** none · **Requires files:** `public/objects/src/*.{png,jpg}` (the team adds 3 photos of objects)
+- **Owner:** Raphaël (autopilot, tonight) · **Order:** 10 · **Deps:** none · **Requires files:** `public/objects/src/*.{png,jpg}` (the team adds 3 photos of objects)
 - **Files:** new `scripts/make-objects.mts` (`pnpm objects:make`), `public/objects/glb/`, `public/objects/thumbs/`, `components/studio/object-library.ts`, House object renderer (GLB path only).
 - **Do:** the script runs each source image through the existing 3D chain (`lib/ai`: cutout → Rodin → GLB compress, same as P5), writes `public/objects/glb/<name>.glb` (≤ 3 MB) and a PNG thumbnail. In mock mode it writes the mock GLB so everything is testable. List the defaults first in the object library (available in every room); the House renders them with the existing shadow/float; SVG objects stay as fallback.
 - **Human:** the live run (`AI_MODE=live pnpm objects:make`, ≈ $1.50, ~5 min), then commit the 3 GLBs + thumbs.
@@ -114,7 +114,7 @@ Order = the team's priority. Owners and dependencies are machine-readable in `do
 - **Done when:** mock run produces 20 `lab_runs`; report template ready; live run + scores done by a human.
 
 ### SH8 — UI redesign v2
-- **Owner:** Raphaël · **Order:** 13 · **Deps:** none
+- **Owner:** Raphaël · **When:** Sunday morning, interactive · **Deps:** none
 - **Files:** `app/globals.css`, `components/ui/**`, styling of Studio/House screens (classes and layout only, not logic), `docs/DESIGN.md`.
 - **Do:** apply the new design from Figma. Restyle; do not change data flow or props unless needed. Split into `B<n>` sub-tasks with `node scripts/tasks.mjs add` if large. Pull often: features are landing in the same screens.
 
