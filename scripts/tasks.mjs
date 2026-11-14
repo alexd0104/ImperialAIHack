@@ -55,7 +55,7 @@ function idsInParens(text) {
 }
 
 function loadDone() {
-  if (!flag("no-fetch")) sh("git fetch --quiet origin main");
+  if (!flag("no-fetch")) sh("git fetch --quiet origin +refs/heads/main:refs/remotes/origin/main");
   const done = new Map(); // id -> { by, at, ref }
   const merged = opt("merged") && existsSync(opt("merged")) ? JSON.parse(readFileSync(opt("merged"), "utf8")) : [];
   for (const pr of merged) {
@@ -189,6 +189,9 @@ function nextId(person) {
   const order = (t) => (typeof t.order === "number" ? t.order : 1000);
   const ready = tasks
     .filter((t) => (only ? only.includes(t.id) : t.owner === person) && !done.has(t.id) && !skip.has(t.id))
+    // Overnight scope: the v2 round plus bug tasks; first-round leftovers (live demo content, ElevenLabs,
+    // COULDs) need a human decision, so they run only with --all.
+    .filter((t) => flag("all") || only || t.release === "v2" || /^B\d/.test(t.id))
     .filter((t) => t.deps.every((d) => done.has(d)) && !filesMissing(t))
     .sort((a, b) => order(a) - order(b));
   if (ready.length) console.log(ready[0].id);

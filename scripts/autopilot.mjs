@@ -231,7 +231,7 @@ function park(id, why) {
 
 async function integrate(id, spent) {
   for (let attempt = 1; attempt <= 3; attempt++) {
-    git("fetch", "-q", "origin", "main");
+    git("fetch", "-q", "origin", "+refs/heads/main:refs/remotes/origin/main");
     const r = git("rebase", "origin/main");
     if (!r.ok && rebasing()) {
       log(`⚔ rebase conflict on ${id}, asking the agent to resolve`);
@@ -322,7 +322,7 @@ async function main() {
   let done = 0;
   const giveUpAt = Date.now() + waitHours * 3600e3;
   while (done < maxTasks && spent.usd < totalUsd) {
-    git("fetch", "-q", "origin", "main");
+    git("fetch", "-q", "origin", "+refs/heads/main:refs/remotes/origin/main");
     git("rebase", "-q", "origin/main");
     const id = nextId();
     if (!id) {
