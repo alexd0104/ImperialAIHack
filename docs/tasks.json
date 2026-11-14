@@ -838,6 +838,18 @@
       "deps": [],
       "soft": [],
       "note": ""
+    },
+    {
+      "id": "S15",
+      "title": "Demo room backgrounds from team photos",
+      "owner": "raphael",
+      "priority": "V2",
+      "release": "v2",
+      "order": 6,
+      "deps": [],
+      "soft": [],
+      "brief": "docs/FEATURES-V2.md#S15",
+      "requiresFiles": "public/rooms/src"
     }
   ]
 }

@@ -54,14 +54,16 @@ Tasks (autopilot): S10 back navigation · S11 room management (after F7) · S12 
 
 ## Raphaël
 
-Tonight (autopilot): H10 loading animations in `components/ui` (now) · P9 ambience sound library (after F7) · S14 3D objects (when the team's photos land). **Figma and the UI redesign (SH8) are tomorrow morning**, interactive.
+Tonight (autopilot): H10 loading animations in `components/ui` (now) · S15 demo room backgrounds (when the team's room photos land) · P9 ambience sound library (after F7) · S14 3D objects (when the team's photos land). **Figma and the UI redesign (SH8) are tomorrow morning**, interactive.
 
-1. **Claude does** "Start the autopilot", options `--only H10,P9,S14 --wait-hours 10 --total-usd 20` (`--only` keeps SH8 for tomorrow).
-2. **Morning (you do, with Claude), from 08:00:** `AI_MODE=live pnpm objects:make` (S14, ≈ $1.50) and `AI_MODE=live pnpm beds:make` (P9, ≈ $0.05), commit the GLBs, thumbs and 6 sounds, check them in the House. Then **SH8, interactive:** `/start SH8`; brief `node scripts/doc.mjs docs/FEATURES-V2.md SH8`; Figma is the source; restyle with `app/globals.css` and `components/ui` only (no logic/props changes), including every screen added overnight; small commits `(SH8-wip)`, last one `(SH8)`; `pnpm verify`; push; update Figma-vs-code evidence in `docs/DESIGN.md`.
+1. **Claude does** "Start the autopilot", options `--only H10,S15,P9,S14 --wait-hours 10 --total-usd 20` (`--only` keeps SH8 for tomorrow).
+2. **Morning (you do, with Claude), from 08:00:** `AI_MODE=live pnpm objects:make` (S14, ≈ $1.50) `AI_MODE=live pnpm beds:make` (P9, ≈ $0.05) and `AI_MODE=live pnpm rooms:make` (S15, ≈ $0.15), commit the GLBs, thumbs, 6 sounds and 3 room pictures, re-run `pnpm seed:demo` + `pnpm export:demo`, check everything in the House. Then **SH8, interactive:** `/start SH8`; brief `node scripts/doc.mjs docs/FEATURES-V2.md SH8`; Figma is the source; restyle with `app/globals.css` and `components/ui` only (no logic/props changes), including every screen added overnight; small commits `(SH8-wip)`, last one `(SH8)`; `pnpm verify`; push; update Figma-vs-code evidence in `docs/DESIGN.md`.
 
-## Team — the 3 object images
+## Team — photos to add tonight (your own photos only: public repo)
 
-Anyone: put 3 photos of objects (one object each, plain background, your own photos) in `public/objects/src/` as `name.jpg`, commit `chore: default object images`, push. Raphaël's autopilot then builds S14 automatically.
+- **Rooms:** photos of a real garden, kitchen and living room (wide, landscape, no people), as `public/rooms/src/garden.jpg`, `kitchen.jpg`, `living-room.jpg`. Raphaël's autopilot turns them into the demo backgrounds (S15).
+- **Objects:** put 3 photos of objects (one object each, plain background, your own photos) in `public/objects/src/` as `name.jpg`, commit `chore: default object images`, push. Raphaël's autopilot then builds S14.
+- Commit `chore: demo room and object photos`, push. Each is picked up within 10 min.
 
 ## Everyone — morning (paste into Claude)
 

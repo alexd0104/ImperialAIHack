@@ -80,7 +80,7 @@ Order = the team's priority. Owners and dependencies are machine-readable in `do
 ### S11 — Room management
 - **Owner:** Alexandre · **Order:** 7 · **Deps:** F7
 - **Files:** `app/api/rooms/**`, `app/api/houses/[id]/rooms/**`, new `components/studio/RoomManager.tsx`, Studio dashboard entry point.
-- **Do:** create a room (style or photo), rename, change background (style or photo → `room_edit` job with Nano Banana cleanup; **keep the old background until the new one is ready**, then swap), delete with confirmation (cascade Stories, Memories, scenes, files). Use H10 loaders for the room photo wait.
+- **Do:** reuse `lib/ai/room-photo.ts` for the photo cleanup (S15 creates it; if it does not exist yet, create it there). Create a room (style or photo), rename, change background (style or photo → `room_edit` job with Nano Banana cleanup; **keep the old background until the new one is ready**, then swap), delete with confirmation (cascade Stories, Memories, scenes, files). Use H10 loaders for the room photo wait.
 - **Done when:** all four actions work in mock; House shows the new background after refresh; delete cascades (test).
 
 ### S12 — Place objects freely (editor)
@@ -94,6 +94,13 @@ Order = the team's priority. Owners and dependencies are machine-readable in `do
 - **Files:** `lib/house/**`, `components/house/house-app.tsx`, `components/house/room-scene.tsx`, `app/api/h/**` (bundle `version` + resolved `position`).
 - **Do:** refetch the bundle every 30 s (skip while a Memory is playing); if `version` changed, preload new files, then objects that moved fade out and fade in at the new place (~1.2 s), new objects fade in, removed ones fade out. Rooms with a new background cross-fade. Never interrupt playback.
 - **Done when:** demo:check green; manual test: move an object in the Studio → House updates within 30 s with a fade.
+
+### S15 — Demo room backgrounds from team photos
+- **Owner:** Raphaël (autopilot, tonight) · **Order:** 6 · **Deps:** none · **Requires files:** `public/rooms/src/{garden,kitchen,living-room}.jpg` (the team's own room photos; other names become extra styles)
+- **Files:** `lib/ai/room-photo.ts` (shared cleanup function; S11 reuses it — if it already exists, reuse it), `scripts/make-rooms.mts` (`pnpm rooms:make`), `public/rooms/*.jpg`, `components/studio/room-styles.ts`, demo seed Slot positions if they no longer fit.
+- **Do:** the script sends each photo through the room cleanup (fal image edit via `lib/ai`, prompt: tidy and light the room as it is, remove people and clutter, **add nothing**), crops/resizes to 1194×834, writes `public/rooms/<name>.jpg` (≤ 400 KB). In mock mode it just crops/resizes the source so everything is testable. `room-styles.ts` uses the `.jpg` when present, the `.svg` otherwise (fallback kept). Suggested Slots: adjust so objects sit on surfaces (table, shelf, floor) of the new pictures.
+- **Human:** live run `AI_MODE=live pnpm rooms:make` (≈ $0.15), look at the 3 results, commit; re-run `pnpm seed:demo` + `pnpm export:demo` for the demo House.
+- **Done when:** mock run writes the files, Studio and House show the photo backgrounds, SVG fallback still works.
 
 ### S14 — Default 3D objects from 3 images
 - **Owner:** Raphaël (autopilot, tonight) · **Order:** 10 · **Deps:** none · **Requires files:** `public/objects/src/*.{png,jpg}` (the team adds 3 photos of objects)
