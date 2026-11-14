@@ -58,3 +58,22 @@ export const findMockHouse = (id: string) => read("houses", id, House);
 
 export const insertMockHouse = (house: House) => insert("houses", house.id, House, house);
 export const insertMockRoom = (room: Room) => insert("rooms", room.id, Room, room);
+
+export async function updateMockHouse(id: string, fields: Partial<Omit<House, "id">>) {
+  const house = await findMockHouse(id);
+  if (!house) return null;
+  const next = House.parse({ ...house, ...fields });
+  await writeFile(join(directory("houses"), `${id}.json`), JSON.stringify(next), { mode: 0o600 });
+  return next;
+}
+
+export async function deleteMockHouse(id: string) {
+  if (!entityId.test(id)) return false;
+  try {
+    await unlink(join(directory("houses"), `${id}.json`));
+    return true;
+  } catch (error) {
+    if (hasCode(error, "ENOENT")) return false;
+    throw error;
+  }
+}
