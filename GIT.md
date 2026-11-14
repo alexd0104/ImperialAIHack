@@ -4,7 +4,7 @@ Goal: four people (three on Claude Code, one on Codex) ship in parallel without 
 
 ## 1. Branches
 
-- `main` is always runnable (`pnpm dev` and `pnpm build` work). Protected: no direct push, no force-push.
+- **Hackathon mode: no PRs.** Commit and push straight to `main` (`git pull --rebase`, `pnpm verify`, `git push`). Commit subject ends with `(<ID>)`. `main` must stay runnable; no force-push. The PR rules below are suspended.
 - Work branches from the latest `main`: `feat/<zone>-<ID>-<topic>`, `fix/<zone>-<topic>`, `docs/<topic>`, `chore/<topic>`.
   - zones: `pipeline`, `studio`, `house`, `design`, `contracts`, `shared`
   - example: `feat/studio-S3-memory-bank`, `feat/pipeline-P1-job-engine`, `feat/contracts-memory-sheet-v2`
