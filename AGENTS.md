@@ -164,3 +164,15 @@ node scripts/tasks.mjs lint
 - `docs/STATUS.md` handoff written (`/handoff`), including anything you learned that others need.
 - PR title ends with `(<ID>)` so the board marks it done; description lists files outside your zone and contract changes.
 - If you stop mid-task: push the branch, PR title with `(<ID>-wip)`, and say in STATUS exactly where you stopped and what is next.
+
+## 12. Next.js notes
+
+<!-- BEGIN:nextjs-agent-rules -->
+
+## This is NOT the Next.js you know
+
+This version has breaking changes — APIs, conventions, and file structure may all differ from your training data. Read the relevant guide in `node_modules/next/dist/docs/` (resolved from this file's directory; in monorepos the `next` package may not be visible from the repo root) before writing any code. Heed deprecation notices.
+
+This block is written and re-added by `next dev` — verify at `node_modules/next/dist/server/lib/generate-agent-files.js`. Removing it from a diff only re-creates the uncommitted change; committing it with your work keeps the tree clean.
+
+<!-- END:nextjs-agent-rules -->

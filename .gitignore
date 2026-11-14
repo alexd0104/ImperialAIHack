@@ -8,9 +8,8 @@ out/
 next-env.d.ts
 
 # env — never commit secrets
-.env
-.env*.local
-.env.production
+.env*
+!.env.example
 
 # local data — never commit (public repo)
 storage/
@@ -28,3 +27,6 @@ test-results/
 *.log
 .vercel
 .claude/settings.local.json
+
+# typescript
+*.tsbuildinfo

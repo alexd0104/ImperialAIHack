@@ -1,0 +1,42 @@
+{
+  "name": "memorai",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "verify": "pnpm typecheck && pnpm lint && pnpm test",
+    "typecheck": "next typegen && tsc --noEmit",
+    "lint": "biome check .",
+    "format": "biome format --write .",
+    "test": "vitest run",
+    "test:e2e": "playwright test",
+    "demo": "node scripts/todo.mjs demo",
+    "demo:check": "node scripts/todo.mjs demo:check",
+    "seed:demo": "node scripts/todo.mjs seed:demo",
+    "export:demo": "node scripts/todo.mjs export:demo",
+    "prepare": "husky"
+  },
+  "dependencies": {
+    "next": "16.4.6",
+    "react": "19.3.0",
+    "react-dom": "19.3.0"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "^2.6.7",
+    "@playwright/test": "^1.65.0",
+    "@tailwindcss/turbopack": "4.3.3",
+    "@types/node": "^24",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "husky": "^9.1.7",
+    "tailwindcss": "4.3.3",
+    "typescript": "^5",
+    "vitest": "^5.1.0"
+  },
+  "packageManager": "pnpm@12.18.0",
+  "engines": {
+    "node": ">=24"
+  }
+}
