@@ -38,6 +38,20 @@ _(newest first: date — from → to — what)_
 
 ## Log
 
+### 2026-11-14 19:05 — Raphaël (design)
+- Done: B2 (PR #11 review by Alexandre). New tokens `primary-strong #B4552F` / `primary-strong-hover #A44B2C` for filled controls with white text (4.9 / 5.8:1), `success-strong #426B38` for the Approved badge; avatar initials in ink; checkbox/stepper checks on `success-text`. Contrast unit test for every pair + axe (WCAG 2.2 AA) e2e on `/dev/ui`.
+- In progress: PR #11 (F5) waiting for re-review.
+- Blocked: nothing.
+- Contract changes: none.
+- Next: everyone: use `bg-primary-strong` (not `bg-primary`) behind white text. Test 4.
+
+### 2026-11-14 18:30 — Raphaël (design)
+- Done: F5. Tokens in `app/globals.css` (TECHNICAL.md §3.2 + shadcn mapping), fonts in `app/fonts.ts`, 14 components in `components/ui/` (Button, Switch, Badge, Card, Input/Textarea/Label, Checkbox, Tabs, ToggleGroup, Polaroid, IconButton 64/76/92/124, HeartButton, AvatarGroup, Stepper, SegmentedProgress). Gallery at `/dev/ui` (dev only, 404 in prod). Evidence `docs/design-evidence/f5-dev-ui.png`, deviations in `docs/DESIGN.md` §4.3.
+- In progress: PR "feat(design): tokens, fonts and base components (F5)".
+- Blocked: nothing. Figma MCP needs re-auth (`/mcp`) for new captures.
+- Contract changes: none. New tokens: `switch-on #3F8A55`, `avatar-ring`, `shadow-house-control`, `shadow-knob`, `spacing-page`.
+- Next: Test 4 (Rodin vs Trellis). Everyone: Tailwind's default palette, `text-sm/lg…` and `shadow-sm…` are gone; use our tokens (`text-16`, `text-ink/70`, `shadow-card`, `rounded-card`). Import components from `@/components/ui/*`; `cn` is in `@/lib/utils`. House screens: IconButton 76+ and HeartButton only (Switch/Checkbox/Button sm are Studio-only).
+
 ### 2026-11-14 17:55 — Raphaël (design)
 - Done: SH7, 8 missing frames on Figma v5 row 4 (Questions + free text, Record a voice, Story end, loading/error/clip fallback, Order memories, Room from a photo, Sent confirmation, Studio phone). Mapped in `docs/DESIGN.md` §2, captures in `docs/design-evidence/sh7-*`.
 - In progress: Q4 evidence (branch `feat/design-Q4-figma-specs`, also holds the exported SVGs).
