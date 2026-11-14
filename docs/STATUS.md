@@ -59,6 +59,13 @@ _(newest first: date — from → to — what)_
 
 ## Log
 
+### 2026-11-14 20:35 — Raphaël for Timoté (pipeline, P4)
+- Done: P4 routes. `POST /api/memories/:id/generate` makes one Scene per photo and one scene Job each (idempotent: scenes with a job keep it), `GET /api/jobs/:id` advances and returns `JobView`, `POST /api/scenes/:id/retry` starts a `bypassCache` job (reuses a running one; 429 `rate_limited` after 5 retries per House per 10 min, in-memory). Memory status is computed (`memoryStatusOf`, §5.2) on generate/retry and when a scene job settles. Logic in `lib/jobs/generation.ts` with unit tests.
+- In progress: P5 next.
+- Blocked: nothing.
+- Contract changes: none. Done outside Raphaël's zone, for Timoté. Shared edit: `lib/copy.ts` (+`studio.generation` API messages).
+- Next: Alexandre can call generate/poll jobs/retry from the Studio review screen.
+
 ### 2026-11-14 20:20 — Raphaël (design)
 - Done: Slot review (Alexandre's request): kitchen and living Slots now rest Objects on drawn surfaces (counter top, floor); garden unchanged. SH2: the demo House has Garden, Kitchen and Living, and Choose a room shows all three. Q4: House evidence in `docs/DESIGN.md` §7/§8, 7 captures, axe WCAG 2.2 AA: 0 violations on 8 House screens.
 - In progress: Q4 stays ongoing (Figma-vs-code captures once the Figma MCP is re-authenticated).

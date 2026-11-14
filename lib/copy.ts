@@ -107,6 +107,16 @@ export const copy = {
       wrongPassword: "That password is not right. Please try again.",
       genericError: "Something went wrong. Please try again.",
     },
+    // API messages of the generation routes (P4).
+    generation: {
+      notFound: "We could not find this Memory.",
+      sceneNotFound: "We could not find this photo.",
+      jobNotFound: "We could not find this step.",
+      needsAnswers: "Answer the questions and add at least one photo first.",
+      published: "This Memory is already shared.",
+      tooManyRetries: "Please wait a few minutes before trying again.",
+      error: "Something went wrong. Please try again.",
+    },
   },
   // Accessible names for shared components in components/ui (screen readers only).
   ui: {

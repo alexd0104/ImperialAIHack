@@ -8,6 +8,7 @@ import { CompiledPrompts } from "@/lib/ai/prompt-types";
 import type { Asset, Job, JobStep, MemorySheet, SceneOutputs } from "@/lib/contracts";
 import { db } from "@/lib/db/collections";
 import { openReadStream, saveFile, sha256File } from "@/lib/storage";
+import { mongoGenerationStore, refreshMemoryStatusById } from "./generation";
 import type { FalPlan, StepContext, StepHandlers } from "./types";
 
 // Default step handlers (TECHNICAL.md §5.1). P2 refines model params once each
@@ -287,6 +288,7 @@ export async function settleJob(job: Job): Promise<void> {
       outputs: sceneOutputsOf(job),
       status: job.status === "done" ? "done" : job.status === "fallback" ? "fallback" : "failed",
     });
+    if (job.memoryId) await refreshMemoryStatusById(mongoGenerationStore, job.memoryId);
     return;
   }
   const last = (name: JobStep["name"]) =>
