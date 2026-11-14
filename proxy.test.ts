@@ -1,9 +1,28 @@
 import { NextRequest } from "next/server";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { ApiErrorResponse } from "./lib/contracts";
 import { createSessionToken, SESSION_COOKIE } from "./lib/session";
 import { proxy } from "./proxy";
 
 const SECRET = "test-secret-that-is-at-least-32-chars";
+
+/** Signs a token the way createSessionToken would, but with any secret (even a short one). */
+async function forgeToken(secret: string, expiresAt = Date.now() + 60_000): Promise<string> {
+  const key = await crypto.subtle.importKey(
+    "raw",
+    new TextEncoder().encode(secret),
+    { name: "HMAC", hash: "SHA-256" },
+    false,
+    ["sign"],
+  );
+  const sig = await crypto.subtle.sign(
+    "HMAC",
+    key,
+    new TextEncoder().encode(`session:${expiresAt}`),
+  );
+  const b64 = Buffer.from(sig).toString("base64url");
+  return `${expiresAt}.${b64}`;
+}
 
 function request(path: string, cookie?: string) {
   return new NextRequest(`http://localhost:3000${path}`, {
@@ -26,8 +45,11 @@ describe("proxy", () => {
   it("answers a signed-out API call with a 401 error envelope", async () => {
     const response = await proxy(request("/api/houses"));
     expect(response.status).toBe(401);
-    expect(await response.json()).toEqual({
-      error: { code: "unauthorized", message: "Please sign in.", retryable: false },
+    const body = ApiErrorResponse.parse(await response.json());
+    expect(body.error).toEqual({
+      code: "unauthorized",
+      message: "Please sign in.",
+      retryable: false,
     });
   });
 
@@ -59,6 +81,15 @@ describe("proxy", () => {
       const response = await proxy(request(path));
       expect(response.headers.get("x-robots-tag")).toBe("noindex");
     }
+  });
+
+  it("rejects a cookie signed with a short configured secret", async () => {
+    vi.stubEnv("SESSION_SECRET", "short");
+    const response = await proxy(request("/api/houses", await forgeToken("short")));
+    expect(response.status).toBe(401);
+    expect(response.headers.get("x-middleware-next")).toBeNull();
+    const page = await proxy(request("/studio", await forgeToken("short")));
+    expect(page.status).toBe(307);
   });
 
   it("fails closed without SESSION_SECRET", async () => {

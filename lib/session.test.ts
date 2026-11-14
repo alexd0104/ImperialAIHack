@@ -10,6 +10,24 @@ import {
 
 const SECRET = "test-secret-that-is-at-least-32-chars";
 
+/** Signs a token the way createSessionToken would, but with any secret (even a short one). */
+async function forgeToken(secret: string, expiresAt = Date.now() + 60_000): Promise<string> {
+  const key = await crypto.subtle.importKey(
+    "raw",
+    new TextEncoder().encode(secret),
+    { name: "HMAC", hash: "SHA-256" },
+    false,
+    ["sign"],
+  );
+  const sig = await crypto.subtle.sign(
+    "HMAC",
+    key,
+    new TextEncoder().encode(`session:${expiresAt}`),
+  );
+  const b64 = Buffer.from(sig).toString("base64url");
+  return `${expiresAt}.${b64}`;
+}
+
 describe("session token", () => {
   it("round-trips a fresh token", async () => {
     const token = await createSessionToken(SECRET);
@@ -42,6 +60,21 @@ describe("session token", () => {
     expect(await verifySessionToken("garbage", SECRET)).toBe(false);
     expect(await verifySessionToken(`${token}.extra`, SECRET)).toBe(false);
     expect(await verifySessionToken("abc.def", SECRET)).toBe(false);
+  });
+});
+
+describe("short secrets", () => {
+  it("refuses to issue a token with a secret under 32 chars", async () => {
+    await expect(createSessionToken("short")).rejects.toThrow(/at least 32/);
+  });
+
+  it("rejects a correctly signed token when the configured secret is under 32 chars", async () => {
+    const token = await forgeToken("short");
+    expect(await verifySessionToken(token, "short")).toBe(false);
+  });
+
+  it("accepts a token forged the same way with a long secret (the helper is faithful)", async () => {
+    expect(await verifySessionToken(await forgeToken(SECRET), SECRET)).toBe(true);
   });
 });
 

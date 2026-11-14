@@ -1,11 +1,12 @@
 import { LoginRequest } from "@/lib/contracts";
+import { copy } from "@/lib/copy";
 import { fail, ok, parseJson } from "@/lib/http";
 import {
   createSessionToken,
+  isUsableSecret,
   passwordMatches,
   SESSION_COOKIE,
   SESSION_MAX_AGE_SECONDS,
-  SESSION_SECRET_MIN_LENGTH,
 } from "@/lib/session";
 
 function isHttps(request: Request): boolean {
@@ -16,17 +17,18 @@ function isHttps(request: Request): boolean {
 export async function POST(request: Request) {
   const password = process.env.STUDIO_PASSWORD;
   const secret = process.env.SESSION_SECRET;
-  if (!password || !secret || secret.length < SESSION_SECRET_MIN_LENGTH) {
+  if (!password || !isUsableSecret(secret)) {
     // Not retryable: only fixing .env.local helps (see .env.example).
-    return fail("internal", "Studio sign-in is not configured.", 500, false);
+    return fail("internal", copy.auth.notConfigured, 500, false);
   }
 
   const body = await parseJson(request, LoginRequest);
-  if (!body.success) return fail("validation_failed", body.message);
+  // 422 per docs/playbooks/add-api-route.md (well-formed request, invalid content).
+  if (!body.success) return fail("validation_failed", body.message, 422);
 
   if (!(await passwordMatches(body.data.password, password, secret))) {
     // Retryable: the person can simply type the password again.
-    return fail("unauthorized", "That password is not right.", 401, true);
+    return fail("unauthorized", copy.auth.wrongPassword, 401, true);
   }
 
   const response = ok({ ok: true });

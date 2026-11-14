@@ -1,8 +1,14 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { ApiErrorResponse } from "@/lib/contracts";
 import { SESSION_COOKIE, verifySessionToken } from "@/lib/session";
 import { POST } from "./route";
 
 const SECRET = "test-secret-that-is-at-least-32-chars";
+
+/** Every error must be consumable by a contract-based client (review of #12). */
+async function errorOf(response: Response) {
+  return ApiErrorResponse.parse(await response.json()).error;
+}
 
 function login(body: unknown) {
   return POST(
@@ -51,21 +57,26 @@ describe("POST /api/auth/login", () => {
     vi.stubEnv("SESSION_SECRET", "short");
     const response = await login({ password: "family-password" });
     expect(response.status).toBe(500);
+    expect((await errorOf(response)).code).toBe("internal");
   });
 
   it("returns 401 unauthorized and no cookie on a wrong password", async () => {
     const response = await login({ password: "nope" });
     expect(response.status).toBe(401);
-    expect((await response.json()).error.code).toBe("unauthorized");
+    expect(await errorOf(response)).toEqual({
+      code: "unauthorized",
+      message: "That password is not right.",
+      retryable: true,
+    });
     expect(response.headers.get("set-cookie")).toBeNull();
   });
 
   it.each([{}, { password: "" }, { password: 42 }, "not json"])(
-    "returns 400 for %j",
+    "returns 422 validation_failed for %j",
     async (body) => {
       const response = await login(body);
-      expect(response.status).toBe(400);
-      expect((await response.json()).error.code).toBe("validation_failed");
+      expect(response.status).toBe(422);
+      expect((await errorOf(response)).code).toBe("validation_failed");
     },
   );
 
@@ -73,7 +84,7 @@ describe("POST /api/auth/login", () => {
     vi.stubEnv("STUDIO_PASSWORD", "");
     const response = await login({ password: "family-password" });
     expect(response.status).toBe(500);
-    expect((await response.json()).error).toEqual({
+    expect(await errorOf(response)).toEqual({
       code: "internal",
       message: "Studio sign-in is not configured.",
       retryable: false,

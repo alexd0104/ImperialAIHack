@@ -32,8 +32,16 @@ function timingSafeEqual(a: string, b: string): boolean {
   return diff === 0;
 }
 
+/** A short secret makes forged cookies guessable, so both issuing and verifying refuse it. */
+export function isUsableSecret(secret: string | undefined): secret is string {
+  return typeof secret === "string" && secret.length >= SESSION_SECRET_MIN_LENGTH;
+}
+
 /** Token format: `<expiresAtMs>.<base64url HMAC-SHA256(expiresAtMs)>`. */
 export async function createSessionToken(secret: string, now = Date.now()): Promise<string> {
+  if (!isUsableSecret(secret)) {
+    throw new Error(`SESSION_SECRET must be at least ${SESSION_SECRET_MIN_LENGTH} characters`);
+  }
   const expiresAt = String(now + SESSION_MAX_AGE_SECONDS * 1000);
   return `${expiresAt}.${await hmac(secret, `session:${expiresAt}`)}`;
 }
@@ -43,8 +51,8 @@ export async function verifySessionToken(
   secret: string | undefined,
   now = Date.now(),
 ): Promise<boolean> {
-  // Fail closed: without a secret nobody is signed in.
-  if (!token || !secret) return false;
+  // Fail closed: without a usable secret nobody is signed in, even with a well-signed cookie.
+  if (!token || !isUsableSecret(secret)) return false;
   const [expiresAt, signature, extra] = token.split(".");
   if (!expiresAt || !signature || extra !== undefined || !/^\d+$/.test(expiresAt)) return false;
   if (Number(expiresAt) <= now) return false;

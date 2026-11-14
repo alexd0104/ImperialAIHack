@@ -1,4 +1,5 @@
 import { type NextRequest, NextResponse } from "next/server";
+import { copy } from "@/lib/copy";
 import { fail } from "@/lib/http";
 import { needsSession, SESSION_COOKIE, verifySessionToken } from "@/lib/session";
 
@@ -17,7 +18,7 @@ export async function proxy(request: NextRequest) {
     );
     if (!signedIn) {
       if (pathname.startsWith("/api/")) {
-        return noindex(fail("unauthorized", "Please sign in."));
+        return noindex(fail("unauthorized", copy.auth.signInRequired));
       }
       const login = new URL("/studio/login", request.url);
       login.searchParams.set("next", `${pathname}${search}`);

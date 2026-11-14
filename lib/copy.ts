@@ -5,6 +5,12 @@ export const copy = {
     name: "memorAI",
     tagline: "Real family photos, gently brought to life, to share with someone you love.",
   },
+  // Messages carried in API error envelopes; the Studio may show them as they are.
+  auth: {
+    signInRequired: "Please sign in.",
+    wrongPassword: "That password is not right.",
+    notConfigured: "Studio sign-in is not configured.",
+  },
   studio: {
     login: {
       title: "Family Studio",

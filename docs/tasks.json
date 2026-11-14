@@ -524,17 +524,6 @@
         "P4"
       ],
       "soft": []
-    },
-    {
-      "id": "B1",
-      "title": "Studio login: throttle repeated wrong passwords",
-      "owner": "timote",
-      "priority": "FIX",
-      "deps": [
-        "F6"
-      ],
-      "soft": [],
-      "note": "F6 review: /api/auth/login allows unlimited guesses; small in-memory per-IP delay is enough"
     }
   ]
 }
