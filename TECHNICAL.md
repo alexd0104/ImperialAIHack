@@ -454,6 +454,7 @@ Implementation notes (F3):
 |---|---|---|
 | `AI_MODE` | `mock` | `mock` \| `live` |
 | `MOCK_FAIL_RATE` | `0.1` | mock failure rate |
+| `STUDIO_MOCK_STORE` | `false` | Explicit offline S1 test store; only allowed with `AI_MODE=mock`. Unset/false uses F4 MongoDB even in AI mock mode. Playwright enables it for its test server. |
 | `FAL_KEY` | — | personal fal key (server only) |
 | `FAL_KEY_LABEL` | `dev-timote` / `demo` | budget accounting per key |
 | `FAL_BUDGET_USD` | `5` | switch to mock above this spend |
