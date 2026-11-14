@@ -6,7 +6,7 @@ import { join } from "node:path";
 
 const input = JSON.parse(readFileSync(0, "utf8") || "{}");
 const cmd = String(input?.tool_input?.command ?? "");
-const m = cmd.match(/git\s+(?:checkout\s+-[bB]|switch\s+-[cC]|worktree\s+add\b.*\s-[bB])\s+((?:feat|fix)\/[a-z]+-(SH\d+|[FPSHQC]\d+)\b\S*)/);
+const m = cmd.match(/git\s+(?:checkout\s+-[bB]|switch\s+-[cC]|worktree\s+add\b.*\s-[bB])\s+((?:feat|fix)\/[a-z]+-(SH\d+|[FPSHQCB]\d+)\b\S*)/);
 if (!m) process.exit(0);
 
 const root = process.env.CLAUDE_PROJECT_DIR || process.cwd();

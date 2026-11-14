@@ -6,7 +6,7 @@ The rules above are shared with Codex. This file only adds what is specific to C
 
 ## Start of every session
 
-1. `git pull` and read `docs/STATUS.md`.
+1. Run `/orient` (or follow `AGENTS.md` §11.1): branch, repo state, STATUS, board, environment.
 2. Read `docs/zones/<OWNER_ZONE>.md` (your zone is set in `.env.local` as `OWNER_ZONE`; the hooks use it).
 3. Work on a branch `feat/<zone>-<topic>` (see `GIT.md`).
 
@@ -19,6 +19,7 @@ The rules above are shared with Codex. This file only adds what is specific to C
 | Skill | `add-api-route` | Adding or changing an API route (contract → route → mock → test). |
 | Skill | `add-fal-step` | Adding or swapping a fal model in the generation chain. |
 | Skill | `figma-to-component` | Turning a Figma frame into code (uses the Figma MCP server). |
+| Command | `/orient` | First thing in every session: where am I, what is ready, is the env sane. |
 | Command | `/start <ID>` | Starting any task: checks dependencies, creates the branch, plans. |
 | Command | `/verify` | Typecheck + lint + tests, with fixes for what fails. |
 | Command | `/demo-check` | Checks the House demo mode works offline. |

@@ -31,6 +31,8 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version-file: .nvmrc
+      - name: Validate docs/tasks.json
+        run: node scripts/tasks.mjs lint
       - name: Check task ID and dependencies
         env:
           HEAD_REF: ${{ github.head_ref }}

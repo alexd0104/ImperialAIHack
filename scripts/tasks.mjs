@@ -5,6 +5,9 @@
 //   node scripts/tasks.mjs board             print the task board (markdown) to stdout
 //   node scripts/tasks.mjs next [person]     tasks you can start now (deps done, not started)
 //   node scripts/tasks.mjs id-from <text>    print the first task ID found in a branch name / title
+//   node scripts/tasks.mjs add --title "..." --owner <person> [--deps A,B] [--soft C] [--note "..."]
+//                                            append a new B<n> task (bug / troubleshooting / missing piece)
+//   node scripts/tasks.mjs lint              validate docs/tasks.json (duplicate IDs, unknown deps/owners, cycles)
 //
 // Options: --base <ref> (default origin/main), --no-fetch, --prs <file.json> (open PRs, from gh),
 //          --merged <file.json> (merged PRs, from gh), --out <file>
@@ -32,7 +35,7 @@ const registry = JSON.parse(readFileSync(join(root, "docs/tasks.json"), "utf8"))
 const people = registry.people;
 const tasks = registry.tasks;
 const byId = new Map(tasks.map((t) => [t.id, t]));
-const ID_RE = /\b(SH\d+|[FPSHQC]\d+)\b/;
+const ID_RE = /\b(SH\d+|[FPSHQCB]\d+)\b/;
 
 const sh = (c) => {
   try {
@@ -79,7 +82,7 @@ function loadInProgress(done) {
   }
   for (const line of sh("git branch -r --format=%(refname:short)").split("\n")) {
     const branch = line.trim().replace(/^origin\//, "");
-    const m = branch.match(/^(feat|fix)\/[a-z]+-(SH\d+|[FPSHQC]\d+)\b/);
+    const m = branch.match(/^(feat|fix)\/[a-z]+-(SH\d+|[FPSHQCB]\d+)\b/);
     if (m && !done.has(m[2]) && !wip.has(m[2])) wip.set(m[2], { by: "", where: `branch ${branch}` });
   }
   return wip;
@@ -164,13 +167,59 @@ function next(person) {
   for (const t of list) console.log(`🟢 ${t.id}  ${t.title}  (${t.priority}, ${who(t.owner)})`);
 }
 
+function lint() {
+  const errors = [];
+  const seen = new Set();
+  for (const t of tasks) {
+    if (seen.has(t.id)) errors.push(`duplicate id ${t.id}`);
+    seen.add(t.id);
+    if (!ID_RE.test(t.id)) errors.push(`invalid id ${t.id}`);
+    if (!people[t.owner]) errors.push(`${t.id}: unknown owner ${t.owner}`);
+    for (const d of [...(t.deps ?? []), ...(t.soft ?? [])]) if (!byId.has(d)) errors.push(`${t.id}: unknown dependency ${d}`);
+  }
+  const visiting = new Set();
+  const visited = new Set();
+  const visit = (id, path) => {
+    if (visiting.has(id)) return errors.push(`cycle: ${[...path, id].join(" -> ")}`);
+    if (visited.has(id) || !byId.has(id)) return;
+    visiting.add(id);
+    for (const d of byId.get(id).deps ?? []) visit(d, [...path, id]);
+    visiting.delete(id);
+    visited.add(id);
+  };
+  for (const t of tasks) visit(t.id, []);
+  if (errors.length) {
+    console.error("docs/tasks.json is invalid:\n - " + errors.join("\n - "));
+    process.exit(1);
+  }
+  console.log(`docs/tasks.json OK (${tasks.length} tasks).`);
+}
+
+function add() {
+  const title = opt("title");
+  const owner = opt("owner");
+  if (!title || !people[owner]) {
+    console.error('Usage: add --title "..." --owner <timote|alexandre|yasir|raphael> [--deps A,B] [--soft C] [--note "..."]');
+    process.exit(2);
+  }
+  const list = (s) => (s ? s.split(",").map((x) => x.trim()).filter(Boolean) : []);
+  const n = Math.max(0, ...tasks.filter((t) => /^B\d+$/.test(t.id)).map((t) => Number(t.id.slice(1)))) + 1;
+  const task = { id: `B${n}`, title, owner, priority: "FIX", deps: list(opt("deps")), soft: list(opt("soft")), note: opt("note", "") };
+  for (const d of [...task.deps, ...task.soft]) if (!byId.has(d)) { console.error(`Unknown dependency ${d}`); process.exit(2); }
+  registry.tasks.push(task);
+  writeFileSync(join(root, "docs/tasks.json"), JSON.stringify(registry, null, 2) + "\n");
+  console.log(`Added ${task.id}: ${title} (owner ${who(owner)}). Commit docs/tasks.json in a small PR "chore(tasks): add ${task.id}" or with your fix.`);
+}
+
 if (cmd === "check") check(args[1]);
+else if (cmd === "lint") lint();
+else if (cmd === "add") add();
 else if (cmd === "board") board();
 else if (cmd === "next") next(args[1] && !args[1].startsWith("--") ? args[1] : undefined);
 else if (cmd === "id-from") {
   const m = (args[1] ?? "").match(ID_RE);
   if (m) console.log(m[1]);
 } else {
-  console.log("Usage: node scripts/tasks.mjs check <ID> | board | next [timote|alexandre|yasir|raphael] | id-from <text>");
+  console.log("Usage: node scripts/tasks.mjs check <ID> | board | next [person] | id-from <text> | add --title ... --owner ... | lint");
   process.exit(2);
 }

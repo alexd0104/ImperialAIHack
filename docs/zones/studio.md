@@ -18,6 +18,8 @@
 
 **Task guardrail:** before each task run `node scripts/tasks.mjs check S<n>` and stop if it fails; PR titles end with `(S<n>)`.
 
+**Agent manual:** follow `AGENTS.md` §11 (orient, troubleshooting two-strikes rule, `node scripts/tasks.mjs add` for new bug tasks).
+
 **Codex notes:** you have no Claude Code hooks. Before every push run `pnpm verify`; never open `.env*`; check `docs/zones/` before touching a file outside your paths; follow `docs/playbooks/*.md` (same content as the Claude skills). Update `docs/STATUS.md` by hand with the handoff format.
 
 **Definition of done (zone-specific):** the E2E flow (`TESTING.md` Q2) passes through your screens in mock mode; axe shows no serious violations on Create the House, Memory bank, Approve, Place.
