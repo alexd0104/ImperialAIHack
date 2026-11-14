@@ -31,6 +31,13 @@ _(newest first: date — from → to — what)_
 
 ## Log
 
+### 2026-11-14 17:55 — Raphaël (design)
+- Done: SH7, 8 missing frames on Figma v5 row 4 (Questions + free text, Record a voice, Story end, loading/error/clip fallback, Order memories, Room from a photo, Sent confirmation, Studio phone). Mapped in `docs/DESIGN.md` §2, captures in `docs/design-evidence/sh7-*`.
+- In progress: Q4 evidence (branch `feat/design-Q4-figma-specs`, also holds the exported SVGs).
+- Blocked: F5 waits for F1. No Node/pnpm on my machine yet.
+- Contract changes: none.
+- Next: F5 when F1 merges. Alexandre: S4/SH5/S8 can build from frames 57-624, 58-638, 61-734, 61-982. Yasir: Story end 58-812 and clip fallback in 60-709.
+
 ### Template
 ```
 ### <YYYY-MM-DD HH:MM> — <name> (<zone>)
