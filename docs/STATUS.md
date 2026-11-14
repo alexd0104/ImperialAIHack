@@ -16,7 +16,7 @@ Async coordination. **Append only; never edit someone else's lines.** Newest ent
 | 1 | GLB on room SVG | | | Yasir |
 | 2 | Memory chain fidelity (Kling vs Veo) | | | Timoté |
 | 3 | Room from real photo | | | Timoté |
-| 4 | Rodin vs Trellis | 3 photos (teapot, radio, watering can), same input, via fal API. Speed and weight equal: 18–74 s, 0.8–1.4 MB, ~19–20K triangles each. Rodin: 3/3 clean, faithful shapes, simplified/saturated texture (fits the illustrated rooms). Trellis 2: richer teapot glaze, but radio grille texture is noise and the watering can kept a disc of the decking (background bled). | Keep **Rodin v2.5 fast** as default, Trellis 2 as fallback. Cutout before model3d is mandatory (busy backgrounds). Check Trellis price on the fal dashboard. | Raphaël |
+| 4 | Rodin vs Trellis | 3 photos (teapot, radio, watering can), same input, via fal API. Speed and weight equal: 18–74 s, 0.8–1.4 MB, ~19–20K triangles each. Rodin: 3/3 clean, faithful shapes, simplified/saturated texture (fits the illustrated rooms). Trellis 2: richer teapot glaze, but radio grille texture is noise and the watering can kept a disc of the decking (background bled). | Keep **Rodin v2.5 fast** as default, Trellis 2 as fallback. Cutout before model3d is mandatory (busy backgrounds). Cost (fal usage export): Rodin **$0.10** / generation (not $0.40), Trellis 2 **$0.30** / run (6 units × $0.05). Whole test: $1.20. | Raphaël |
 | 5 | Time + cost per Memory | | | Timoté |
 
 ## Contract changes
@@ -40,7 +40,7 @@ _(newest first: date — from → to — what)_
 ## Log
 
 ### 2026-11-14 19:45 — Raphaël (design)
-- Done: Test 4 (Rodin vs Trellis), result in the test table. Timoté: P5 can keep `fal-ai/hyper3d/rodin/v2.5/fast` as in TECHNICAL.md §7; Trellis 2 with `texture_size 1024, decimation_target 20000` works as fallback. Background must be cut out first.
+- Done: Test 4 (Rodin vs Trellis), result in the test table. Timoté: P5 can keep `fal-ai/hyper3d/rodin/v2.5/fast` as in TECHNICAL.md §7; Trellis 2 with `texture_size 1024, decimation_target 20000` works as fallback. Background must be cut out first. Rodin is also 3× cheaper ($0.10 vs $0.30); TECHNICAL.md §7 cost corrected.
 - In progress: Q4 (as screens land).
 - Blocked: nothing.
 - Contract changes: none.
