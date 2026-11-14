@@ -8,7 +8,7 @@ The rules above are shared with Codex. This file only adds what is specific to C
 
 1. Run `/orient` (or follow `AGENTS.md` §11.1): branch, repo state, STATUS, board, environment.
 2. Read `docs/zones/<OWNER_ZONE>.md` (your zone is set in `.env.local` as `OWNER_ZONE`; the hooks use it).
-3. Work on a branch `feat/<zone>-<topic>` (see `GIT.md`).
+3. Work on `main` directly: `git pull --rebase`, commit with `(<ID>)` at the end of the subject, `pnpm verify`, push.
 
 ## Tools in `.claude/`
 
@@ -25,7 +25,7 @@ The rules above are shared with Codex. This file only adds what is specific to C
 | Command | `/demo-check` | Checks the House demo mode works offline. |
 | Command | `/handoff` | Writes your status lines into `docs/STATUS.md` before pushing or pausing. |
 
-Hooks (automatic): Biome formats every file you edit · reading/editing `.env*` is blocked · editing outside your zone triggers a warning you must acknowledge in the PR · `git push --force` and pushes to `main` are blocked · creating a task branch whose dependencies are not merged is blocked.
+Hooks (automatic): Biome formats every file you edit · reading/editing `.env*` is blocked · editing outside your zone triggers a warning you must acknowledge in the PR · `git push --force` is blocked · creating a task branch whose dependencies are not merged is blocked.
 
 ## Figma
 
@@ -33,6 +33,6 @@ The Figma MCP server is configured in `.mcp.json` (remote server). Run `/mcp` on
 
 ## Behaviour
 
-- Prefer small PRs (< 400 lines) that keep `main` runnable.
+- Speed first: push small commits straight to `main`, keep it runnable, keep token use low (no subagents unless asked).
 - When a decision is not covered by `TECHNICAL.md`, choose the simplest option that keeps the demo reliable, and note it in the PR and in `docs/STATUS.md`.
 - If you must touch another zone, keep the change minimal and list the files in the PR description.

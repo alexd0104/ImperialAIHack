@@ -22,4 +22,12 @@ export const copy = {
       genericError: "Something went wrong. Please try again.",
     },
   },
+  // Accessible names for shared components in components/ui (screen readers only).
+  ui: {
+    heartButton: "Send love",
+    videoBadge: "Video",
+    stepDone: "done",
+    stepCurrent: "current step",
+    memoryProgress: "Memory progress",
+  },
 } as const;

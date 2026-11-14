@@ -79,7 +79,7 @@ pnpm export:demo      # regenerate demo-assets/bundle.json from the demo DB
 - Never use `AI_MODE=live` in tests or CI.
 - Never write generated files into `public/` (use `storage/` via `/api/files/...`).
 - Never commit `storage/`, `demo-assets/`, real family photos, voices or copyrighted songs. The repo is public.
-- Never push to `main` directly or force-push.
+- Never force-push. Direct pushes to `main` are allowed (hackathon speed): `git pull --rebase`, `pnpm verify`, then push.
 - Never edit files outside your zone without saying so in the PR (see `docs/zones/`). Never change `lib/contracts/` without a PR reviewed by Timoté.
 - Never remove a fallback path (still photo, mock mode, demo mode) to "simplify".
 - Never add a dependency without a one-line reason in the PR.
@@ -91,7 +91,7 @@ pnpm export:demo      # regenerate demo-assets/bundle.json from the demo DB
 3. `pnpm verify` passes; new logic in `lib/` has a unit test.
 4. House-side changes: `pnpm demo:check` passes.
 5. UI matches the Figma frame (v5 page) or the deviation is noted in `docs/DESIGN.md`.
-6. `docs/STATUS.md` updated (handoff), PR opened with the template, CI green.
+6. `docs/STATUS.md` updated (handoff), pushed to `main` with a commit subject ending in `(<ID>)`, CI green.
 
 ## 9. Zones and owners
 
@@ -106,7 +106,7 @@ Details: `docs/zones/*.md`. Shared files (`package.json`, `proxy.ts`, `lib/copy.
 
 ## 10. Working without talking
 
-**Task guardrail (mandatory):** before starting any task, run `node scripts/tasks.mjs check <ID>`. If it fails, do not start: the task's dependencies are not merged on `main`. Pick a ready task with `node scripts/tasks.mjs next <timote|alexandre|yasir|raphael>`. Branches are `feat/<zone>-<ID>-<topic>`; the PR title must end with `(<ID>)` (use `(<ID>-wip)` for partial work) — that is how a task is marked done when merged. The live board (who did what, what is ready) is the GitHub issue **"📋 memorAI task board"**, refreshed automatically; locally: `node scripts/tasks.mjs board`. Tasks, owners and dependencies live in `docs/tasks.json`.
+**Task guardrail (mandatory):** before starting any task, run `node scripts/tasks.mjs check <ID>`. If it fails, do not start: the task's dependencies are not merged on `main`. Pick a ready task with `node scripts/tasks.mjs next <timote|alexandre|yasir|raphael>`. Commit on `main` directly; the commit subject must end with `(<ID>)` (use `(<ID>-wip)` for partial work) — that is how a task is marked done. The live board (who did what, what is ready) is the GitHub issue **"📋 memorAI task board"**, refreshed automatically; locally: `node scripts/tasks.mjs board`. Tasks, owners and dependencies live in `docs/tasks.json`.
 
 
 - Before starting: `git pull`, read `docs/STATUS.md`.
@@ -119,7 +119,7 @@ How to work well on this repo when nobody is there to answer.
 
 ### 11.1 Orient yourself first (every session, before any edit)
 
-1. **Where am I?** `git branch --show-current`, `git status --short`, `git log --oneline -3`. Never edit on `main`; if you are on `main` or on someone else's branch, stop and create/checkout your own `feat/<zone>-<ID>-<topic>` (or use `/start <ID>`).
+1. **Where am I?** `git branch --show-current`, `git status --short`, `git log --oneline -3`. Work on `main` (no PRs during the hackathon). Feature branches are optional.
 2. **Who am I?** Your zone is the human's `OWNER_ZONE` (pipeline=Timoté, studio=Alexandre, house=Yasir, design=Raphaël). If unknown, ask once.
 3. **What is the state?** `git pull --ff-only` (or `git fetch && git rebase origin/main` on a branch), read `docs/STATUS.md` (newest entries + Requests + Contract changes), run `node scripts/tasks.mjs board` or `next <person>`.
 4. **Is my task allowed?** `node scripts/tasks.mjs check <ID>`. Blocked → do not start; pick a ready task.
@@ -163,8 +163,8 @@ node scripts/tasks.mjs lint
 
 - Acceptance criteria met, `pnpm verify` green, reviewer agent (Claude Code) or self-review (Codex) done.
 - `docs/STATUS.md` handoff written (`/handoff`), including anything you learned that others need.
-- PR title ends with `(<ID>)` so the board marks it done; description lists files outside your zone and contract changes.
-- If you stop mid-task: push the branch, PR title with `(<ID>-wip)`, and say in STATUS exactly where you stopped and what is next.
+- Commit subject ends with `(<ID>)` so the board marks it done; note files outside your zone and contract changes in `docs/STATUS.md`.
+- If you stop mid-task: push with a `(<ID>-wip)` commit subject (keep `main` runnable), and say in STATUS exactly where you stopped and what is next.
 
 ## 12. Next.js notes
 

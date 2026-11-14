@@ -38,6 +38,34 @@ _(newest first: date — from → to — what)_
 
 ## Log
 
+### 2026-11-14 18:58 — Alexandre (studio)
+- Done: F6 integration validated after resolving `lib/copy.ts` and `docs/STATUS.md` conflicts with main. Mock `pnpm verify` passes (143 tests), production build passes, and all 5 Playwright tests pass including the shared UI axe check. B3/B4 regressions pass; sign-in uses F5 primitives and readable type tokens.
+- In progress: Push the tested merge commit to the existing PR #12 branch, approve and merge at that exact commit. #13 has been merged; #11 was already merged.
+- Blocked: None locally; awaiting the final GitHub checks and merge result.
+- Contract changes: None. Shared files touched for integration: `lib/copy.ts` and `docs/STATUS.md`; application adjustments are within `app/studio/login/`. Existing main changes were preserved without force-push.
+- Next: Confirm #12 merged and the open PR list is empty. S1 can be rechecked once F6 is on main; B1 remains a separate tracked follow-up.
+
+### 2026-11-14 18:55 — Alexandre (studio)
+- Done: User requested accepting all remaining PRs and resolving conflicts. #11 was already merged with its B2 contrast fix; merged #13 (task registry). Integrated main into #12, preserving both `copy.ui` and `copy.auth`/`copy.studio`, and all design/pipeline handoff entries. Studio sign-in now uses the merged Button/Input/Label primitives and current type tokens.
+- In progress: Verify/build/browser checks of the combined F5 + F6 tree, then approve and merge #12 (F6, B3, B4). Reviewed the author's fixes: shared API errors, 422 validation responses, minimum signing-secret length enforced during both issuance and verification, and proxy regression coverage.
+- Blocked: None after conflict resolution; integration validation pending.
+- Contract changes: None. Outside Studio: conflict resolution in shared `lib/copy.ts` and this handoff; upstream main changes retained, including AGENTS.md. No pipeline behavior or shared component source changed by this integration; no `.env*` file read.
+- Next: Complete checks, push the merge commit to the existing #12 branch without force-push, approve the tested commit and merge it. Confirm no PR remains open and recheck S1 readiness.
+
+### 2026-11-14 19:05 — Raphaël (design)
+- Done: B2 (PR #11 review by Alexandre). New tokens `primary-strong #B4552F` / `primary-strong-hover #A44B2C` for filled controls with white text (4.9 / 5.8:1), `success-strong #426B38` for the Approved badge; avatar initials in ink; checkbox/stepper checks on `success-text`. Contrast unit test for every pair + axe (WCAG 2.2 AA) e2e on `/dev/ui`.
+- In progress: PR #11 (F5) waiting for re-review.
+- Blocked: nothing.
+- Contract changes: none.
+- Next: everyone: use `bg-primary-strong` (not `bg-primary`) behind white text. Test 4.
+
+### 2026-11-14 18:30 — Raphaël (design)
+- Done: F5. Tokens in `app/globals.css` (TECHNICAL.md §3.2 + shadcn mapping), fonts in `app/fonts.ts`, 14 components in `components/ui/` (Button, Switch, Badge, Card, Input/Textarea/Label, Checkbox, Tabs, ToggleGroup, Polaroid, IconButton 64/76/92/124, HeartButton, AvatarGroup, Stepper, SegmentedProgress). Gallery at `/dev/ui` (dev only, 404 in prod). Evidence `docs/design-evidence/f5-dev-ui.png`, deviations in `docs/DESIGN.md` §4.3.
+- In progress: PR "feat(design): tokens, fonts and base components (F5)".
+- Blocked: nothing. Figma MCP needs re-auth (`/mcp`) for new captures.
+- Contract changes: none. New tokens: `switch-on #3F8A55`, `avatar-ring`, `shadow-house-control`, `shadow-knob`, `spacing-page`.
+- Next: Test 4 (Rodin vs Trellis). Everyone: Tailwind's default palette, `text-sm/lg…` and `shadow-sm…` are gone; use our tokens (`text-16`, `text-ink/70`, `shadow-card`, `rounded-card`). Import components from `@/components/ui/*`; `cn` is in `@/lib/utils`. House screens: IconButton 76+ and HeartButton only (Switch/Checkbox/Button sm are Studio-only).
+
 ### 2026-11-14 18:26 — Timoté (pipeline)
 - Done: F6 Studio auth on `feat/pipeline-F6-studio-auth`: `POST /api/auth/login` (signed `mh_session`, 7 days, Secure only on https), `POST /api/auth/logout`, `proxy.ts` guard (pages → `/studio/login?next=`, APIs → 401 envelope, `/api/h` + `/api/files` + login/logout open, `X-Robots-Tag: noindex` everywhere), minimal `/studio/login`, `pnpm env:check`. 97 unit tests + 3 e2e, `pnpm build` green.
 - In progress: PR #12 (F6, B3, B4), rebased on main after #10. Fixed Alexandre's review: sessions signed with a SESSION_SECRET under 32 chars are now rejected by `verifySessionToken` (so by the proxy) and refused by `createSessionToken`; invalid login body returns 422; every error parses with `ApiErrorResponse`; API messages live in `copy.auth.*`.
