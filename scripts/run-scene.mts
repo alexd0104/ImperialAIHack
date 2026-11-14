@@ -48,6 +48,12 @@ if (!mime) {
   process.exit(1);
 }
 
+// Read before inserting anything, so a wrong path leaves no half-made test House.
+const photoBytes = await readFile(photo).catch(() => {
+  console.error(`✗ Cannot read ${photo}`);
+  process.exit(1);
+});
+
 const mode = process.env.AI_MODE === "live" ? "live" : "mock";
 const config = jobConfig();
 console.log(`Mode: ${mode} · key label: ${config.falKeyLabel} · DB: ${process.env.MONGODB_DB}`);
@@ -101,7 +107,7 @@ const memory = await db.memories.insert({
 const saved = await saveFile(
   house.id,
   `uploads/photo${path.extname(photo).toLowerCase()}`,
-  await readFile(photo),
+  photoBytes,
 );
 const asset = await db.assets.insert({
   houseId: house.id,

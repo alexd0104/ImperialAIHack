@@ -34,7 +34,8 @@ export const MODELS = {
     id: "bria/fibo-edit/colorize",
     defaults: { color: "contemporary color" },
     price: { unit: "image", usd: 0.04, verified: true },
-    output: { path: ["image", "url"], mime: "image/jpeg" },
+    // Live run 2026-11-14: Bria returns PNG (1168×880 from a 480×360 input).
+    output: { path: ["image", "url"], mime: "image/png" },
   },
   colouriseFallback: {
     // TODO verify: price.

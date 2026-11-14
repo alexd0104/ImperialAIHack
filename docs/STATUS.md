@@ -59,19 +59,19 @@ _(newest first: date — from → to — what)_
 
 ## Log
 
+### 2026-11-14 20:35 — Timoté (pipeline, P2)
+- Done: P2 scene chain live. Live run (`AI_MODE=live pnpm scene:run mocks/media/photo.jpg --colourise`): compile (Claude) 6 s → restore (Topaz Recover 3) 30 s $0.08 → colourise (Bria, returns PNG) 18 s $0.04 → animate (Kling 2.5 Turbo Pro) 94 s $0.35 → ambience (mmaudio) 9 s $0.005. **Total 157 s, ≈ $0.48**, 5.04 s 1656×1248 H.264 + AAC clip, all outputs in storage/. Models checked on fal's API pages; Bria colour guard; outputs keep their real extension (flac/png); `pnpm scene:run <photo> [--colourise] [--still]` runs one scene without Studio or P4.
+- In progress: nothing. Note: the run used the generated mock test photo (480×360), not a real old family photo; fidelity on real photos is Test 2 / P6.
+- Blocked: nothing.
+- Contract changes: none. Out-of-zone/shared edits: scripts/ts-resolve.mjs (Node resolve hook for `@/` + extensionless imports, no new dependency), scripts/run-scene.mts, package.json (`scene:run`), lib/house/preload.ts (+`flac: "audio"`).
+- Next: P5 (Object 3D job). Set `FAL_KEY_LABEL=dev-timote` in .env.local (it still says `dev-yourname`).
+
 ### 2026-11-14 20:20 — Raphaël (design)
 - Done: Slot review (Alexandre's request): kitchen and living Slots now rest Objects on drawn surfaces (counter top, floor); garden unchanged. SH2: the demo House has Garden, Kitchen and Living, and Choose a room shows all three. Q4: House evidence in `docs/DESIGN.md` §7/§8, 7 captures, axe WCAG 2.2 AA: 0 violations on 8 House screens.
 - In progress: Q4 stays ongoing (Figma-vs-code captures once the Figma MCP is re-authenticated).
 - Blocked: nothing.
 - Contract changes: none. Outside my zone: `components/studio/room-styles.ts` (Slot x/y/scale only, ids unchanged) → Alexandre, please check the Studio Room preview.
 - Next: re-run `MONGODB_DB=mh_demo pnpm seed:demo && MONGODB_DB=mh_demo pnpm export:demo` so the DB demo picks up the new Slots.
-### 2026-11-14 20:25 — Timoté (pipeline, P2 wip)
-- Done: scene models checked on fal's API pages (2026-11-14). Topaz `model: "Recover 3"`, priced $0.08 per started 4 MP; Kling price confirmed; mmaudio duration 5 s (its default is 8); text-to-audio returns FLAC. Bria colour guard keeps only Bria's 4 enum values. Stored outputs take the URL's own extension (mock .wav vs live .flac). New `pnpm scene:run <photo> [--colourise] [--still]` runs one scene through the real chain without the Studio or P4 (throwaway House in your MONGODB_DB). Mock run: colourised scene 23 s, still scene 13 s.
-- In progress: one live run on a real photo (`AI_MODE=live pnpm scene:run ~/photo.jpg`); time and cost to be logged here.
-- Blocked: nothing.
-- Contract changes: none. Out-of-zone/shared edits: scripts/ts-resolve.mjs (Node resolve hook for `@/` + extensionless imports, no new dependency), scripts/run-scene.mts, package.json (`scene:run`), lib/house/preload.ts (+`flac: "audio"`, one line).
-- Next: live run → P2 done, then P5.
-
 ### 2026-11-14 — Alexandre (studio, S2 final review)
 - Done: S2 library/photo creation, House-scoped upload, persisted object_3d mock progress, fallback and resumable drafts implemented. Provisional free Slot explicitly approved, never reserved or published by S2. Corrected and registered B9: auth E2E alert locator scoped to the sign-in form. Tablet/phone captures saved under docs/design-evidence/create-object-*.png; direct Figma MCP comparison remains unavailable and is documented.
 - In progress: Final checks and PR merge explicitly requested by Alexandre. Final integrated tree: verify passed (338 tests), production build passed, all 12 browser tests passed in development, and all 3 S2 scenarios passed against production, including invalid replacement upload recovery. The full production suite has one expected dev-only gallery failure (/dev/ui intentionally returns 404); its development run passes.
