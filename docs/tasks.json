@@ -552,7 +552,7 @@
       "priority": "FIX",
       "deps": [],
       "soft": [],
-      "note": "PR #12 review: invalid_password, bad_request and not_configured are rejected by F2 ApiErrorResponse. F2 is merged; rebase F6 and use LoginRequest plus ok/fail/parseJson, supported codes and copy.ts. Add contract-valid error response tests before merging F6. Review: https://github.com/alexd0104/ImperialAIHack/pull/12#pullrequestreview-5906434698"
+      "note": "PR #12 initial review: invalid_password, bad_request and not_configured were rejected by F2 ApiErrorResponse. Corrected in ac1ae03 (head ba1cbcd); reviewer confirmed unauthorized and validation_failed now parse. Pending F6 merge; retain the playbook 422 status and shared-copy alignment follow-up. B4 remains blocking. Review update: https://github.com/alexd0104/ImperialAIHack/pull/12"
     },
     {
       "id": "B4",
