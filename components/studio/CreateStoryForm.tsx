@@ -1,7 +1,7 @@
 "use client";
 
 import { QueryClient, QueryClientProvider, useMutation, useQuery } from "@tanstack/react-query";
-import { ArrowRight, Check, ChevronLeft } from "lucide-react";
+import { ArrowRight, Check } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
@@ -247,13 +247,6 @@ function StoryForm({ roomId }: { roomId: string }) {
 
   return (
     <>
-      <Link
-        href="/studio/house/new"
-        className="mb-5 inline-flex min-h-12 items-center gap-2 text-16 font-bold"
-      >
-        <ChevronLeft aria-hidden className="size-5" />
-        {words.back}
-      </Link>
       <h1 ref={heading} tabIndex={-1} className="font-display text-32 sm:text-40">
         {done ? words.ready : story ? words.preparing : words.title}
       </h1>

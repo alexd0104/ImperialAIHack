@@ -150,6 +150,27 @@ export const copy = {
       noHouse: "Choose a House first.",
       warnTitle: "This Memory mentions something on your Don’t show list:",
     },
+    nav: {
+      label: "Studio",
+      logo: "memorAI Studio home",
+      home: "Hear back",
+      create: "Create",
+      care: "Care and privacy",
+      signOut: "Sign out",
+      signingOut: "Signing out…",
+      step: "Step {n} of {total}",
+      backTo: {
+        home: "Back to Hear back",
+        bank: "Back to photos",
+        questions: "Back to questions",
+        sheet: "Back to the Memory sheet",
+        story: "Back to the Story",
+      },
+      stories: "Your Stories",
+      storiesNone: "No Stories yet.",
+      memoriesCount: "Memories",
+      draft: "Not sent yet",
+    },
     login: {
       title: "Family Studio",
       intro: "Enter the family password to create and share Memories.",
@@ -183,7 +204,8 @@ export const copy = {
       saving: "Saving…",
     },
     bank: {
-      eyebrow: "Step 2 of 4",
+      // Numbered steps live in the Studio header now ("Step n of 5", B12).
+      eyebrow: "Create · Photos and sounds",
       title: "Gather the Memory",
       intro: "Add the real photos and sounds. We only bring to life what is in your photos.",
       photosHeading: "Photos and videos",
@@ -206,7 +228,7 @@ export const copy = {
       videoLabel: "Video",
     },
     questions: {
-      eyebrow: "Step 3 of 4",
+      eyebrow: "Create · Questions",
       title: "Tell us about it",
       intro:
         "Answer what you can. Every answer is optional except the name, and you can change them later.",
@@ -252,7 +274,7 @@ export const copy = {
       autosave: "Your answers are saved as you go.",
     },
     sheet: {
-      eyebrow: "Step 3 of 4",
+      eyebrow: "Create · Memory sheet",
       title: "Here is your Memory",
       intro: "Check everything below. Nothing is made until you press the button.",
       change: "Change",

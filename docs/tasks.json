@@ -828,6 +828,15 @@
       ],
       "soft": [],
       "brief": "docs/FEATURES-V2.md#P10"
+    },
+    {
+      "id": "B12",
+      "title": "Studio navigation: header, back links, sign out",
+      "owner": "yasir",
+      "priority": "FIX",
+      "deps": [],
+      "soft": [],
+      "note": ""
     }
   ]
 }

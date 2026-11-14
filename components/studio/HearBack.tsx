@@ -12,6 +12,7 @@ import { requestStudio } from "./api";
 import { useStudioHouseId } from "./studio-house";
 
 const words = copy.studio.hearBack;
+const nav = copy.studio.nav;
 
 export function HearBack({ houseId }: { houseId?: string }) {
   const [client] = useState(() => new QueryClient());
@@ -95,18 +96,44 @@ function HearBackContent({ initialHouseId }: { initialHouseId?: string }) {
       {feedback.data.perMemory.length > 0 ? (
         <ul className="flex flex-col gap-2">
           {feedback.data.perMemory.map((item) => (
-            <li
-              key={item.memoryId}
-              className="flex items-center justify-between rounded-lg bg-surface px-4.5 py-3.5 text-16"
-            >
-              <span>{item.title}</span>
-              <span className="text-ink/70">
-                {item.views} {words.viewsCount} · {item.hearts} {words.heartsCount}
-              </span>
+            <li key={item.memoryId}>
+              <Link
+                href={`/studio/memories/${item.memoryId}`}
+                className="flex min-h-11 flex-wrap items-center justify-between gap-2 rounded-lg bg-surface px-4.5 py-3.5 text-16 hover:bg-surface-muted"
+              >
+                <span className="font-bold">{item.title}</span>
+                <span className="text-ink/70">
+                  {item.views} {words.viewsCount} · {item.hearts} {words.heartsCount}
+                </span>
+              </Link>
             </li>
           ))}
         </ul>
       ) : null}
+      {/* Existing Stories, so home is a way back into any Story, not only "create". */}
+      <section className="flex flex-col gap-2">
+        <h2 className="font-display text-22 text-ink">{nav.stories}</h2>
+        {house.data.stories.length === 0 ? (
+          <p className="text-16 text-ink/70">{nav.storiesNone}</p>
+        ) : (
+          <ul className="flex flex-col gap-2">
+            {house.data.stories.map((story) => (
+              <li key={story.id}>
+                <Link
+                  href={`/studio/stories/${story.id}/place`}
+                  className="flex min-h-11 flex-wrap items-center justify-between gap-2 rounded-lg bg-surface px-4.5 py-3.5 text-16 hover:bg-surface-muted"
+                >
+                  <span className="font-bold">{story.title}</span>
+                  <span className="text-ink/70">
+                    {story.memoryCount} {nav.memoriesCount}
+                    {story.publishedAt ? "" : ` · ${nav.draft}`}
+                  </span>
+                </Link>
+              </li>
+            ))}
+          </ul>
+        )}
+      </section>
       <div className="flex flex-wrap gap-3">
         <Button asChild>
           <Link

@@ -1,7 +1,6 @@
 "use client";
 
 import { useMutation, useQuery } from "@tanstack/react-query";
-import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { type ReactNode, useEffect, useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
@@ -183,9 +182,6 @@ function Form(props: { memoryId: string; initial: AnswerDraft; songs: AssetView[
       <div className="flex flex-wrap items-center gap-4">
         <Button type="button" onClick={next}>
           {words.continue}
-        </Button>
-        <Button asChild variant="secondary">
-          <Link href={`/studio/memories/${props.memoryId}`}>{copy.studio.memory.back}</Link>
         </Button>
         <p role="status" className="text-14 text-ink/70">
           {status}

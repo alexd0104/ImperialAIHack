@@ -182,7 +182,18 @@ function Place({ storyId }: { storyId: string }) {
                 className="flex flex-wrap items-center gap-3 rounded-lg border border-ink/10 p-3"
               >
                 <span className="w-6 text-18 font-bold">{index + 1}</span>
-                <span className="min-w-40 flex-1 text-18">{memory?.title ?? "…"}</span>
+                <span className="min-w-40 flex-1 text-18">
+                  {memory ? (
+                    <Link
+                      href={`/studio/memories/${id}`}
+                      className="inline-flex min-h-11 items-center underline-offset-4 hover:underline"
+                    >
+                      {memory.title}
+                    </Link>
+                  ) : (
+                    "…"
+                  )}
+                </span>
                 <label htmlFor={`alone-${id}`} className="flex items-center gap-2 text-14">
                   {words.okAlone}
                   <Switch

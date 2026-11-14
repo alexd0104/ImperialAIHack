@@ -84,12 +84,6 @@ function Care({ initialHouseId }: { initialHouseId?: string }) {
   return (
     <div className="space-y-6">
       <div>
-        <Link
-          href={`/studio?house=${houseId}`}
-          className="inline-flex min-h-12 items-center text-16 font-bold"
-        >
-          {copy.studio.memory.back}
-        </Link>
         <h1 className="font-display text-32 sm:text-40">{words.title}</h1>
         <p className="mt-2 max-w-2xl text-18 text-ink/70">{words.intro}</p>
       </div>
