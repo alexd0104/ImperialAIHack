@@ -688,7 +688,7 @@
     {
       "id": "P9",
       "title": "Ambience bed library",
-      "owner": "timote",
+      "owner": "raphael",
       "priority": "V2",
       "release": "v2",
       "order": 4,
@@ -703,7 +703,7 @@
     {
       "id": "H10",
       "title": "Loading feedback everywhere",
-      "owner": "yasir",
+      "owner": "raphael",
       "priority": "V2",
       "release": "v2",
       "order": 5,

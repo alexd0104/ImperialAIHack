@@ -58,13 +58,13 @@ Order = the team's priority. Owners and dependencies are machine-readable in `do
 - **Done when:** unit tests for events extraction (beach + laughing answers → laughter + waves); one manual live run on the beach photo with the result noted in `docs/STATUS.md` (human, not autopilot).
 
 ### P9 — Ambience bed library (safety net)
-- **Owner:** Timoté · **Order:** 4 · **Deps:** F7
-- **Files:** `public/beds/*.mp3` (≤ 300 KB each), `lib/ai/beds.ts`, `lib/house/` bundle field mapping (coordinate with Yasir: add `bedUrl` to the bundle scene), `scripts/make-beds.mts`.
+- **Owner:** Raphaël (autopilot) · **Order:** 4 · **Deps:** F7
+- **Files:** `public/beds/*.mp3` (≤ 300 KB each), `lib/ai/beds.ts`, `lib/house/` bundle field mapping (add `bedUrl` to the bundle scene; note it for Yasir in your handoff), `scripts/make-beds.mts`.
 - **Do:** 6 short loops (beach, crowd laughter, fireplace, garden birds, kitchen, rain), generated **once** with fal text-to-audio by a human (`pnpm beds:make`, live, ≈ $0.05) and committed — generated audio, no copyright issue. Compiler/tagger picks one bed per scene from the sound events; the House plays it quietly (≈ 25 %) under the scene sound.
 - **Done when:** beds committed, mapping tested, House mixes bed + ambience + song + voice with the voice still ducking everything.
 
 ### H10 — Loading feedback everywhere
-- **Owner:** Yasir · **Order:** 5 · **Deps:** none
+- **Owner:** Raphaël (autopilot; `components/ui` is his zone) · **Order:** 5 · **Deps:** none
 - **Files:** new `components/ui/shimmer-bar.tsx`, `components/ui/moving-dots.tsx`, `components/ui/step-progress.tsx`; apply in the **generation progress** screen, the **3D object** wait, and the **House preload** (dots only, no text). Other Studio forms adopt them in their own tasks.
 - **Do:** CSS-only animations (respect `prefers-reduced-motion`), step progress with real step names from job status + estimated time from measured durations (keep a small table of averages in `lib/copy.ts` or job config).
 - **Done when:** every long wait in those three places shows movement; no layout shift; reduced-motion shows a static bar.

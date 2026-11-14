@@ -31,18 +31,18 @@ Then paste: `Do my part of tonight's plan: node scripts/doc.mjs docs/NIGHT-PLAN.
 
 ## Timoté
 
-Tasks: F7 (by hand, now) → autopilot P7 movement · P8 sound prompts · P9 ambience sounds · P10 sound in parallel.
+Tasks: F7 (by hand, now) → autopilot P7 movement · P8 sound prompts · P10 sound in parallel.
 
 1. **Claude does F7 now, interactively:** `/start F7`; brief `node scripts/doc.mjs docs/FEATURES-V2.md F7`; every shape of the "Contracts v2" table as Zod schemas + DB mapping + fixtures + tests + env vars (`.env.example`, `check-env`); no route handlers; additive. `pnpm verify`, commit `feat(contracts): contracts v2 (F7)`, push, 5-line "Contract changes" note in `docs/STATUS.md`. This unblocks 7 tasks of the team: do it first, fast.
 2. **Claude does** "Start the autopilot" after `cd ../mh-autopilot && git pull --rebase origin main`, options `--total-usd 20`.
 3. **You do:** tell the team in the chat "F7 is pushed".
-4. **Morning (you do, with Claude):** live beach test of the new sound prompts (P8, `AI_MODE=live` on one photo, ≈ $0.50) and note the result in STATUS; `pnpm beds:make` live (P9, ≈ $0.05) then commit the 6 sounds; listen in the House.
+4. **Morning (you do, with Claude):** live beach test of the new sound prompts (P8, `AI_MODE=live` on one photo, ≈ $0.50) and note the result in STATUS; listen in the House.
 
 ## Yasir
 
-Tasks (autopilot): H9 sound in review · H10 loading animations · H11 House live refresh (after F7) · Q5 prompt experiment (after F7 + P7).
+Tasks (autopilot): H9 sound in review · H11 House live refresh (after F7) · Q5 prompt experiment (after F7 + P7).
 
-1. **Claude does** "Start the autopilot", options `--total-usd 20`. H9 and H10 start now; H11/Q5 start by themselves when F7/P7 land.
+1. **Claude does** "Start the autopilot", options `--total-usd 20`. H9 starts now; H11/Q5 start by themselves when F7/P7 land.
 2. **Morning (you do, with Claude):** listen to a review clip and "Play full memory" (H9); move an object in the Studio and watch the House update within 30 s (H11); run the live experiment `AI_MODE=live pnpm lab:experiment --photos <dir>` with 5 test photos (≈ $10), look at results on fal, score 1–5, have Claude fill `docs/LAB-REPORT.md`.
 
 ## Alexandre
@@ -54,10 +54,10 @@ Tasks (autopilot): S10 back navigation · S11 room management (after F7) · S12 
 
 ## Raphaël
 
-Tonight: only the autopilot for S14 (3D objects from the team's 3 images). **Figma and the UI redesign (SH8) are tomorrow morning**, interactive.
+Tonight (autopilot): H10 loading animations in `components/ui` (now) · P9 ambience sound library (after F7) · S14 3D objects (when the team's photos land). **Figma and the UI redesign (SH8) are tomorrow morning**, interactive.
 
-1. **Claude does** "Start the autopilot", options `--only S14 --wait-hours 10` (`--only` matters: it keeps SH8 for tomorrow). It waits for the photos in `public/objects/src/`.
-2. **Morning (you do, with Claude):** `AI_MODE=live pnpm objects:make` (≈ $1.50, ~5 min), commit the 3 GLBs + thumbs, check them in the House. Then **SH8, interactive:** `/start SH8`; brief `node scripts/doc.mjs docs/FEATURES-V2.md SH8`; Figma is the source; restyle with `app/globals.css` and `components/ui` only (no logic/props changes), including every screen added overnight; small commits `(SH8-wip)`, last one `(SH8)`; `pnpm verify`; push; update Figma-vs-code evidence in `docs/DESIGN.md`.
+1. **Claude does** "Start the autopilot", options `--only H10,P9,S14 --wait-hours 10 --total-usd 20` (`--only` keeps SH8 for tomorrow).
+2. **Morning (you do, with Claude), from 08:00:** `AI_MODE=live pnpm objects:make` (S14, ≈ $1.50) and `AI_MODE=live pnpm beds:make` (P9, ≈ $0.05), commit the GLBs, thumbs and 6 sounds, check them in the House. Then **SH8, interactive:** `/start SH8`; brief `node scripts/doc.mjs docs/FEATURES-V2.md SH8`; Figma is the source; restyle with `app/globals.css` and `components/ui` only (no logic/props changes), including every screen added overnight; small commits `(SH8-wip)`, last one `(SH8)`; `pnpm verify`; push; update Figma-vs-code evidence in `docs/DESIGN.md`.
 
 ## Team — the 3 object images
 
