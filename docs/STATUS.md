@@ -39,6 +39,13 @@ _(newest first: date — from → to — what)_
 
 ## Log
 
+### 2026-11-14 19:30 — Timoté (pipeline)
+- Done: F3 mock layer. `lib/ai/`: `models.ts` (every §7.1 model: id, defaults, price, output path; unverified ones marked `// TODO verify`, Kling ID awaits Test 2), `fal.ts` (`getFal()` → `FalGateway` {upload, submit, status, result} + `extractOutput()`; live = fal queue API + 1 h lifecycle header; mock = 2–5 s delay, `MOCK_FAIL_RATE`, fixtures from `mocks/fal/`), `claude.ts` + `prompt-compiler.ts` + `prompt-templates.ts` (never throws, template fallback, default negative prompt + "no music" + family's colour choice enforced). `mocks/` = 10 fal fixtures, Claude fixture, generated placeholder media (248 KB, no photos). New deps: `@fal-ai/client`, `@anthropic-ai/sdk` (AI integrations, AGENTS.md §4), `server-only` already added by F4. 180 tests green.
+- In progress: nothing.
+- Blocked: nothing.
+- Contract changes: none (`CompiledPrompts` schema lives in `lib/ai/prompt-types.ts`, pipeline-only).
+- Next: P1 job engine. Notes for everyone: mock outputs are `file://…/mocks/media/*` URLs, so the engine's download step copies them from disk (`isMockUrl`). Mock request IDs carry their own state and survive a dev-server restart. Errors are `AiRequestError { code, retryable }` in both modes. Decision: live Claude uses structured outputs instead of a forced tool call, because forced `tool_choice` is rejected by `claude-sonnet-5-5` (our quality fallback). Details in TECHNICAL.md §7.4. Live smoke test of the compiler still to do (P3).
+
 ### 2026-11-14 19:25 — Timoté (pipeline)
 - Done: F4. `lib/db` (`import { db, findHouseByToken, deleteHouseDocuments } from "@/lib/db"`): client singleton on `globalThis`, env read lazily; `db.houses|rooms|stories|memories|assets|scenes|jobs|events|generationCache` with `insert/findById/findOne/find/update/deleteById/deleteMany/raw`, all parsed with the contracts. `lib/storage`: `saveFile(houseId, name, bytes|stream) → {path, bytes, sha256}`, `statFile`, `openReadStream`, `sha256File`, `deleteHouseFolder`, `contentTypeFor`, traversal-safe. `GET/HEAD /api/files/<houseId>/...` with Range (206/416), access = Studio session or `?t=<House token>` of the House owning the folder. `pnpm db:ping`, `pnpm db:indexes`. Checked on real Atlas (`mh_timote`): ping, the 5 indexes, typed insert/read/update/delete OK.
 - In progress: nothing.
