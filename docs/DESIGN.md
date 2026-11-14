@@ -169,6 +169,8 @@ S2 mapping: canvas `bg-background` / centred 1194 px / `sm:px-page`; heading `fo
 | 2026-11-14 | Button, Toggle, Polaroid, Family avatars, controls (20-624, 20-668, 23-580) | `/dev/ui` | `docs/design-evidence/20-624-*`, `20-668-*`, `23-580-*` | `docs/design-evidence/f5-dev-ui.png` | yes (`use_figma` read-only for exact sizes, radii, shadows) | see §4.3 |
 | 2026-11-14 | Button + every v5 Primary instance, e.g. 23-580 | `components/ui/button.tsx` | `docs/design-evidence/23-580-approve-scenes-figma-tokens.png` | `docs/design-evidence/f5-dev-ui.png` | yes (`use_figma` write: Variables + bindings) | none left on Button |
 | 2026-11-14 | — (no Figma frame: sign-in out of scope) | `/studio/login` (F6) | — | `docs/design-evidence/q4-studio-login-code.png`, `q4-studio-login-error-code.png` | no (code-only check) | tokens + `components/ui` only; axe WCAG 2.2 AA: 0 violations (empty and error states); targets 64 / 56 px. Gap: field not marked `aria-invalid` / linked to the error (`aria-describedby`) → request to Timoté |
+| 2026-11-14 20:15 | Choose a room, Room (×3), Object open, Memory playing (20-624), Send love (20-668) | `/house/[token]` in offline demo mode (`HOUSE_DEMO_MODE=true`), 1194×834 | 20-624 / 20-668 captures above; others pending MCP re-auth | `docs/design-evidence/q4-house-{choose-room,room-kitchen,room-garden,room-living,heart,heart-sent,alone-living}-code.png` | no (Figma MCP needs `/mcp` re-auth; code-only check) | axe WCAG 2.2 AA: **0 violations on 8 screens** (choose room, 3 Rooms, polaroids, player, Heart, alone mode). Player and polaroid captures were taken but not committed because they show demo photos of unverified origin (public repo). Slot review: see §8 "Slots". |
+| 2026-11-14 20:15 | SH2 · second Room | `/house/demo-token` | — | `docs/design-evidence/q4-house-choose-room-code.png` | no | The demo House has Garden, Kitchen and Living; Choose a room shows all three (`demo-assets/demo.json` via `pnpm seed:demo`, served offline by `pnpm export:demo`). |
 
 ## 8. Accessibility notes
 
@@ -190,6 +192,8 @@ Other choices:
 - **Focus:** global 3 px `primary` outline with 3 px offset on `:focus-visible`.
 - **Motion:** all transitions use `--ease-memorai`; `prefers-reduced-motion` cuts animations and transitions to near zero.
 - **Names:** icon-only buttons require a `label` (from `lib/copy.ts`); avatars expose the full name; decorative icons are `aria-hidden`; the stepper announces "done" / "current step".
+- **Slots (2026-11-14 review):** the room SVGs draw no furniture, so Objects floated (radio on the living-room wall, kitchen Objects over the cupboard doors). Kitchen and living Slots now rest Objects on a drawn surface: kitchen counter top (y 560–586 of 834), living floor (from y 614); garden unchanged. Values live in `components/studio/room-styles.ts` and `scripts/demo/plan.ts` `PRESET_SLOTS` (ids unchanged, so saved Rooms keep working).
+- **House screens (Q4):** every House control has an accessible name (`Open: <story>`, `Play: <memory>`, Back to the room, Next memory); Heart 230 px, round controls ≥ 76 px; no text needed to use the House.
 - **Language:** "a person living with Alzheimer's"; no clinical claims (`AGENTS.md` §3).
 
 ## 9. S1 mapping from repository specifications (2026-11-14)

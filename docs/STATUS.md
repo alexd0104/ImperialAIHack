@@ -33,8 +33,8 @@ _(newest first: date — what changed — who)_
 
 ## Requests
 
+- 2026-11-14 20:20 — Raphaël → Alexandre — Kitchen/living Slot positions changed in `components/studio/room-styles.ts` (ids unchanged): Objects now sit on the counter top / floor. Please check your Room preview still looks right.
 - 2026-11-14 — Alexandre → Timoté — S2 provisional Slot assignment is explicitly approved by Alexandre (modifiable in S8, no reservation/publication here). P5 is still absent (mock jobs carry a permanent lease so P1 cannot process them): the temporary Studio object-job route persists Job/JobView and uses a sample GLB only in mock mode. Please replace that adapter with P5 when ready; normal persistence uses F4 MongoDB, explicit offline tests use STUDIO_MOCK_STORE. Object photos upload through POST /api/houses/:id/assets with existing Asset/AssetView schemas.
-
 - 2026-11-14 20:07 — Yasir → Timoté — Your 20:15 build request is fixed in eeb26e6 (B8): `/house/[token]` now reads params inside `<Suspense>`; `pnpm build` passes.
 - 2026-11-14 20:07 — Yasir → Timoté — Contract asks (House works around both, no edit made): (1) `BundleScene` has no still for a clip, so a failed clip falls back to the Memory's `polaroidUrl`, not that scene's own photo. Proposal: optional `stillUrl` on `BundleScene` (`lib/contracts/house-bundle.ts:5`), filled by `lib/house/bundle.ts` `buildMemory`. (2) `HouseBundle.house.avatars` has no source (no family members on `House`), so the DB bundle sends `[]`; tell me where family members will live.
 
@@ -58,6 +58,13 @@ _(newest first: date — from → to — what)_
 - ~~2026-11-14 — Raphaël → Timoté — The Tasks workflow rejected `(ID-wip)` PR titles although its error message recommends them (`.github/workflows/tasks.yml:47`). Fixed in `fix/shared-tasks-wip-title`; please review. Not registered as a B task because `tasks.mjs add` needs Node, which is not set up on my machine yet: please add it if you want it on the board.~~ Resolved by #9.
 
 ## Log
+
+### 2026-11-14 20:20 — Raphaël (design)
+- Done: Slot review (Alexandre's request): kitchen and living Slots now rest Objects on drawn surfaces (counter top, floor); garden unchanged. SH2: the demo House has Garden, Kitchen and Living, and Choose a room shows all three. Q4: House evidence in `docs/DESIGN.md` §7/§8, 7 captures, axe WCAG 2.2 AA: 0 violations on 8 House screens.
+- In progress: Q4 stays ongoing (Figma-vs-code captures once the Figma MCP is re-authenticated).
+- Blocked: nothing.
+- Contract changes: none. Outside my zone: `components/studio/room-styles.ts` (Slot x/y/scale only, ids unchanged) → Alexandre, please check the Studio Room preview.
+- Next: re-run `MONGODB_DB=mh_demo pnpm seed:demo && MONGODB_DB=mh_demo pnpm export:demo` so the DB demo picks up the new Slots.
 
 ### 2026-11-14 — Alexandre (studio, S2 final review)
 - Done: S2 library/photo creation, House-scoped upload, persisted object_3d mock progress, fallback and resumable drafts implemented. Provisional free Slot explicitly approved, never reserved or published by S2. Corrected and registered B9: auth E2E alert locator scoped to the sign-in form. Tablet/phone captures saved under docs/design-evidence/create-object-*.png; direct Figma MCP comparison remains unavailable and is documented.
