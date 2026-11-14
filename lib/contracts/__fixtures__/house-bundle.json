@@ -1,0 +1,60 @@
+{
+  "house": { "firstName": "Frank", "avatars": [{ "initial": "S", "color": "#E8A87C" }] },
+  "mode": "together",
+  "rooms": [
+    {
+      "id": "6650a1f0c0ffee0000000002",
+      "name": "Garden",
+      "background": "/rooms/garden.svg",
+      "slots": [
+        {
+          "id": "bench",
+          "x": 0.22,
+          "y": 0.68,
+          "scale": 0.18,
+          "story": {
+            "id": "6650a1f0c0ffee0000000003",
+            "title": "Summers in Brighton",
+            "object": { "kind": "svg", "url": "/objects/deckchair.svg" },
+            "available": true,
+            "memories": [
+              {
+                "id": "6650a1f0c0ffee0000000004",
+                "title": "Brighton beach, 1968",
+                "polaroidUrl": "/api/files/6650a1f0c0ffee0000000001/6650a1f0c0ffee0000000031/restore.png",
+                "caption": "Brighton, 1968",
+                "scenes": [
+                  {
+                    "kind": "clip",
+                    "url": "/api/files/6650a1f0c0ffee0000000001/6650a1f0c0ffee0000000031/animate.mp4",
+                    "durationMs": 5000
+                  },
+                  {
+                    "kind": "photo",
+                    "url": "/api/files/6650a1f0c0ffee0000000001/assets/6650a1f0c0ffee0000000012.jpg",
+                    "durationMs": 6000
+                  }
+                ],
+                "songUrl": "/api/files/6650a1f0c0ffee0000000001/assets/6650a1f0c0ffee0000000013.mp3",
+                "ambienceUrl": "/api/files/6650a1f0c0ffee0000000001/6650a1f0c0ffee0000000031/ambience.mp3",
+                "voiceUrl": "/api/files/6650a1f0c0ffee0000000001/assets/6650a1f0c0ffee0000000014.m4a",
+                "voiceDurationMs": 7400
+              }
+            ]
+          }
+        },
+        { "id": "tree", "x": 0.71, "y": 0.42, "scale": 0.24, "story": null }
+      ]
+    }
+  ],
+  "files": [
+    "/rooms/garden.svg",
+    "/objects/deckchair.svg",
+    "/api/files/6650a1f0c0ffee0000000001/6650a1f0c0ffee0000000031/restore.png",
+    "/api/files/6650a1f0c0ffee0000000001/6650a1f0c0ffee0000000031/animate.mp4",
+    "/api/files/6650a1f0c0ffee0000000001/assets/6650a1f0c0ffee0000000012.jpg",
+    "/api/files/6650a1f0c0ffee0000000001/assets/6650a1f0c0ffee0000000013.mp3",
+    "/api/files/6650a1f0c0ffee0000000001/6650a1f0c0ffee0000000031/ambience.mp3",
+    "/api/files/6650a1f0c0ffee0000000001/assets/6650a1f0c0ffee0000000014.m4a"
+  ]
+}
