@@ -1,11 +1,22 @@
-# Replace the placeholders with real GitHub usernames before enabling "Require review from Code Owners".
-# Unknown usernames make GitHub flag this file as invalid, so keep lines commented until filled.
-#
-# /lib/contracts/   @TIMOTE_GITHUB
-# /lib/db/          @TIMOTE_GITHUB
-# /.github/         @TIMOTE_GITHUB
-# /.claude/         @TIMOTE_GITHUB
-# /components/ui/   @RAPHAEL_GITHUB
-# /app/globals.css  @RAPHAEL_GITHUB
-# /app/studio/      @alexd0104
-# /app/house/       @YASIR_GITHUB
+# Owners are requested automatically as reviewers on PRs touching these paths.
+# Contracts and shared config: Timoté. Design system: Raphaël. Zones: their owner.
+
+/lib/contracts/   @Tmt-L
+/lib/db/          @Tmt-L
+/lib/ai/          @Tmt-L
+/lib/jobs/        @Tmt-L
+/.github/         @Tmt-L
+/.claude/         @Tmt-L
+/AGENTS.md        @Tmt-L
+/CLAUDE.md        @Tmt-L
+
+/components/ui/   @raphael-verger
+/app/globals.css  @raphael-verger
+/docs/DESIGN.md   @raphael-verger
+
+/app/studio/      @alexd0104
+/components/studio/ @alexd0104
+
+/app/house/       @yasiralzaid
+/components/house/ @yasiralzaid
+/lib/house/       @yasiralzaid
