@@ -79,13 +79,11 @@ test("phone photo upload resizes, survives reload and progresses to a stored moc
   const uploaded = page.waitForResponse(
     (response) => response.url().endsWith("/assets") && response.status() === 201,
   );
-  await page
-    .getByLabel("Photo of your Object", { exact: true })
-    .setInputFiles({
-      name: "sample.png",
-      mimeType: "image/png",
-      buffer: Buffer.from(image, "base64"),
-    });
+  await page.getByLabel("Photo of your Object", { exact: true }).setInputFiles({
+    name: "sample.png",
+    mimeType: "image/png",
+    buffer: Buffer.from(image, "base64"),
+  });
   const asset = (await (await uploaded).json()).data;
   const dimensions = await page.evaluate(async (url) => {
     const bitmap = await createImageBitmap(await (await fetch(url)).blob());
@@ -95,6 +93,25 @@ test("phone photo upload resizes, survives reload and progresses to a stored moc
   }, asset.url);
   expect(dimensions).toEqual([2048, 1024]);
   expect(asset.mime).toBe("image/jpeg");
+  await page
+    .getByLabel("Photo of your Object", { exact: true })
+    .setInputFiles({
+      name: "broken.jpg",
+      mimeType: "image/jpeg",
+      buffer: Buffer.from("not an image"),
+    });
+  await expect(
+    page.getByRole("alert").filter({ hasText: "Please choose a JPEG or PNG" }),
+  ).toBeVisible();
+  await expect(page.getByRole("button", { name: "Create the Story", exact: true })).toBeDisabled();
+  await page
+    .getByLabel("Photo of your Object", { exact: true })
+    .setInputFiles({
+      name: "sample.png",
+      mimeType: "image/png",
+      buffer: Buffer.from(image, "base64"),
+    });
+  await expect(page.getByText("Photo saved. You can leave this page and come back.")).toBeVisible();
   await page.getByLabel("Name this Story").fill("Tea with family");
   await page.reload();
   await expect(page.getByText("Photo saved. You can leave this page and come back.")).toBeVisible();

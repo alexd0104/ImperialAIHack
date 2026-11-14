@@ -1,5 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { ApiErrorResponse } from "@/lib/contracts";
+import { loginThrottle } from "@/lib/login-throttle";
 import { SESSION_COOKIE, verifySessionToken } from "@/lib/session";
 import { POST } from "./route";
 
@@ -24,6 +25,27 @@ describe("POST /api/auth/login", () => {
   beforeEach(() => {
     vi.stubEnv("STUDIO_PASSWORD", "family-password");
     vi.stubEnv("SESSION_SECRET", SECRET);
+    loginThrottle.clear();
+  });
+
+  it("returns 429 rate_limited after repeated wrong passwords, even for the right one", async () => {
+    for (let i = 0; i < 5; i++) expect((await login({ password: "nope" })).status).toBe(401);
+    const blocked = await login({ password: "family-password" });
+    expect(blocked.status).toBe(429);
+    expect(Number(blocked.headers.get("retry-after"))).toBeGreaterThan(0);
+    expect(await errorOf(blocked)).toEqual({
+      code: "rate_limited",
+      message: "Too many tries. Please wait a moment and try again.",
+      retryable: true,
+    });
+    expect(blocked.headers.get("set-cookie")).toBeNull();
+  });
+
+  it("resets the count after a successful sign-in", async () => {
+    for (let i = 0; i < 4; i++) await login({ password: "nope" });
+    expect((await login({ password: "family-password" })).status).toBe(200);
+    for (let i = 0; i < 4; i++) await login({ password: "nope" });
+    expect((await login({ password: "family-password" })).status).toBe(200);
   });
   afterEach(() => vi.unstubAllEnvs());
 

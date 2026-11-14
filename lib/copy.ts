@@ -10,6 +10,7 @@ export const copy = {
     signInRequired: "Please sign in.",
     wrongPassword: "That password is not right.",
     notConfigured: "Studio sign-in is not configured.",
+    tooManyTries: "Too many tries. Please wait a moment and try again.",
   },
   studio: {
     createStory: {

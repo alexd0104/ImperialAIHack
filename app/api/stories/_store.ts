@@ -4,7 +4,7 @@ import { link, mkdir, readFile, rename, unlink, writeFile } from "node:fs/promis
 import { join } from "node:path";
 import type { z } from "zod";
 import { Asset, House, Job, Room, Story } from "@/lib/contracts";
-import { db } from "@/lib/db";
+import { db, type TypedCollection } from "@/lib/db";
 
 const schemas = { houses: House, rooms: Room, stories: Story, assets: Asset, jobs: Job };
 type Collection = keyof typeof schemas;
@@ -59,6 +59,22 @@ export function isDuplicate(error: unknown) {
   return (
     error instanceof Error && "code" in error && (error.code === "EEXIST" || error.code === 11000)
   );
+}
+
+export async function updateEntity<K extends Collection>(
+  collection: K,
+  id: string,
+  fields: Partial<Omit<Entity<K>, "id">>,
+) {
+  if (!offline()) {
+    const table = db[collection] as TypedCollection<Entity<K>>;
+    return table.update(id, fields);
+  }
+  const current = await getEntity(collection, id);
+  if (!current) return null;
+  const next = schemas[collection].parse({ ...current, ...fields }) as Entity<K>;
+  await replaceEntity(collection, next);
+  return next;
 }
 export async function replaceEntity<K extends Collection>(collection: K, input: Entity<K>) {
   const entity = schemas[collection].parse(input);

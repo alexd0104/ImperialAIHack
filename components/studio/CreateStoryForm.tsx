@@ -146,6 +146,10 @@ function StoryForm({ roomId }: { roomId: string }) {
   }, [ready, draftKey, title, mode, name, asset, story, locked, provisionalSlot]);
 
   const upload = useMutation({
+    onMutate: () => {
+      setAsset(null);
+      setMessage("");
+    },
     mutationFn: async (file: File) => {
       if (!room.data) throw new Error(words.missingRoom);
       const blob = await resizeObjectPhoto(file);

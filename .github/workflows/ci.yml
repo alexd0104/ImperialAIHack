@@ -28,38 +28,29 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Skip until the app is scaffolded
-        id: scaffold
-        run: |
-          if [ -f package.json ]; then echo "ready=true" >> "$GITHUB_OUTPUT"; else echo "ready=false" >> "$GITHUB_OUTPUT"; echo "No package.json yet: skipping."; fi
-
       - uses: pnpm/action-setup@v4
-        if: steps.scaffold.outputs.ready == 'true'
 
       - uses: actions/setup-node@v4
-        if: steps.scaffold.outputs.ready == 'true'
         with:
           node-version-file: .nvmrc
           cache: pnpm
 
       - name: Install
-        if: steps.scaffold.outputs.ready == 'true'
         run: pnpm install --frozen-lockfile
 
       - name: Typecheck
-        if: steps.scaffold.outputs.ready == 'true'
         run: pnpm typecheck
 
       - name: Lint (Biome)
-        if: steps.scaffold.outputs.ready == 'true'
         run: pnpm lint
 
+      - name: Secret scan (all tracked files)
+        run: node scripts/secret-scan.mjs --all
+
       - name: Unit tests
-        if: steps.scaffold.outputs.ready == 'true'
         run: pnpm test
 
       - name: Build
-        if: steps.scaffold.outputs.ready == 'true'
         run: pnpm build
 
       - name: Zone check (warning only)

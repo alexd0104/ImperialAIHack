@@ -12,7 +12,8 @@ export default defineConfig({
   test: {
     environment: "node",
     include: ["**/*.test.{ts,tsx}"],
-    exclude: ["node_modules/**", ".next/**", "e2e/**"],
+    // `.claude/worktrees/` holds parallel agent checkouts; their tests are not ours.
+    exclude: ["**/node_modules/**", ".next/**", "e2e/**", ".claude/**"],
     // Tests must never reach a paid model (AGENTS.md §7).
     env: { AI_MODE: "mock", MOCK_FAIL_RATE: "0" },
   },

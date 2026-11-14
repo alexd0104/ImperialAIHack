@@ -1,7 +1,7 @@
 import "server-only";
 import { readFile } from "node:fs/promises";
 import { join } from "node:path";
-import { getEntity, replaceEntity } from "@/app/api/stories/_store";
+import { getEntity, replaceEntity, updateEntity } from "@/app/api/stories/_store";
 import { JobView } from "@/lib/contracts";
 import { copy } from "@/lib/copy";
 import { fail, ok } from "@/lib/http";
@@ -44,7 +44,7 @@ export async function GET(_request: Request, context: { params: Promise<{ id: st
       fallback = true;
       story.object = { kind: "svg", path: "camera", jobId: job.id };
     }
-    await replaceEntity("stories", story);
+    await updateEntity("stories", story.id, { object: story.object });
     const finished = {
       ...job,
       status: fallback ? ("fallback" as const) : ("done" as const),

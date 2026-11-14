@@ -1,6 +1,7 @@
 import { LoginRequest } from "@/lib/contracts";
 import { copy } from "@/lib/copy";
 import { fail, ok, parseJson } from "@/lib/http";
+import { clientKey, loginThrottle } from "@/lib/login-throttle";
 import {
   createSessionToken,
   isUsableSecret,
@@ -26,10 +27,21 @@ export async function POST(request: Request) {
   // 422 per docs/playbooks/add-api-route.md (well-formed request, invalid content).
   if (!body.success) return fail("validation_failed", body.message, 422);
 
+  // Checked before the password so a locked-out IP learns nothing from its guesses.
+  const key = clientKey(request);
+  const gate = loginThrottle.check(key);
+  if (!gate.allowed) {
+    const response = fail("rate_limited", copy.auth.tooManyTries, 429, true);
+    response.headers.set("Retry-After", String(gate.retryAfterSeconds));
+    return response;
+  }
+
   if (!(await passwordMatches(body.data.password, password, secret))) {
+    loginThrottle.recordFailure(key);
     // Retryable: the person can simply type the password again.
     return fail("unauthorized", copy.auth.wrongPassword, 401, true);
   }
+  loginThrottle.recordSuccess(key);
 
   const response = ok({ ok: true });
   const cookie = [
