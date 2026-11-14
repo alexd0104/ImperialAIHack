@@ -26,6 +26,9 @@ Types: `feat`, `fix`, `refactor`, `test`, `docs`, `chore`, `style`, `perf`. Scop
 
 ## 3. Pull requests
 
+- **Task ID in the title is mandatory** for `feat/*` and `fix/*` branches with an ID: `feat(studio): memory bank (S3)`. When merged, the task becomes ✅ on the board. Partial work: `(S3-wip)`.
+- The **Tasks** workflow fails the PR if the title has no `(ID)` or if a hard dependency (see `docs/tasks.json`) is not merged on `main`.
+
 - Open a PR for every branch (use the template). Title = main commit subject.
 - **CI must be green** (typecheck, Biome, Vitest, build in mock mode).
 - Run the `reviewer` agent (Claude Code) or `pnpm verify` + self-review (Codex) before opening.

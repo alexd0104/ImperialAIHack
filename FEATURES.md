@@ -4,7 +4,7 @@ Prioritised feature list. **Owner = the only person who edits that feature's fil
 
 Owners: **T** = Timoté (Pipeline + contracts, lead) · **A** = Alexandre (Studio, Codex) · **Y** = Yasir (House) · **R** = Raphaël (Design + platform).
 
-Status is tracked in `docs/STATUS.md`, not here.
+Status is tracked automatically on the GitHub issue **"📋 memorAI task board"** (from merged PR titles). Machine-readable owners and dependencies: `docs/tasks.json` (hard deps block a task; soft deps only warn). Notes in `docs/STATUS.md`.
 
 ---
 
