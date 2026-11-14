@@ -27,7 +27,16 @@ _(newest first: date — what changed — who)_
 
 _(newest first: date — from → to — what)_
 
+- 2026-11-14 — Raphaël → Timoté — The Tasks workflow rejected `(ID-wip)` PR titles although its error message recommends them (`.github/workflows/tasks.yml:47`). Fixed in `fix/shared-tasks-wip-title`; please review. Not registered as a B task because `tasks.mjs add` needs Node, which is not set up on my machine yet: please add it if you want it on the board.
+
 ## Log
+
+### 2026-11-14 17:55 — Raphaël (design)
+- Done: SH7, 8 missing frames on Figma v5 row 4 (Questions + free text, Record a voice, Story end, loading/error/clip fallback, Order memories, Room from a photo, Sent confirmation, Studio phone). Mapped in `docs/DESIGN.md` §2, captures in `docs/design-evidence/sh7-*`.
+- In progress: Q4 evidence (branch `feat/design-Q4-figma-specs`, also holds the exported SVGs).
+- Blocked: F5 waits for F1. No Node/pnpm on my machine yet.
+- Contract changes: none.
+- Next: F5 when F1 merges. Alexandre: S4/SH5/S8 can build from frames 57-624, 58-638, 61-734, 61-982. Yasir: Story end 58-812 and clip fallback in 60-709.
 
 ### 2026-11-14 17:45 — Raphaël (design)
 - Done: exported logo, 3 room backgrounds, 9 Objects from Figma v5 as SVG via the MCP server → `public/brand`, `public/rooms`, `public/objects` (cleaned of exporter frame rects). Component specs for F5 read via MCP and logged in `docs/DESIGN.md` §4.1; first 3 Figma captures in `docs/design-evidence/`.
