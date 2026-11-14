@@ -243,7 +243,7 @@ All routes are Next route handlers under `app/api/`, Node runtime. Every input a
 
 ### 4.1 Auth
 
-- **Studio:** `POST /api/auth/login { password }` compares with `STUDIO_PASSWORD`, sets `mh_session` (HMAC-signed with `SESSION_SECRET`, httpOnly, sameSite=lax, 7 days). `proxy.ts` guards `/studio/**` (except `/studio/login`) and `/api/**` except `/api/auth/login`, `/api/h/**` and `/api/files/**` (files check either a session or a valid House token query param).
+- **Studio:** `POST /api/auth/login { password }` compares with `STUDIO_PASSWORD`, sets `mh_session` (HMAC-signed with `SESSION_SECRET`, httpOnly, sameSite=lax, 7 days). `proxy.ts` guards `/studio/**` (except `/studio/login`) and `/api/**` except `/api/auth/login`, `/api/auth/logout`, `/api/h/**` and `/api/files/**` (files check either a session or a valid House token query param).
 - **House:** token = 32 random bytes, base64url, stored on the House. Read-only routes under `/api/h/:token/*`. Revocable (`houses.tokenRevoked`).
 - **Rate limit:** max 10 generation starts (generate + try again) per House per hour → 429 `rate_limited`.
 - All pages send `X-Robots-Tag: noindex`.
@@ -466,7 +466,7 @@ Not in MUST. Go/no-go at 02:00 Sunday (see `PLAN.md`). If go: an ElevenLabs conv
 
 Rules: nothing secret in `NEXT_PUBLIC_*`; pre-commit secret scan (husky); Claude Code hook blocks `.env*`; CI runs with dummy values and `AI_MODE=mock`.
 
-**Local dev:** Node ≥ 24 (`.nvmrc` = 24), pnpm, `pnpm install`, `cp .env.example .env.local`, fill your values, `pnpm dev`. **Demo:** `pnpm demo` (build + seed + `next start`), open `/studio` and `/house/demo-token` (Chrome devtools tablet size 1194 × 834) on the same laptop.
+**Local dev:** Node ≥ 24 (`.nvmrc` = 24), pnpm, `pnpm install`, `cp .env.example .env.local`, fill your values, `pnpm env:check` (names only, never values), `pnpm dev`. **Demo:** `pnpm demo` (build + seed + `next start`), open `/studio` and `/house/demo-token` (Chrome devtools tablet size 1194 × 834) on the same laptop.
 
 ---
 
@@ -498,6 +498,7 @@ Rules: nothing secret in `NEXT_PUBLIC_*`; pre-commit secret scan (husky); Claude
 | New file in `public/` 404 in production | Next serves `public/` as of build time | Serve generated files from `storage/` via `/api/files` |
 | fal output URL 404 later | CDN expiry (we set 1 h) | Always download outputs to `storage/` when the step completes |
 | Jobs stuck "IN_QUEUE" | Account concurrency = 2, other dev on same key | One key per developer; `FAL_MAX_CONCURRENCY=2` |
+| `/studio` loops back to sign-in, or login returns 500 "not configured" | `STUDIO_PASSWORD` missing or `SESSION_SECRET` shorter than 32 chars | `pnpm env:check` (prints names only, never values); generate a secret with `node -e "console.log(crypto.randomBytes(32).toString('base64url'))"` |
 | fal 401/403 | Wrong key or credits on another account | Check `FAL_KEY`, check dashboard balance |
 | GLB loads slowly / tablet lags | Heavy mesh/textures | `gltf-transform optimize`, textures 1024 webp, ≤ 6 objects per Room |
 | Hydration mismatch on House | Random/Date in render | Generate random values in effects or seed them from ids |

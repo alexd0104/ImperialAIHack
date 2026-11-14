@@ -12,6 +12,7 @@
     "format": "biome format --write .",
     "test": "vitest run",
     "test:e2e": "playwright test",
+    "env:check": "node scripts/check-env.mjs",
     "demo": "node scripts/todo.mjs demo",
     "demo:check": "node scripts/todo.mjs demo:check",
     "seed:demo": "node scripts/todo.mjs seed:demo",

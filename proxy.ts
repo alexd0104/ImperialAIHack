@@ -1,7 +1,8 @@
 import { type NextRequest, NextResponse } from "next/server";
+import { fail } from "@/lib/http";
 import { needsSession, SESSION_COOKIE, verifySessionToken } from "@/lib/session";
 
-function noindex(response: NextResponse): NextResponse {
+function noindex<R extends Response>(response: R): R {
   response.headers.set("X-Robots-Tag", "noindex");
   return response;
 }
@@ -16,12 +17,7 @@ export async function proxy(request: NextRequest) {
     );
     if (!signedIn) {
       if (pathname.startsWith("/api/")) {
-        return noindex(
-          NextResponse.json(
-            { error: { code: "unauthorized", message: "Please sign in.", retryable: false } },
-            { status: 401 },
-          ),
-        );
+        return noindex(fail("unauthorized", "Please sign in."));
       }
       const login = new URL("/studio/login", request.url);
       login.searchParams.set("next", `${pathname}${search}`);

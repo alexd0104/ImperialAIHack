@@ -53,10 +53,10 @@ describe("POST /api/auth/login", () => {
     expect(response.status).toBe(500);
   });
 
-  it("returns 401 invalid_password and no cookie on a wrong password", async () => {
+  it("returns 401 unauthorized and no cookie on a wrong password", async () => {
     const response = await login({ password: "nope" });
     expect(response.status).toBe(401);
-    expect((await response.json()).error.code).toBe("invalid_password");
+    expect((await response.json()).error.code).toBe("unauthorized");
     expect(response.headers.get("set-cookie")).toBeNull();
   });
 
@@ -65,16 +65,16 @@ describe("POST /api/auth/login", () => {
     async (body) => {
       const response = await login(body);
       expect(response.status).toBe(400);
-      expect((await response.json()).error.code).toBe("bad_request");
+      expect((await response.json()).error.code).toBe("validation_failed");
     },
   );
 
-  it("returns 500 not_configured when env is missing", async () => {
+  it("returns 500 internal (not retryable) when env is missing", async () => {
     vi.stubEnv("STUDIO_PASSWORD", "");
     const response = await login({ password: "family-password" });
     expect(response.status).toBe(500);
     expect((await response.json()).error).toEqual({
-      code: "not_configured",
+      code: "internal",
       message: "Studio sign-in is not configured.",
       retryable: false,
     });

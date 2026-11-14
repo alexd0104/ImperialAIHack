@@ -45,6 +45,7 @@ Next.js 16 (App Router, TypeScript strict) · Tailwind CSS v4 + shadcn/ui · rea
 
 ```bash
 pnpm install          # install
+pnpm env:check        # validate .env.local (prints names only, never values)
 pnpm dev              # dev server (AI_MODE=mock by default)
 pnpm verify           # typecheck + lint + unit tests — run before every push
 pnpm typecheck        # tsc --noEmit

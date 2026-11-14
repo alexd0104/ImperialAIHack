@@ -1,4 +1,5 @@
-import { z } from "zod";
+import { LoginRequest } from "@/lib/contracts";
+import { fail, ok, parseJson } from "@/lib/http";
 import {
   createSessionToken,
   passwordMatches,
@@ -6,13 +7,6 @@ import {
   SESSION_MAX_AGE_SECONDS,
   SESSION_SECRET_MIN_LENGTH,
 } from "@/lib/session";
-
-// TODO(F2): move to lib/contracts/ and switch to ok()/fail() from lib/http.ts once F2 is merged.
-const LoginRequest = z.object({ password: z.string().min(1).max(200) });
-
-function fail(status: number, code: string, message: string, retryable: boolean) {
-  return Response.json({ error: { code, message, retryable } }, { status });
-}
 
 function isHttps(request: Request): boolean {
   const forwarded = request.headers.get("x-forwarded-proto")?.split(",")[0]?.trim();
@@ -23,20 +17,19 @@ export async function POST(request: Request) {
   const password = process.env.STUDIO_PASSWORD;
   const secret = process.env.SESSION_SECRET;
   if (!password || !secret || secret.length < SESSION_SECRET_MIN_LENGTH) {
-    return fail(500, "not_configured", "Studio sign-in is not configured.", false);
+    // Not retryable: only fixing .env.local helps (see .env.example).
+    return fail("internal", "Studio sign-in is not configured.", 500, false);
   }
 
-  const body: unknown = await request.json().catch(() => null);
-  const parsed = LoginRequest.safeParse(body);
-  if (!parsed.success) {
-    return fail(400, "bad_request", "A password is required.", false);
+  const body = await parseJson(request, LoginRequest);
+  if (!body.success) return fail("validation_failed", body.message);
+
+  if (!(await passwordMatches(body.data.password, password, secret))) {
+    // Retryable: the person can simply type the password again.
+    return fail("unauthorized", "That password is not right.", 401, true);
   }
 
-  if (!(await passwordMatches(parsed.data.password, password, secret))) {
-    return fail(401, "invalid_password", "That password is not right.", true);
-  }
-
-  const response = Response.json({ data: { ok: true } });
+  const response = ok({ ok: true });
   const cookie = [
     `${SESSION_COOKIE}=${await createSessionToken(secret)}`,
     "Path=/",
