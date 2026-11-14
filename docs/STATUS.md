@@ -37,6 +37,12 @@ _(newest first: date — from → to — what)_
 - Blocked: F5 waits for F1. No Node/pnpm on my machine yet.
 - Contract changes: none.
 - Next: F5 when F1 merges. Alexandre: S4/SH5/S8 can build from frames 57-624, 58-638, 61-734, 61-982. Yasir: Story end 58-812 and clip fallback in 60-709.
+### 2026-11-14 17:45 — Raphaël (design)
+- Done: exported logo, 3 room backgrounds, 9 Objects from Figma v5 as SVG via the MCP server → `public/brand`, `public/rooms`, `public/objects` (cleaned of exporter frame rects). Component specs for F5 read via MCP and logged in `docs/DESIGN.md` §4.1; first 3 Figma captures in `docs/design-evidence/`.
+- In progress: Q4 (evidence log, ongoing).
+- Blocked: F5 waits for F1 (scaffold). Local machine has no Node/pnpm yet.
+- Contract changes: none. Token additions planned in F5: `--shadow-house-control`, `--color-avatar-ring` (`#FFF8EE`).
+- Next: F5 as soon as F1 merges; test 4 (Rodin vs Trellis) by hand in the fal playground.
 
 ### Template
 ```

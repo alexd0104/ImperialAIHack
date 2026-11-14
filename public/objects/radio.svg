@@ -1,0 +1,48 @@
+<svg width="286" height="256" viewBox="0 0 286 256" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g id="Room &#194;&#183; Living room">
+<g id="Radio">
+<g id="Shadow" filter="url(#filter0_f_20_66)">
+<ellipse cx="149.497" cy="234.116" rx="66" ry="9" transform="rotate(-4 149.497 234.116)" fill="#5A4632" fill-opacity="0.22"/>
+</g>
+<g id="Art" filter="url(#filter1_d_20_66)">
+<g clip-path="url(#clip0_20_66)">
+<path id="Vector" d="M195.985 67.4667L228.689 19.0676" stroke="#8A7A6A" stroke-width="5" stroke-linecap="round"/>
+<path id="Vector_2" d="M230.035 23.9856C233.341 23.7545 235.833 20.8873 235.602 17.5817C235.371 14.2761 232.504 11.7837 229.198 12.0149C225.893 12.246 223.4 15.1131 223.631 18.4188C223.863 21.7244 226.73 24.2168 230.035 23.9856Z" fill="#8A7A6A"/>
+<path id="Vector_3" d="M219.649 61.8023L56.048 73.2424C40.6217 74.3211 28.9907 87.7011 30.0694 103.127L35.5104 180.937C36.5891 196.364 49.9691 207.995 65.3954 206.916L228.996 195.476C244.422 194.397 256.053 181.017 254.974 165.591L249.533 87.7809C248.455 72.3546 235.075 60.7236 219.649 61.8023Z" fill="url(#paint0_radial_20_66)"/>
+<path id="Vector_4" d="M105.689 181.042C129.93 179.347 148.207 158.321 146.512 134.08C144.817 109.839 123.791 91.5615 99.55 93.2566C75.3087 94.9517 57.0314 115.977 58.7265 140.219C60.4216 164.46 81.4473 182.737 105.689 181.042Z" fill="#7A3324"/>
+<path id="Vector_5" d="M104.851 169.071C122.481 167.839 135.774 152.547 134.541 134.917C133.308 117.287 118.017 103.995 100.387 105.227C82.7568 106.46 69.4642 121.752 70.6971 139.382C71.9299 157.012 87.2212 170.304 104.851 169.071Z" stroke="#A85A44" stroke-width="3"/>
+<path id="Vector_6" d="M103.875 155.106C113.792 154.412 121.269 145.811 120.575 135.894C119.882 125.977 111.28 118.5 101.363 119.193C91.4465 119.887 83.9694 128.488 84.6628 138.405C85.3563 148.322 93.9577 155.799 103.875 155.106Z" stroke="#A85A44" stroke-width="3"/>
+<path id="Vector_7" d="M224.873 93.5151L167.014 97.561C163.158 97.8307 160.25 101.176 160.52 105.032L161.217 115.008C161.487 118.864 164.832 121.772 168.688 121.503L226.547 117.457C230.404 117.187 233.311 113.842 233.042 109.985L232.344 100.01C232.074 96.1532 228.729 93.2454 224.873 93.5151Z" fill="#FBE7C8"/>
+<path id="Vector_8" d="M180.262 100.644L181.378 116.605" stroke="#E0573A" stroke-width="3"/>
+<path id="Vector_9" d="M183.359 173.606C190.521 173.105 195.921 166.893 195.421 159.731C194.92 152.569 188.708 147.169 181.545 147.669C174.383 148.17 168.983 154.382 169.484 161.545C169.985 168.707 176.197 174.107 183.359 173.606Z" fill="#F4D9B0"/>
+<path id="Vector_10" d="M221.266 170.955C228.429 170.455 233.829 164.242 233.328 157.08C232.827 149.918 226.615 144.518 219.453 145.019C212.29 145.52 206.89 151.732 207.391 158.894C207.892 166.056 214.104 171.456 221.266 170.955Z" fill="#F4D9B0"/>
+<path id="Vector_11" d="M159.634 78.0283L49.9019 85.7015C47.1472 85.8941 45.0702 88.2834 45.2628 91.0381C45.4555 93.7928 47.8448 95.8697 50.5994 95.6771L160.331 88.0039C163.086 87.8113 165.163 85.422 164.971 82.6673C164.778 79.9126 162.389 77.8356 159.634 78.0283Z" fill="white" fill-opacity="0.4"/>
+</g>
+</g>
+</g>
+</g>
+<defs>
+<filter id="filter0_f_20_66" x="73.6553" y="214.024" width="151.685" height="40.1837" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+<feFlood flood-opacity="0" result="BackgroundImageFix"/>
+<feBlend mode="normal" in="SourceGraphic" in2="BackgroundImageFix" result="shape"/>
+<feGaussianBlur stdDeviation="5" result="effect1_foregroundBlur_20_66"/>
+</filter>
+<filter id="filter1_d_20_66" x="-15.3477" y="-2.72661" width="312.669" height="266.279" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+<feFlood flood-opacity="0" result="BackgroundImageFix"/>
+<feColorMatrix in="SourceAlpha" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" result="hardAlpha"/>
+<feOffset dy="18"/>
+<feGaussianBlur stdDeviation="15"/>
+<feColorMatrix type="matrix" values="0 0 0 0 0.352941 0 0 0 0 0.27451 0 0 0 0 0.196078 0 0 0 0.18 0"/>
+<feBlend mode="normal" in2="BackgroundImageFix" result="effect1_dropShadow_20_66"/>
+<feBlend mode="normal" in="SourceGraphic" in2="effect1_dropShadow_20_66" result="shape"/>
+</filter>
+<radialGradient id="paint0_radial_20_66" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(107.733 109.926) rotate(-4) scale(198 120.6)">
+<stop stop-color="#FFC9AE"/>
+<stop offset="0.5" stop-color="#E5876A"/>
+<stop offset="1" stop-color="#A9472F"/>
+</radialGradient>
+<clipPath id="clip0_20_66">
+<rect width="240" height="190" fill="white" transform="translate(14.6523 26.0149) rotate(-4)"/>
+</clipPath>
+</defs>
+</svg>
