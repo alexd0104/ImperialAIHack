@@ -1,0 +1,28 @@
+[
+  {
+    "id": "6650a1f0c0ffee0000000021",
+    "houseId": "6650a1f0c0ffee0000000001",
+    "memoryId": "6650a1f0c0ffee0000000004",
+    "assetId": "6650a1f0c0ffee0000000011",
+    "order": 0,
+    "outputs": {
+      "restored": "6650a1f0c0ffee0000000001/6650a1f0c0ffee0000000031/restore.png",
+      "clip": "6650a1f0c0ffee0000000001/6650a1f0c0ffee0000000031/animate.mp4",
+      "ambience": "6650a1f0c0ffee0000000001/6650a1f0c0ffee0000000031/ambience.mp3"
+    },
+    "choice": { "use": "animated", "colour": "bw", "restored": true },
+    "status": "done",
+    "jobId": "6650a1f0c0ffee0000000031",
+    "createdAt": "2026-11-14T15:10:00.000Z"
+  },
+  {
+    "id": "6650a1f0c0ffee0000000022",
+    "houseId": "6650a1f0c0ffee0000000001",
+    "memoryId": "6650a1f0c0ffee0000000004",
+    "assetId": "6650a1f0c0ffee0000000012",
+    "order": 1,
+    "outputs": {},
+    "status": "fallback",
+    "createdAt": "2026-11-14T15:10:00.000Z"
+  }
+]
