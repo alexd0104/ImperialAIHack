@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 import { Job } from "@/lib/contracts";
 import { cacheKey, stableStringify } from "./cache";
 import { newJob, object3dPlan, roomBackgroundPlan, scenePlan } from "./plans";
-import { sceneOutputsOf } from "./steps";
+import { briaColour, extensionOf, sceneOutputsOf } from "./steps";
 import { makeJob } from "./test-fakes";
 
 const enabled = (steps: { name: string; status: string }[]) =>
@@ -94,5 +94,21 @@ describe("sceneOutputsOf", () => {
   it("keeps ambience as separate audio for a still scene", () => {
     const job = makeJob("6650a1f0c0ffee0000000031", [done("ambience", "h/j/ambience.wav")]);
     expect(sceneOutputsOf(job)).toMatchObject({ clip: undefined, ambience: "h/j/ambience.wav" });
+  });
+});
+
+describe("step helpers", () => {
+  it("keeps only colour styles Bria accepts", () => {
+    expect(briaColour("sepia vintage")).toBe("sepia vintage");
+    expect(briaColour("none")).toBe("contemporary color");
+    expect(briaColour("warm 1960s tones")).toBe("contemporary color");
+  });
+
+  it("names stored outputs after the file, else the model's mime", () => {
+    expect(extensionOf("https://v3.fal.media/files/x/audio.flac", "audio/flac")).toBe("flac");
+    expect(extensionOf("file:///repo/mocks/media/ambience.wav", "audio/flac")).toBe("wav");
+    expect(extensionOf("https://fal.media/x/out.jpeg?sig=1", "image/png")).toBe("jpg");
+    expect(extensionOf("https://fal.media/x/blob", "video/mp4")).toBe("mp4");
+    expect(extensionOf("https://fal.media/x/file.exe", "image/jpeg")).toBe("jpg");
   });
 });

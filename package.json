@@ -19,7 +19,8 @@
     "demo:check": "node --env-file-if-exists=.env.local scripts/demo-check.mts",
     "seed:demo": "node --conditions=react-server --env-file-if-exists=.env.local scripts/seed-demo.mts",
     "export:demo": "node --conditions=react-server --env-file-if-exists=.env.local scripts/export-demo.mts",
-    "prepare": "husky"
+    "prepare": "husky",
+    "scene:run": "node --import ./scripts/ts-resolve.mjs --conditions=react-server --env-file-if-exists=.env.local scripts/run-scene.mts"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^1.8.0",

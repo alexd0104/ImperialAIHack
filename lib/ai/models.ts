@@ -9,7 +9,8 @@ import "server-only";
  * https://fal.ai/models/<id>/api; check before the first live call.
  */
 
-export type PriceUnit = "image" | "second" | "generation" | "megapixel";
+/** `block4mp` = per started 4 megapixels of output (Topaz). */
+export type PriceUnit = "image" | "second" | "generation" | "megapixel" | "block4mp";
 
 export interface FalModel {
   readonly id: string;
@@ -22,10 +23,11 @@ export interface FalModel {
 
 export const MODELS = {
   restore: {
-    // TODO verify: Topaz param names for Recover 3 / Dust-Scratch V2 and the per-megapixel price.
+    // Verified 2026-11-14: `model` is "Recover 3" (default, rebuilds detail) or
+    // "Dust-Scratch V2" (film dust and scratches, priced per started 24 MP instead).
     id: "topaz/restore/image",
-    defaults: {},
-    price: { unit: "megapixel", usd: 0.05, verified: false },
+    defaults: { model: "Recover 3", output_format: "jpeg" },
+    price: { unit: "block4mp", usd: 0.08, verified: true },
     output: { path: ["image", "url"], mime: "image/jpeg" },
   },
   colourise: {
@@ -42,15 +44,16 @@ export const MODELS = {
     output: { path: ["image", "url"], mime: "image/jpeg" },
   },
   animate: {
-    // TODO verify: exact Kling 2.5 Turbo Pro ID comes from Timoté's Test 2.
+    // Verified 2026-11-14: duration "5" | "10" (strings); $0.35 for 5 s, $0.07 per extra second.
     id: "fal-ai/kling-video/v2.5-turbo/pro/image-to-video",
     defaults: { duration: "5" },
-    price: { unit: "second", usd: 0.07, verified: false },
+    price: { unit: "second", usd: 0.07, verified: true },
     output: { path: ["video", "url"], mime: "video/mp4" },
   },
   ambienceClip: {
     id: "fal-ai/mmaudio-v2",
-    defaults: {},
+    // mmaudio defaults to 8 s; match the 5 s Kling clip.
+    defaults: { duration: 5 },
     price: { unit: "second", usd: 0.001, verified: true },
     // mmaudio returns the input video with the generated sound muxed in.
     output: { path: ["video", "url"], mime: "video/mp4" },
@@ -59,7 +62,8 @@ export const MODELS = {
     id: "fal-ai/mmaudio-v2/text-to-audio",
     defaults: { duration: 5 },
     price: { unit: "second", usd: 0.001, verified: true },
-    output: { path: ["audio", "url"], mime: "audio/wav" },
+    // Verified 2026-11-14: returns FLAC (served as octet-stream, so the mime is fixed here).
+    output: { path: ["audio", "url"], mime: "audio/flac" },
   },
   cutout: {
     // TODO verify: background-removal model ID (BiRefNet) and price.
@@ -109,6 +113,8 @@ export function estimateCostUsd(
     case "megapixel":
       // A 2048 px long-edge upload is ≈ 3 MP.
       return model.price.usd * (usage.megapixels ?? 3);
+    case "block4mp":
+      return model.price.usd * Math.max(1, Math.ceil((usage.megapixels ?? 3) / 4));
     default:
       return model.price.usd;
   }

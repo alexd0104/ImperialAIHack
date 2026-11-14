@@ -15,6 +15,12 @@ describe("models", () => {
     expect(estimateCostUsd("animate", { seconds: 10 })).toBeCloseTo(0.7);
   });
 
+  it("prices Topaz per started 4 megapixels", () => {
+    expect(estimateCostUsd("restore")).toBeCloseTo(0.08);
+    expect(estimateCostUsd("restore", { megapixels: 4 })).toBeCloseTo(0.08);
+    expect(estimateCostUsd("restore", { megapixels: 9 })).toBeCloseTo(0.24);
+  });
+
   it("no model ID appears in code outside lib/ai/models.ts", () => {
     const ids = Object.values(MODELS).map((m) => m.id);
     const offenders: string[] = [];

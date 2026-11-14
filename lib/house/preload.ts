@@ -14,6 +14,7 @@ const KINDS: Record<string, FileKind> = {
   mp3: "audio",
   m4a: "audio",
   wav: "audio",
+  flac: "audio",
   ogg: "audio",
   webm: "video",
   mp4: "video",

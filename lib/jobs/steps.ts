@@ -27,6 +27,19 @@ const FAL_URL_LIFETIME_MS = 60 * 60_000;
 /** Fixed wording: only asks to tidy and relight what is already in the family's photo. */
 const ROOM_EDIT_PROMPT = "warm, tidy, soft light, keep the room exactly as it is";
 
+/** `bria/fibo-edit/colorize` `color` enum (verified 2026-11-14). */
+const BRIA_COLOURS = new Set([
+  "contemporary color",
+  "vivid color",
+  "black and white colors",
+  "sepia vintage",
+]);
+
+/** Bria rejects anything outside its enum; Claude's colourStyle is free text. */
+export function briaColour(style: string): string {
+  return BRIA_COLOURS.has(style) ? style : "contemporary color";
+}
+
 function nonRetryable(message: string): AiRequestError {
   return new AiRequestError("bad_output", message, false);
 }
@@ -140,7 +153,7 @@ export const defaultHandlers: StepHandlers = {
     kind: "fal",
     async plan(ctx): Promise<FalPlan> {
       const prompts = await loadPrompts(ctx);
-      const color = prompts.colourStyle === "none" ? "contemporary color" : prompts.colourStyle;
+      const color = briaColour(prompts.colourStyle);
       return { model: "colourise", params: { color }, input: await imageInput(ctx, "restore") };
     },
   },
@@ -218,8 +231,21 @@ const EXTENSIONS: Record<string, string> = {
   "video/mp4": "mp4",
   "audio/wav": "wav",
   "audio/mpeg": "mp3",
+  "audio/flac": "flac",
   "model/gltf-binary": "glb",
 };
+
+const KNOWN_EXTENSIONS = new Set(Object.values(EXTENSIONS).concat("jpeg"));
+
+/**
+ * The file's own extension when it is one we serve (fal sends some audio as
+ * octet-stream, and mocks use other formats than live), else from the mime.
+ */
+export function extensionOf(url: string, mime: string): string {
+  const ext = /\.([a-z0-9]+)$/i.exec(url.split(/[?#]/)[0] ?? "")?.[1]?.toLowerCase();
+  if (ext && KNOWN_EXTENSIONS.has(ext)) return ext === "jpeg" ? "jpg" : ext;
+  return EXTENSIONS[mime] ?? "bin";
+}
 
 /** Every output is copied to storage/ at once: fal CDN files expire after an hour. */
 export async function storeOutput(
@@ -228,7 +254,7 @@ export async function storeOutput(
   url: string,
   mime: string,
 ): Promise<string> {
-  const name = `${job.id}/${step.name}.${EXTENSIONS[mime] ?? "bin"}`;
+  const name = `${job.id}/${step.name}.${extensionOf(url, mime)}`;
   if (isMockUrl(url)) {
     return (await saveFile(job.houseId, name, await readFile(fileURLToPath(url)))).path;
   }

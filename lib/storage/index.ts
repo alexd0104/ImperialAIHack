@@ -132,6 +132,7 @@ const CONTENT_TYPES: Record<string, string> = {
   ".m4a": "audio/mp4",
   ".aac": "audio/aac",
   ".wav": "audio/wav",
+  ".flac": "audio/flac",
   ".ogg": "audio/ogg",
   ".glb": "model/gltf-binary",
   ".json": "application/json",
