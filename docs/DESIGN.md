@@ -53,13 +53,13 @@ Owner: Raphaël. This file is both the **Figma → code map** for developers and
 
 ## 3. Tokens
 
-Defined in `app/globals.css` (see `TECHNICAL.md` §3.2). Figma currently has **no Variables or Styles**: all values were read from layers. Cleanup done in code: `#2B2420` merged into `ink #3B2A20`; DM Sans leftovers replaced by Nunito.
+Defined in `app/globals.css` (see `TECHNICAL.md` §3.2). Since 2026-11-14 Figma mirrors them as **Variables**: collection **memorAI tokens** (mode `Value`) with 26 `color/*` and 9 `radius/*` variables, same names as the CSS (`color/primary-strong` ↔ `--color-primary-strong`), WEB code syntax `var(--…)`, scoped (no `ALL_SCOPES`), and contrast notes in the descriptions. Code is the source of truth: change `globals.css` first, then the Variable. Values were originally read from layers. Cleanup done in code: `#2B2420` merged into `ink #3B2A20`; DM Sans leftovers replaced by Nunito.
 
 ## 4. Components
 
 | Figma component | Code | Notes |
 |---|---|---|
-| Button (Style=Primary/Secondary) | `components/ui/button.tsx` | shadcn, tokens |
+| Button (Style=Primary/Secondary) | `components/ui/button.tsx` | Figma component now matches code: Nunito Bold 18, Primary bound to `color/primary-strong`, Secondary to `surface` + `ink` 14% border |
 | Toggle (State=On/Off) | `switch.tsx` | on `switch-on #3F8A55` (Figma On variant), off `#DCD5CB`, knob 26 |
 | Close Button / Rooms Button | `icon-button.tsx` (64) | round, `shadow-round-button` |
 | Polaroid (Video, Caption) | `polaroid.tsx` | Caveat caption, `shadow-polaroid`, radius 6/2, 200×250 or 150×188 |
@@ -138,7 +138,7 @@ Designed on 2026-11-14 (row 4, see §2): free-text prompt · full set of guided 
 
 Still open: animated vs still side-by-side (S7 can reuse the 3b before/after layout) · Stories for Kitchen and Living room Objects (same frames, other content) · Studio desktop (> 1194 px: centre the iPad layout) · (sign-in / invites: out of scope).
 
-New frames follow the code rules, not the old Figma leftovers: readable text at `ink` ≥ 0.7, Stepper ✓ is a vector check (no DM Sans), primary buttons in `primary` `#D9734E` (the local Button component's Primary variant is dark and is overridden on every instance).
+New frames follow the code rules, not the old Figma leftovers: readable text at `ink` ≥ 0.7, Stepper ✓ is a vector check (no DM Sans), primary buttons bound to `color/primary-strong` (the Button component itself was fixed on 2026-11-14).
 
 Accessibility gap: secondary text at 0.45–0.55 opacity on cream likely fails WCAG AA → code uses ≥ 0.7 for readable text.
 
@@ -150,6 +150,7 @@ _Fill in as you go (for the presentation):_ which frames were read through MCP, 
 - **2026-11-14 — asset export.** `download_assets` exported the logo, 3 rooms and 9 Objects as SVG (13 files). By hand: removed the parent-frame rects the exporter adds, squared the room corners. Checked every file renders on its own.
 - **2026-11-14 — SH7, designing with the MCP server.** The 8 missing frames were built directly in the Figma file with `use_figma`: the Studio header was cloned from existing v5 frames so it stays identical, and every frame reuses the file's own components (Button, Toggle, Close, Polaroid, Family avatars, Empty Spot, logo, Object/Flower). Fixed in the new frames while building: DM Sans ✓ → vector check, low-opacity text → 0.7, dark Primary button → terracotta. One visual check per frame caught 3 layout bugs (clipped chips, polaroid captions squashed by `resize` instead of `rescale`, phone actions cut off), each fixed with a targeted edit.
 - **2026-11-14 — F5, code from exact values.** Two read-only `use_figma` calls returned the Toggle, Polaroid, Button, Close/Rooms, avatar, input, checkbox, segmented and stepper values in one pass (sizes, radii, paddings, shadows, opacities), so the 14 `components/ui` pieces were written straight from numbers instead of eyeballing. By hand: tokens deduplicated (`#2B2420` → `ink`), and accessibility fixes applied on top of Figma (§4.3, §8).
+- **2026-11-14 — tokens as Figma Variables.** One `use_figma` script created the **memorAI tokens** collection from `app/globals.css` (35 variables with scopes and code syntax). A second reconciled the Button component with the code (DM Sans + `#2B2420` → Nunito Bold + `color/primary-strong`) and re-bound the 16 Primary instances on v5 that carried a hard-coded `#D9734E` override (3.2:1) to the token (4.9:1). Design and code now share names and values.
 
 ## 7. Evidence log
 
@@ -161,6 +162,7 @@ _Fill in as you go (for the presentation):_ which frames were read through MCP, 
 | 2026-11-14 | Create · 3b Approve every scene (23-580) | `/studio/memories/[id]/approve` | `docs/design-evidence/23-580-approve-scenes-figma.png` | _after S-tasks_ | yes | stepper todo label 0.45 → 0.7, subtitle 0.6 → 0.7 |
 | 2026-11-14 | SH7 · 8 new frames (57-624 … 61-1155) | see §2 row 4 | `docs/design-evidence/sh7-*-figma.png` | _when built_ | yes (`use_figma` built them from local components; captures via `get_screenshot`) | — |
 | 2026-11-14 | Button, Toggle, Polaroid, Family avatars, controls (20-624, 20-668, 23-580) | `/dev/ui` | `docs/design-evidence/20-624-*`, `20-668-*`, `23-580-*` | `docs/design-evidence/f5-dev-ui.png` | yes (`use_figma` read-only for exact sizes, radii, shadows) | see §4.3 |
+| 2026-11-14 | Button + every v5 Primary instance, e.g. 23-580 | `components/ui/button.tsx` | `docs/design-evidence/23-580-approve-scenes-figma-tokens.png` | `docs/design-evidence/f5-dev-ui.png` | yes (`use_figma` write: Variables + bindings) | none left on Button |
 
 ## 8. Accessibility notes
 
