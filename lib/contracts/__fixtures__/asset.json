@@ -1,0 +1,12 @@
+{
+  "id": "6650a1f0c0ffee0000000011",
+  "houseId": "6650a1f0c0ffee0000000001",
+  "memoryId": "6650a1f0c0ffee0000000004",
+  "kind": "photo",
+  "path": "6650a1f0c0ffee0000000001/assets/6650a1f0c0ffee0000000011.jpg",
+  "url": "/api/files/6650a1f0c0ffee0000000001/assets/6650a1f0c0ffee0000000011.jpg",
+  "mime": "image/jpeg",
+  "bytes": 2483021,
+  "sha256": "9f86d081884c7d659a2feaa0c55ad015a3bf4f1b2b0b822cd15d6c15b0f00a08",
+  "createdAt": "2026-11-14T15:08:00.000Z"
+}
