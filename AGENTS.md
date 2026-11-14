@@ -8,7 +8,7 @@ Single source of rules for every coding agent (Claude Code reads it via `CLAUDE.
 
 ## 2. Vocabulary (exact words in code, types, routes, docs)
 
-House (one person's private space, one token link, holds Rooms) · Room (2D background + fixed Slots) · Slot (fixed place; its Object never moves) · Object = Story (tap → plays its Memories) · Memory (restored/animated scenes, real videos, real song, ambience, family voice) · Scene (one photo in the generation chain) · Memory bank (raw uploads) · MemorySheet (the one contract every creation method fills: form now, agents later) · Heart (reaction sent to family) · OK alone (per-Memory flag) · Don't show (people/topics kept out) · Studio (family side `/studio`; UI may use Figma wording "Create", "Bring to life", "Send love").
+House (one person's private space, one token link, holds Rooms) · Room (2D background + suggested Slots) · Slot (fixed place; its Object never moves) · Object = Story (tap → plays its Memories) · Memory (restored/animated scenes, real videos, real song, ambience, family voice) · Scene (one photo in the generation chain) · Memory bank (raw uploads) · MemorySheet (the one contract every creation method fills: form now, agents later) · Heart (reaction sent to family) · OK alone (per-Memory flag) · Don't show (people/topics kept out) · Studio (family side `/studio`; UI may use Figma wording "Create", "Bring to life", "Send love").
 
 ## 3. Product rules (non-negotiable)
 
@@ -17,7 +17,7 @@ House (one person's private space, one token link, holds Rooms) · Room (2D back
 3. **Real voices only:** no cloning, no synthetic narration, no avatar.
 4. **House never looks broken:** no error text, no spinner after preload; failed clip → original photo with its sound.
 5. **House needs no reading:** no menus, single tap, targets ≥ 64 px, gentle motion.
-6. **Objects never move;** a new Story fills an empty Slot.
+6. **Objects never move by themselves:** only the family moves them in the Studio (free placement, v2); the House then fades them to the new place. A new Story goes where the family puts it.
 7. **House flow (Figma v5):** "Choose a room" → Room → tap Object → polaroids fly out (0.9 s, `cubic-bezier(0.22,1,0.36,1)`) → tap one, or the first Memory starts after 3 s → full-screen Memory → Heart → next → gentle return to the Room.
 8. Respectful language ("a person living with Alzheimer's"; never "old", "demented", "patient"). No medical claims.
 
@@ -42,7 +42,7 @@ Next.js 16 App Router, TS strict · Tailwind v4 + shadcn/ui · react-three-fiber
 ## 7. Never
 
 - Read, print, edit or commit `.env*` or secrets; put a key in `NEXT_PUBLIC_*`; call fal/Claude from the browser; use `AI_MODE=live` in tests/CI.
-- Write generated files to `public/` (use `storage/` via `/api/files/...`); commit `storage/`, `demo-assets/`, real photos, voices or copyrighted songs (public repo).
+- Write generated files to `public/` at runtime (use `storage/` via `/api/files/...`; committed static assets such as `public/beds/` are fine); commit `storage/`, `demo-assets/`, real photos, voices or copyrighted songs (public repo).
 - Force-push. (Direct pushes to `main` are allowed: `git pull --rebase` → `pnpm verify` → push.)
 - Edit outside your zone without noting it in `docs/STATUS.md`; change `lib/contracts/` without Timoté's review.
 - Remove a fallback (still photo, mock mode, demo mode); add a dependency without a one-line reason in the commit.

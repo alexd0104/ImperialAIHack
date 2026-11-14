@@ -1,0 +1,69 @@
+# NIGHT-PLAN.md — night of 14→15 Nov (read only your section)
+
+Your Claude reads this with `node scripts/doc.mjs docs/NIGHT-PLAN.md <Name>` and does every **Claude does** step. Steps marked **You do** are the only ones a person must do (secrets, Figma, listening, live credits). Feature freeze: Sunday 09:00.
+
+## What is automatic and what is not
+
+**Automatic (the autopilot, all night, on your laptop):** picks your next task in order, waits for dependencies (e.g. F7) without blocking, codes in mock mode, tests, `pnpm verify`, rebases, pushes green commits to `main`, writes a handoff at the top of `docs/status/<you>.md`, moves to the next task. Stops at $20, after 2 agent errors, or when your list is finished.
+
+**Only humans:** typing the API key and copying `.env.local` (agents are blocked from `.env*`) · keeping the laptop on (plugged in, lid open) · Figma design decisions · adding the 3 GLB files · everything that spends live fal credits or needs ears/eyes (listed per person under "Morning").
+
+## Everyone — start (5 min)
+
+**You do**, in a terminal in your repo folder:
+```bash
+git pull
+git worktree add -b autopilot-$USER ../mh-autopilot origin/main
+cp .env.local ../mh-autopilot/
+export ANTHROPIC_API_KEY=sk-ant-...      # typed here only, never in a file or in chat
+claude
+```
+Then paste: `Do my part of tonight's plan: node scripts/doc.mjs docs/NIGHT-PLAN.md <Name>` (Name = Timoté, Yasir, Alexandre or Raphaël). Approve the commands it asks for.
+
+**Claude does** "Start the autopilot" (same for everyone, `<name>` in lowercase):
+1. `cd ../mh-autopilot && pnpm install`
+2. `pnpm autopilot <name> --check` → must print ✅. If ❌: stop and tell the human to `export ANTHROPIC_API_KEY=...` in this terminal and restart `claude`.
+3. `cd ../mh-autopilot && nohup pnpm autopilot <name> <options> > autopilot.out 2>&1 &` (options in your section).
+4. Wait 2 min, show the last 15 lines of `../mh-autopilot/autopilot.out`, say which task started (or that it is waiting for a dependency, which is normal).
+5. Never edit code in `../mh-autopilot` yourself.
+
+**Check during the night (optional):** `tail -20 ../mh-autopilot/autopilot.out`. **If it stopped** (laptop slept, error): Claude runs step 3 again with `--keep-skips`.
+
+## Timoté
+
+Tasks: F7 (by hand, now) → autopilot P7 movement · P8 sound prompts · P9 ambience sounds · P10 sound in parallel.
+
+1. **Claude does F7 now, interactively:** `/start F7`; brief `node scripts/doc.mjs docs/FEATURES-V2.md F7`; every shape of the "Contracts v2" table as Zod schemas + DB mapping + fixtures + tests + env vars (`.env.example`, `check-env`); no route handlers; additive. `pnpm verify`, commit `feat(contracts): contracts v2 (F7)`, push, 5-line "Contract changes" note in `docs/STATUS.md`. This unblocks 7 tasks of the team: do it first, fast.
+2. **Claude does** "Start the autopilot" after `cd ../mh-autopilot && git pull --rebase origin main`, options `--total-usd 20`.
+3. **You do:** tell the team in the chat "F7 is pushed".
+4. **Morning (you do, with Claude):** live beach test of the new sound prompts (P8, `AI_MODE=live` on one photo, ≈ $0.50) and note the result in STATUS; `pnpm beds:make` live (P9, ≈ $0.05) then commit the 6 sounds; listen in the House.
+
+## Yasir
+
+Tasks (autopilot): H9 sound in review · H10 loading animations · H11 House live refresh (after F7) · Q5 prompt experiment (after F7 + P7).
+
+1. **Claude does** "Start the autopilot", options `--total-usd 20`. H9 and H10 start now; H11/Q5 start by themselves when F7/P7 land.
+2. **Morning (you do, with Claude):** listen to a review clip and "Play full memory" (H9); move an object in the Studio and watch the House update within 30 s (H11); run the live experiment `AI_MODE=live pnpm lab:experiment --photos <dir>` with 5 test photos (≈ $10), look at results on fal, score 1–5, have Claude fill `docs/LAB-REPORT.md`.
+
+## Alexandre
+
+Tasks (autopilot): S10 back navigation · S11 room management (after F7) · S12 free placement editor (after F7) · S13 demo login/logout (after F7).
+
+1. **Claude does** "Start the autopilot", options `--total-usd 20`. S10 starts now; the rest after F7.
+2. **You do:** add `DEMO_EMAIL` and `DEMO_PASSWORD` to your `.env.local` (and `../mh-autopilot/.env.local`) once F7 is pushed; share them privately with the team.
+3. **Morning (you do, with Claude):** click through: new Story back/forth, create/rename/change background/delete a room, drag and resize objects, log in/out. Each problem → `node scripts/tasks.mjs add --title "..." --owner alexandre` (the next autopilot run fixes B-tasks).
+
+## Raphaël
+
+Tasks: S14 default 3D objects (autopilot, waits for the GLB files) · SH8 UI redesign (you + Claude, interactive).
+
+1. **Claude does** "Start the autopilot", options `--only S14 --wait-hours 10`.
+2. **You do (or whoever has them):** put the 3 `.glb` files in `public/objects/glb/` in your normal folder, commit `chore: default object models`, push. The autopilot sees them within 10 min and builds S14.
+3. **Claude does SH8 with you, in your normal folder:** `/start SH8`; brief `node scripts/doc.mjs docs/FEATURES-V2.md SH8`; restyle with `app/globals.css` and `components/ui` only, no logic/props changes; pull every 30 min (features land in the same screens); small commits `(SH8-wip)`, last one `(SH8)`; `pnpm verify`; push. Large → split with `node scripts/tasks.mjs add`. Before sleeping, push a runnable `(SH8-wip)` and write where you stopped in `docs/status/raphael.md`.
+4. **Morning (you do):** visual pass on every screen, objects in the House, update Figma-vs-code evidence in `docs/DESIGN.md`.
+
+## Everyone — morning (paste into Claude)
+
+`Morning check: git pull, show ../mh-autopilot/.autopilot/summary-<name>.md and the top of docs/status/<name>.md, list my Human TODOs and Requests for me, then help me do them one by one.`
+
+Then: fix what is broken before 09:00 freeze; after 09:00 only bug fixes, demo rehearsal (`pnpm demo:check`), Devpost by 12:00.

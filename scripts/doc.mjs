@@ -25,12 +25,18 @@ if (!query) {
   process.exit(0);
 }
 
-const q = query.toLowerCase();
+// Case- and accent-insensitive, so "timote" finds "Timoté".
+const norm = (s) =>
+  s
+    .normalize("NFD")
+    .replace(/\p{Diacritic}/gu, "")
+    .toLowerCase();
+const q = norm(query);
 const isNumber = /^\d+(\.\d+)*$/.test(query);
 const hit = headings.find((h) =>
   isNumber
     ? new RegExp(`^${query.replace(/\./g, "\\.")}(\\.|\\s|$)`).test(h.text)
-    : h.text.toLowerCase().includes(q),
+    : norm(h.text).includes(q),
 );
 if (!hit) {
   console.error(`No section matching "${query}" in ${file}. Headings:`);
