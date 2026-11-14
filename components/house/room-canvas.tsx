@@ -11,6 +11,9 @@ import { slotToScene } from "@/lib/house/layout";
 // through the same `object.kind` switch. Orthographic camera, 1 unit = 1 stage pixel.
 // Taps are handled by DOM buttons above the canvas (room-scene.tsx), not by raycasting.
 
+/** About ±17°: enough to read as 3D, never a spin. */
+const SWAY_RADIANS = 0.3;
+
 export type ObjectLook = { opacity: number; scale: number };
 
 type Props = {
@@ -109,8 +112,12 @@ function GlbObject({
   }, [scene, slot.scale]);
   const group = useRef<THREE.Group>(null);
   const eased = useEased(look, reducedMotion);
-  useFrame(() => {
+  useFrame(({ clock }) => {
     group.current?.scale.setScalar(eased.current.scale);
+    // A slow turn from side to side shows the Object is 3D; each Slot is out of phase.
+    if (group.current && !reducedMotion) {
+      group.current.rotation.y = Math.sin(clock.elapsedTime * 0.7 + slot.x * 10) * SWAY_RADIANS;
+    }
     model.traverse((o) => {
       const mat = (o as THREE.Mesh).material as THREE.Material | undefined;
       if (mat) {
@@ -163,7 +170,7 @@ export default function RoomCanvas({ slots, looks, reducedMotion }: Props) {
                 speed={1.2}
                 rotationIntensity={0}
                 floatIntensity={6}
-                floatingRange={[-0.6, 0.6]}
+                floatingRange={[-1.2, 1.2]}
               >
                 {object}
               </Float>

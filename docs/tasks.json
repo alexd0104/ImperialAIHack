@@ -625,6 +625,15 @@
       "deps": [],
       "soft": [],
       "note": ""
+    },
+    {
+      "id": "B11",
+      "title": "Demo readiness: stuck live jobs, approval status, Place room picture, 3D sway",
+      "owner": "raphael",
+      "priority": "FIX",
+      "deps": [],
+      "soft": [],
+      "note": ""
     }
   ]
 }

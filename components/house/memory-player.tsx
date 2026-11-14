@@ -16,6 +16,8 @@ import { cn } from "@/lib/utils";
 // A clip that cannot play becomes the still photo with a slow zoom: never an error.
 
 const TICK_MS = 100;
+/** Quiet enough to sit under the song and the family voice. */
+const CLIP_AMBIENCE_VOLUME = 0.35;
 
 function SceneLayer({
   scene,
@@ -23,6 +25,7 @@ function SceneLayer({
   active,
   paused,
   failed,
+  clipSound,
   onVideoSound,
 }: {
   scene: BundleScene;
@@ -30,6 +33,8 @@ function SceneLayer({
   active: boolean;
   paused: boolean;
   failed: boolean;
+  /** Generated clips carry their own ambience when the Memory has no separate track. */
+  clipSound: boolean;
   onVideoSound: (on: boolean) => void;
 }) {
   const video = useRef<HTMLVideoElement>(null);
@@ -40,11 +45,18 @@ function SceneLayer({
     const el = video.current;
     if (!el || !isMotion) return;
     if (active && !paused) {
-      el.play().catch(() => setBroken(true));
+      const quiet = scene.kind === "clip" && !clipSound;
+      el.muted = quiet;
+      if (scene.kind === "clip") el.volume = CLIP_AMBIENCE_VOLUME;
+      // If the browser refuses sound, play silently rather than fall back to the still.
+      el.play().catch(() => {
+        el.muted = true;
+        el.play().catch(() => setBroken(true));
+      });
     } else {
       el.pause();
     }
-  }, [active, paused, isMotion]);
+  }, [active, paused, isMotion, scene.kind, clipSound]);
 
   // Real family videos keep their own sound, so the music steps aside.
   const sounding = active && scene.kind === "video" && !broken;
@@ -64,7 +76,7 @@ function SceneLayer({
         <video
           ref={video}
           src={scene.url}
-          muted={scene.kind === "clip"}
+          muted={scene.kind === "clip" && !clipSound}
           playsInline
           preload="auto"
           onError={() => setBroken(true)}
@@ -160,6 +172,7 @@ export function MemoryPlayer({
           active={i === current}
           paused={paused}
           failed={failedFiles.has(scene.url)}
+          clipSound={!memory.ambienceUrl}
           onVideoSound={setVideoSound}
         />
       ))}

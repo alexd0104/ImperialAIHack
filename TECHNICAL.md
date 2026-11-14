@@ -69,7 +69,7 @@ sequenceDiagram
   API->>J: create scene jobs (queued)
   loop every 3 s
     St->>API: GET /api/jobs/:id
-    API->>J: advanceJob(id) (lease 10 s)
+    API->>J: advanceJob(id) (lease 120 s)
   end
   J->>CL: compile prompts from MemorySheet
   CL-->>J: motionPrompt, negativePrompt, ambiencePrompt
@@ -372,7 +372,7 @@ Step plans: **scene** = compile → upload → restore (if `restore`) → colour
 
 ### 5.2 `advanceJob(id)` rules
 
-1. Acquire a lease: `findOneAndUpdate({ _id, $or: [{ lockedUntil: null }, { lockedUntil: { $lt: now } }] }, { $set: { lockedUntil: now + 10 s } })`. No lease → return current state.
+1. Acquire a lease: `findOneAndUpdate({ _id, $or: [{ lockedUntil: null }, { lockedUntil: { $lt: now } }] }, { $set: { lockedUntil: now + 120 s } })`. (120 s, not 10: the lease must outlast a clip upload/download, or job polling takes the job mid-download and the step never saves.) No lease → return current state.
 2. Current step has `falRequestId` → `fal.queue.status`. `COMPLETED` → `fal.queue.result` → download output to `storage/<houseId>/<jobId>/<step>.<ext>` → mark done → next step. Still running → release lease, return.
 3. Step not submitted → check **cache** (`generation_cache` by key) → hit: reuse output. Miss: check concurrency (`count(steps running with falRequestId) < FAL_MAX_CONCURRENCY`, default 2) and budget (`sum(costUsd for falKeyLabel) < FAL_BUDGET_USD`, else switch to mock and set `budget_exceeded` notice) → `fal.queue.submit` → store `falRequestId`.
 4. Failure → `attempts++`; after 2 retries → job `fallback` (scene) or `failed` (object → library fallback, room → default style).
@@ -503,6 +503,7 @@ Rules: nothing secret in `NEXT_PUBLIC_*`; pre-commit secret scan (husky); Claude
 
 | Symptom | Cause | Fix |
 |---|---|---|
+| Live scene stuck on one step although fal finished | Lease (10 s) expired during the clip upload/download; job polling took the job, so the finished step could not save, forever | Lease is 120 s (`lib/jobs/config.ts`), released as soon as an advance ends |
 | Jobs advance twice / duplicate fal calls in dev | Ticker started again by hot reload | `globalThis.__mhTicker` guard + DB lease; demo always in `next start` |
 | `window is not defined` / build fails on Room | R3F rendered on the server | `dynamic(() => import(...), { ssr: false })`, `"use client"` |
 | Story starts silent (Safari/iPad) | Autoplay policy | Start Howler only inside the tap handler; call `Howler.ctx.resume()` |

@@ -35,6 +35,13 @@ export const PRESET_SLOTS: Record<RoomStyle, Slot[]> = {
   ],
 };
 
+/** Shown under each arch on Choose a room when the manifest gives no name. */
+export const ROOM_NAMES: Record<RoomStyle, string> = {
+  garden: "Garden",
+  kitchen: "Kitchen",
+  living: "Living room",
+};
+
 export const PRESET_BACKGROUNDS: Record<RoomStyle, string> = {
   garden: "/rooms/garden.svg",
   kitchen: "/rooms/kitchen.svg",
@@ -320,7 +327,7 @@ export function planSeed(
     plan.rooms.push({
       id: roomId,
       houseId: house.id,
-      name: manifestRoom.name ?? manifestRoom.style,
+      name: manifestRoom.name ?? ROOM_NAMES[manifestRoom.style],
       source: "style",
       style: manifestRoom.style,
       backgroundPath: PRESET_BACKGROUNDS[manifestRoom.style],

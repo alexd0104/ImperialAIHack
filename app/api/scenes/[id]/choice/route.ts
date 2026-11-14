@@ -1,8 +1,9 @@
 import "server-only";
-import { getEntity, updateEntity } from "@/app/api/stories/_store";
+import { getEntity, listEntities, updateEntity } from "@/app/api/stories/_store";
 import { SceneChoiceRequest } from "@/lib/contracts";
 import { copy } from "@/lib/copy";
 import { fail, ok, parseJson } from "@/lib/http";
+import { memoryStatusOf } from "@/lib/jobs/generation";
 
 // Records the family's choice for one scene. A scene still being made cannot be approved;
 // an animated choice needs a clip (otherwise the original photo stays, rule: House never looks broken).
@@ -19,6 +20,13 @@ export async function POST(request: Request, context: { params: Promise<{ id: st
     const updated = await updateEntity("scenes", scene.id, {
       choice: { ...body.data, chosenAt: new Date().toISOString() },
     });
+    // The last choice makes the Memory `approved` (and changing one keeps it in step).
+    const memory = await getEntity("memories", scene.memoryId);
+    if (memory) {
+      const scenes = await listEntities("scenes", (item) => item.memoryId === memory.id);
+      const status = memoryStatusOf(memory, scenes);
+      if (status !== memory.status) await updateEntity("memories", memory.id, { status });
+    }
     return updated ? ok(updated) : fail("not_found", copy.studio.approve.missing);
   } catch {
     return fail("internal", copy.studio.approve.error);
