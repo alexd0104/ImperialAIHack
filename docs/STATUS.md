@@ -33,6 +33,7 @@ _(newest first: date — what changed — who)_
 
 ## Requests
 
+- 2026-11-14 20:15 — Timoté → Yasir — `pnpm build` fails on main: `/house/[token]` reads runtime data outside `<Suspense>` during prerender (Next 16 cache components). Wrap the data read in `<Suspense>` or call `connection()` first.
 - 2026-11-14 19:37 — Alexandre → Timoté — F4 arrived during S1 finalization; the earlier persistence request is resolved in S1. Default creation now uses db.houses/db.rooms with ObjectId-compatible ids and duplicate-key replay. The offline adapter requires STUDIO_MOCK_STORE=true plus AI_MODE=mock; no silent DB fallback. B5 remains in #17. F4's existing lib/storage/index.ts:19 emits a Turbopack whole-project tracing warning; build still passes, source unchanged by S1.
 
 - 2026-11-14 19:30 — Alexandre → Timoté — S1 mock creation is ready. F4 helpers are still absent from main: replace `app/api/houses/_mock-store.ts` with `lib/db` persistence when F4 lands, preserving consent timestamps, private tokens, stable Room Slots and idempotent retries. The temporary adapter only runs in AI_MODE=mock and writes to gitignored STORAGE_DIR/studio-mock. Also registered B5 (API playbook uses `input.error`, but `parseJson` exposes `message`) separately in https://github.com/alexd0104/ImperialAIHack/pull/17.
@@ -52,6 +53,13 @@ _(newest first: date — from → to — what)_
 - ~~2026-11-14 — Raphaël → Timoté — The Tasks workflow rejected `(ID-wip)` PR titles although its error message recommends them (`.github/workflows/tasks.yml:47`). Fixed in `fix/shared-tasks-wip-title`; please review. Not registered as a B task because `tasks.mjs add` needs Node, which is not set up on my machine yet: please add it if you want it on the board.~~ Resolved by #9.
 
 ## Log
+
+### 2026-11-14 20:15 — Timoté (pipeline)
+- Done: P1 job engine in `lib/jobs/`. `advanceJob(id, defaultEngineDeps())` with DB lease (lease value doubles as write token), step plans (disabled steps kept as `skipped`), 2 retries with 5 s / 15 s backoff, then `fallback` (scene) or `failed` (object/room), concurrency cap `FAL_MAX_CONCURRENCY`, budget guard per `FAL_KEY_LABEL` (switches to mock, `step.error = "budget_exceeded"`), cache keyed on model + sorted params + input sha256 (live outputs only). Ticker started once from `instrumentation.ts` (5 s, 4 jobs). `settleJob` writes scene outputs/status, room background, story GLB. 24 unit tests.
+- In progress: nothing.
+- Blocked: nothing. Gap: `Job` has no asset id for `object_3d`, so its source photo cannot be found yet (P5 adds it, additive change).
+- Contract changes: none. Outside lib/jobs: `lib/ai/fal.ts` (`getFal(mode)`, `isMockRequestId`), `instrumentation.ts`.
+- Next: P4 routes (generate / job / retry), then P2 live. Note: Rodin price in `models.ts` is still $0.40, Test 4 measured $0.10 (fix in P5).
 
 ### 2026-11-14 20:10 — Raphaël (design)
 - Done: B7 `pnpm export:demo`. Reads the demo House (token `DEMO_HOUSE_TOKEN`) from `MONGODB_DB`, builds it with H1's `buildBundle` and writes `DEMO_ASSETS_DIR/bundle.json` without tokens, with `okAlone: true` markers for alone mode. Test: seed plan → export → `loadDemoBundle` steps round trip.

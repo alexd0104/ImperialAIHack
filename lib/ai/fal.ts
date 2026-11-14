@@ -31,8 +31,17 @@ export interface FalGateway {
   result(model: FalModelKey, requestId: string): Promise<FalResult>;
 }
 
-export function getFal(): FalGateway {
-  return aiMode() === "live" ? liveFal() : mockFal;
+/**
+ * `mode` defaults to AI_MODE; the job engine forces "mock" when the fal budget
+ * is spent (TECHNICAL.md §5.2 step 3).
+ */
+export function getFal(mode: AiMode = aiMode()): FalGateway {
+  return mode === "live" ? liveFal() : mockFal;
+}
+
+/** Mock request IDs carry their own state; anything else came from live fal. */
+export function isMockRequestId(requestId: string): boolean {
+  return requestId.startsWith("mock_");
 }
 
 /** Main output URL and type of a result, using the path declared in models.ts. */
