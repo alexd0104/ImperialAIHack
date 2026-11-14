@@ -1,7 +1,13 @@
 import "server-only";
 import { type ClaudePromptClient, getClaude } from "./claude";
-import { DEFAULT_NEGATIVE_PROMPT, NO_MUSIC, templatePrompts } from "./prompt-templates";
+import {
+  DEFAULT_NEGATIVE_PROMPT,
+  MOTION_TEMPLATE,
+  NO_MUSIC,
+  templatePrompts,
+} from "./prompt-templates";
 import { CompiledPrompts, type PromptCompilerInput } from "./prompt-types";
+import { detectRefusedRequests, mergeRefusedRequests } from "./refused-requests";
 
 export type PromptSource = "claude" | "mock" | "template";
 
@@ -52,12 +58,19 @@ function enforce(
     : [ambience, NO_MUSIC].filter(Boolean).join(", ");
   return {
     ...prompts,
-    motionPrompt: prompts.motionPrompt.trim(),
+    // An empty motion prompt would let the video model improvise.
+    motionPrompt: prompts.motionPrompt.trim() || MOTION_TEMPLATE,
     negativePrompt,
     ambiencePrompt,
     // The family's choice decides colourisation, never the model.
     colourStyle:
       sheet.colour === "colourise" ? prompts.colourStyle.trim() || "contemporary color" : "none",
+    // Free-text edit requests are always surfaced to the family, even when the
+    // model missed one or templates took over (FEATURES.md P3).
+    refusedRequests: mergeRefusedRequests(
+      prompts.refusedRequests,
+      detectRefusedRequests(sheet.freeText),
+    ),
     source,
   };
 }
