@@ -357,6 +357,30 @@ export const copy = {
       backToHouse: "Back to the House",
       blocked: "Approve every scene before sending.",
     },
+    progress: {
+      eyebrow: "Create · Bring to life",
+      title: "Bringing it to life",
+      intro:
+        "Each photo is restored gently. Only what is in the photo moves. This takes a few minutes.",
+      waiting: "Waiting to start…",
+      steps: {
+        compile: "Reading your answers",
+        upload: "Getting the photo ready",
+        restore: "Repairing scratches and fading",
+        colourise: "Bringing colour back",
+        animate: "Adding gentle movement",
+        ambience: "Adding the sound of the place",
+        cutout: "Getting the photo ready",
+        model3d: "Getting the photo ready",
+        compress: "Finishing",
+        room_edit: "Finishing",
+        finalize: "Finishing",
+      },
+      optionsTitle: "How should the photos look?",
+      restore: "Gently repair scratches and fading",
+      motion: "Gentle movement",
+      motionHint: "If off, the photos stay still with their sound.",
+    },
   },
   // Accessible names for shared components in components/ui (screen readers only).
   ui: {

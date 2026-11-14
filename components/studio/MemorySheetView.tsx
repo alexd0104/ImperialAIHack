@@ -1,17 +1,19 @@
 "use client";
 
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import { Label } from "@/components/ui/input";
+import { Switch } from "@/components/ui/switch";
 import { HouseDetail } from "@/lib/contracts";
 import { copy } from "@/lib/copy";
 import { requestStudio, StudioApiError } from "./api";
 import { DontShowWarning } from "./DontShowWarning";
 import { dontShowMatches } from "./dont-show";
 import { hasVisual } from "./memory-bank";
-import { fetchMemory, generateMemory, memoryKey } from "./memory-client";
+import { fetchMemory, generateMemory, memoryKey, patchMemory } from "./memory-client";
 import { sheetRows } from "./memory-sheet-rows";
 import { StudioQuery } from "./StudioQuery";
 
@@ -81,6 +83,11 @@ function Sheet({ memoryId }: { memoryId: string }) {
         </dl>
       </Card>
 
+      <LookOptions
+        memoryId={memoryId}
+        restore={memory.data.answers.restore ?? true}
+        motion={memory.data.answers.motion ?? "gentle"}
+      />
       {mentions.length > 0 && <DontShowWarning mentions={mentions} />}
       {generate.isError && (
         <p role="alert" className="rounded-lg bg-warning-surface p-4 text-16">
@@ -105,5 +112,40 @@ function Sheet({ memoryId }: { memoryId: string }) {
         )}
       </div>
     </div>
+  );
+}
+
+/** S6 options, chosen before anything is made. Memory-wide: the contract has no per-photo field yet. */
+function LookOptions(props: { memoryId: string; restore: boolean; motion: "gentle" | "still" }) {
+  const client = useQueryClient();
+  const save = useMutation({
+    mutationFn: (answers: { restore?: boolean; motion?: "gentle" | "still" }) =>
+      patchMemory(props.memoryId, { answers }),
+    onSettled: () => client.invalidateQueries({ queryKey: memoryKey(props.memoryId) }),
+  });
+  const words = copy.studio.progress;
+  return (
+    <Card className="space-y-4 p-5">
+      <h2 className="font-display text-22">{words.optionsTitle}</h2>
+      <div className="flex items-center justify-between gap-4">
+        <Label htmlFor="opt-restore">{words.restore}</Label>
+        <Switch
+          id="opt-restore"
+          checked={props.restore}
+          onCheckedChange={(restore) => save.mutate({ restore })}
+        />
+      </div>
+      <div className="flex items-center justify-between gap-4">
+        <div>
+          <Label htmlFor="opt-motion">{words.motion}</Label>
+          <p className="text-14 text-ink/70">{words.motionHint}</p>
+        </div>
+        <Switch
+          id="opt-motion"
+          checked={props.motion === "gentle"}
+          onCheckedChange={(on) => save.mutate({ motion: on ? "gentle" : "still" })}
+        />
+      </div>
+    </Card>
   );
 }
