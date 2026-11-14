@@ -1,11 +1,21 @@
+import { Suspense } from "react";
 import { NewMemoryForm } from "@/components/studio/NewMemoryForm";
 import { StudioPage } from "@/components/studio/StudioPage";
 
-export default async function NewMemoryPage({ params }: { params: Promise<{ id: string }> }) {
-  const { id } = await params;
+type Params = { params: Promise<{ id: string }> };
+
+// Params are read inside <Suspense> (Next 16 cache components), as in /house/[token] (B8).
+export default function NewMemoryPage({ params }: Params) {
   return (
     <StudioPage>
-      <NewMemoryForm storyId={id} />
+      <Suspense fallback={null}>
+        <Content params={params} />
+      </Suspense>
     </StudioPage>
   );
+}
+
+async function Content({ params }: Params) {
+  const { id } = await params;
+  return <NewMemoryForm storyId={id} />;
 }

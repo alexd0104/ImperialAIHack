@@ -1,11 +1,21 @@
+import { Suspense } from "react";
 import { MemorySheetView } from "@/components/studio/MemorySheetView";
 import { StudioPage } from "@/components/studio/StudioPage";
 
-export default async function MemorySheetPage({ params }: { params: Promise<{ id: string }> }) {
-  const { id } = await params;
+type Params = { params: Promise<{ id: string }> };
+
+// Params are read inside <Suspense> (Next 16 cache components), as in /house/[token] (B8).
+export default function MemorySheetPage({ params }: Params) {
   return (
     <StudioPage>
-      <MemorySheetView memoryId={id} />
+      <Suspense fallback={null}>
+        <Content params={params} />
+      </Suspense>
     </StudioPage>
   );
+}
+
+async function Content({ params }: Params) {
+  const { id } = await params;
+  return <MemorySheetView memoryId={id} />;
 }

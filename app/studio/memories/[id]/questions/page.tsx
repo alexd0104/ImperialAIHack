@@ -1,11 +1,21 @@
+import { Suspense } from "react";
 import { MemoryQuestions } from "@/components/studio/MemoryQuestions";
 import { StudioPage } from "@/components/studio/StudioPage";
 
-export default async function MemoryQuestionsPage({ params }: { params: Promise<{ id: string }> }) {
-  const { id } = await params;
+type Params = { params: Promise<{ id: string }> };
+
+// Params are read inside <Suspense> (Next 16 cache components), as in /house/[token] (B8).
+export default function MemoryQuestionsPage({ params }: Params) {
   return (
     <StudioPage>
-      <MemoryQuestions memoryId={id} />
+      <Suspense fallback={null}>
+        <Content params={params} />
+      </Suspense>
     </StudioPage>
   );
+}
+
+async function Content({ params }: Params) {
+  const { id } = await params;
+  return <MemoryQuestions memoryId={id} />;
 }
