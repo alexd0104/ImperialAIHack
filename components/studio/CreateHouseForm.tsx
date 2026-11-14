@@ -188,6 +188,12 @@ function HouseForm() {
           {firstName} · {createdRoom.name}
         </p>
         <p className="text-16 text-ink/70">{words.nextHint}</p>
+        <Button asChild>
+          <Link href={`/studio/stories/new?roomId=${encodeURIComponent(createdRoom.id)}`}>
+            {copy.studio.createStory.title}
+            <ArrowRight aria-hidden />
+          </Link>
+        </Button>
         <Button type="button" variant="secondary" onClick={startAgain}>
           {words.another}
         </Button>
