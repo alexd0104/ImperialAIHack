@@ -1,0 +1,11 @@
+# Replace the placeholders with real GitHub usernames before enabling "Require review from Code Owners".
+# Unknown usernames make GitHub flag this file as invalid, so keep lines commented until filled.
+#
+# /lib/contracts/   @TIMOTE_GITHUB
+# /lib/db/          @TIMOTE_GITHUB
+# /.github/         @TIMOTE_GITHUB
+# /.claude/         @TIMOTE_GITHUB
+# /components/ui/   @RAPHAEL_GITHUB
+# /app/globals.css  @RAPHAEL_GITHUB
+# /app/studio/      @alexd0104
+# /app/house/       @YASIR_GITHUB
