@@ -10,7 +10,7 @@ Start task $ARGUMENTS (hackathon mode: work on `main`, push directly).
 3. Read only what the task needs:
    - its row: `grep -n "| $ARGUMENTS |" FEATURES.md`
    - my zone doc `docs/zones/<zone>.md` (short)
-   - the TECHNICAL.md sections it references, by heading: `grep -n '^## \|^### ' TECHNICAL.md` then read only those line ranges
+   - the TECHNICAL.md sections it references, one at a time: `node scripts/doc.mjs TECHNICAL.md 4.3` (no argument = table of contents)
    - the contracts it uses in `lib/contracts/` (only the relevant files)
    - for UI: the one Figma frame listed in `docs/DESIGN.md` (`grep -n` the frame name), not the whole file
 4. Propose a short plan (files, contracts, tests). Wait for my OK.
