@@ -495,6 +495,8 @@ Rules: nothing secret in `NEXT_PUBLIC_*`; pre-commit secret scan (husky); Claude
 | Story starts silent (Safari/iPad) | Autoplay policy | Start Howler only inside the tap handler; call `Howler.ctx.resume()` |
 | Video won't play or seek on Safari | No Range support | `/api/files` must return 206 with `Content-Range`, `Accept-Ranges: bytes` |
 | `MongoServerSelectionError` | IP not allowed / no network | Atlas Network Access: allow 0.0.0.0/0; check Wi-Fi; use demo mode |
+| Not sure the DB works | — | `pnpm db:ping` (connect + insert + read + delete, prints the DB name only), then `pnpm db:indexes` once per DB |
+| Node script crashes with "This module cannot be imported from a Client Component" or cannot resolve `@/` | `lib/db/*` starts with `import "server-only"` and uses the `@/` alias, which plain Node does not resolve | Scripts use the raw `mongodb` driver like `scripts/db-ping.mts`, importing only dependency-free files with a `.ts` extension (e.g. `lib/db/indexes.ts`) |
 | New file in `public/` 404 in production | Next serves `public/` as of build time | Serve generated files from `storage/` via `/api/files` |
 | fal output URL 404 later | CDN expiry (we set 1 h) | Always download outputs to `storage/` when the step completes |
 | Jobs stuck "IN_QUEUE" | Account concurrency = 2, other dev on same key | One key per developer; `FAL_MAX_CONCURRENCY=2` |
