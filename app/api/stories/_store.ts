@@ -1,12 +1,20 @@
 import "server-only";
 import { randomUUID } from "node:crypto";
-import { link, mkdir, readFile, rename, unlink, writeFile } from "node:fs/promises";
+import { link, mkdir, readdir, readFile, rename, unlink, writeFile } from "node:fs/promises";
 import { join } from "node:path";
 import type { z } from "zod";
-import { Asset, House, Job, Room, Story } from "@/lib/contracts";
+import { Asset, House, Job, Memory, Room, Scene, Story } from "@/lib/contracts";
 import { db, type TypedCollection } from "@/lib/db";
 
-const schemas = { houses: House, rooms: Room, stories: Story, assets: Asset, jobs: Job };
+const schemas = {
+  houses: House,
+  rooms: Room,
+  stories: Story,
+  assets: Asset,
+  jobs: Job,
+  memories: Memory,
+  scenes: Scene,
+};
 type Collection = keyof typeof schemas;
 type Entity<K extends Collection> = z.infer<(typeof schemas)[K]>;
 function offline() {
@@ -88,4 +96,37 @@ export async function replaceEntity<K extends Collection>(collection: K, input: 
   const temporary = `${target}.${randomUUID()}.tmp`;
   await writeFile(temporary, JSON.stringify(entity), { mode: 0o600 });
   await rename(temporary, target);
+}
+
+/** Every entity of a collection matching a predicate, oldest first. */
+export async function listEntities<K extends Collection>(
+  collection: K,
+  match: (entity: Entity<K>) => boolean,
+): Promise<Entity<K>[]> {
+  let all: Entity<K>[];
+  if (!offline()) {
+    all = (await db[collection].find({}, { sort: { createdAt: 1 } })) as Entity<K>[];
+  } else {
+    const directory = join(process.env.STORAGE_DIR ?? "storage", "studio-mock", collection);
+    const names = await readdir(directory).catch(() => [] as string[]);
+    all = [];
+    for (const name of names) {
+      if (!name.endsWith(".json")) continue;
+      const entity = await getEntity(collection, name.slice(0, -5));
+      if (entity) all.push(entity);
+    }
+    all.sort((a, b) => a.createdAt.localeCompare(b.createdAt));
+  }
+  return all.filter(match);
+}
+
+export async function deleteEntity(collection: Collection, id: string): Promise<boolean> {
+  if (!/^[a-f0-9]{24}$/.test(id)) return false;
+  if (!offline()) return db[collection].deleteById(id);
+  try {
+    await unlink(filename(collection, id));
+    return true;
+  } catch {
+    return false;
+  }
 }
