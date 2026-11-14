@@ -24,7 +24,7 @@ Then paste: `Do my part of tonight's plan: node scripts/doc.mjs docs/NIGHT-PLAN.
 1. `cd ../mh-autopilot && pnpm install`
 2. `pnpm autopilot <name> --check` → must print ✅. If ❌: stop and tell the human to `export ANTHROPIC_API_KEY=...` in this terminal and restart `claude`.
 3. `cd ../mh-autopilot && nohup pnpm autopilot <name> <options> > autopilot.out 2>&1 &` (options in your section).
-4. Wait 2 min, show the last 15 lines of `../mh-autopilot/autopilot.out`, say which task started (or that it is waiting for a dependency, which is normal).
+4. Wait 3 min, show the last 15 lines of `../mh-autopilot/autopilot.out` and `ls -la ../mh-autopilot/.autopilot/logs/`. Healthy = a task started (▶) and its `.jsonl` log is growing, or "nothing ready" (waiting for F7 or photos: normal). Unhealthy = `AGENT ERROR` or `■ stopped`: show the human the error line and fix it before they leave (usually the API key).
 5. Never edit code in `../mh-autopilot` yourself.
 
 **Check during the night (optional):** `tail -20 ../mh-autopilot/autopilot.out`. **If it stopped** (laptop slept, error): Claude runs step 3 again with `--keep-skips`.
@@ -68,5 +68,7 @@ Tonight (autopilot): H10 loading animations in `components/ui` (now) · S15 demo
 ## Everyone — morning (paste into Claude)
 
 `Morning check: git pull, show ../mh-autopilot/.autopilot/summary-<name>.md and the top of docs/status/<name>.md, list my Human TODOs and Requests for me, then help me do them one by one.`
+
+Sunday **08:30 integration check (Timoté + Claude, 20 min):** `git pull && pnpm install && pnpm verify`; `pnpm dev`; in mock, walk the whole flow once (new Story with motion + back navigation → generate → review with sound → place freely → House: object moves with a fade, room photo background, 3D objects); then one Memory **live** end-to-end on the beach photo; `pnpm demo:check`. Every problem → `node scripts/tasks.mjs add --title "..." --owner <zone owner>`, fixed before 09:00 by its owner.
 
 Sunday: 08:00–09:00 Human TODOs and fixes · **09:00 feature freeze** (no new features; UI restyle SH8 and bug fixes only) · **11:00 code freeze** · 11:00–12:00 demo rehearsal (`pnpm demo:check`) and Devpost (closes 12:00).

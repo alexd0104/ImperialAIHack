@@ -45,6 +45,7 @@ mkdirSync(join(dir, "logs"), { recursive: true });
 const stamp = new Date().toISOString().slice(0, 16).replace(/[:T]/g, "-");
 const logFile = join(dir, "logs", `${person}-${stamp}.log`);
 const summary = [];
+const attempts = new Map();
 // Tests and agents must never spend live credits unattended.
 const env = { ...process.env, AI_MODE: "mock", FORCE_COLOR: "0" };
 
@@ -110,6 +111,10 @@ const ALLOWED = [
   "Bash(git restore:*)",
   "Bash(git rebase --continue:*)",
   "Bash(git mv:*)",
+  "Bash(git rm:*)",
+  "Bash(cp:*)",
+  "Bash(mv:*)",
+  "Bash(find:*)",
   "Bash(ls:*)",
   "Bash(mkdir:*)",
   "Bash(grep:*)",
@@ -186,7 +191,9 @@ function runAgent(prompt, label, usd) {
           const ev = JSON.parse(line);
           if (ev.type === "result") {
             text =
-              ev.is_error || ev.terminal_reason === "api_error"
+              // Budget/turn limits end a run normally (work is kept); only real API failures count as errors.
+              ev.terminal_reason === "api_error" ||
+              (ev.is_error && !String(ev.subtype ?? "").startsWith("error_max"))
                 ? `AGENT ERROR: ${ev.terminal_reason ?? ev.subtype ?? "unknown"} ${ev.result ?? ""}`
                 : String(ev.result ?? ev.subtype ?? "");
             cost = Number(ev.total_cost_usd ?? 0);
@@ -208,7 +215,7 @@ function taskPrompt(t) {
     : `grep -n "| ${t.id} |" FEATURES.md`;
   return `memorAI task ${t.id} — ${t.title} (owner: ${person}).
 ${RULES}
-1. Read your brief only: \`${brief}\` (and the "Rules for every v2 task" section if it is a v2 task). Read other docs by section with scripts/doc.mjs. Stay inside the files the brief lists.
+1. Read your brief only: \`${brief}\` (and the "Rules for every v2 task" section if it is a v2 task). Read other docs by section with scripts/doc.mjs. Stay inside the files the brief lists. If commits for this task already exist (\`git log --oneline --grep=${t.id}\`), continue from them and from your handoff in docs/status/${person}.md.
 2. Implement in small steps; add Vitest tests for new lib/ logic; run \`pnpm verify\` until green (3 fix attempts max).
 3. Commit (git add + git commit). Subject "<type>: <summary> (${t.id})" when the brief's "Done when" is met by code; otherwise "(${t.id}-wip)" and list what is left in the body.
 4. At the TOP of docs/status/${person}.md add 3-5 lines: what you did, files outside your zone, "Human TODO:" (live runs, listening, visual checks you could not do), "Request:" for other zones.
@@ -216,6 +223,12 @@ ${RULES}
 Finish your last message with exactly one line: RESULT: DONE | RESULT: PARTIAL <why> | RESULT: BLOCKED <why>`;
 }
 
+function syncDeps(before) {
+  // A teammate may have added a dependency: without this, verify fails on a missing module.
+  if (git("diff", "--quiet", before, "HEAD", "--", "pnpm-lock.yaml").ok) return;
+  log("… lockfile changed upstream, pnpm install");
+  sh("pnpm", ["install", "--frozen-lockfile"], 10 * 60e3);
+}
 function commitLeftovers(msg) {
   if (!dirty()) return;
   git("add", "-A");
@@ -235,6 +248,7 @@ function park(id, why) {
 async function integrate(id, spent) {
   for (let attempt = 1; attempt <= 3; attempt++) {
     git("fetch", "-q", "origin", "+refs/heads/main:refs/remotes/origin/main");
+    const before = head();
     const r = git("rebase", "origin/main");
     if (!r.ok && rebasing()) {
       log(`⚔ rebase conflict on ${id}, asking the agent to resolve`);
@@ -251,6 +265,7 @@ async function integrate(id, spent) {
         return false;
       }
     }
+    if (!rebasing()) syncDeps(before);
     if (!verify().ok) {
       park(id, "verify failed after rebase");
       return false;
@@ -304,6 +319,12 @@ async function runTask(id, spent) {
     summary.push(`- ${id}: done ✅`);
     return true;
   }
+  // Big tasks often end on the budget/turn cap: give each one a second run that continues the wip.
+  attempts.set(id, (attempts.get(id) ?? 0) + 1);
+  if (attempts.get(id) < 2 && !result.includes("BLOCKED")) {
+    log(`↻ ${id} pushed as wip, it will get one more run`);
+    return;
+  }
   skip(id, `pushed as wip (${result})`);
 }
 
@@ -347,7 +368,9 @@ async function main() {
   const giveUpAt = Date.now() + waitHours * 3600e3;
   while (done < maxTasks && spent.usd < totalUsd) {
     git("fetch", "-q", "origin", "+refs/heads/main:refs/remotes/origin/main");
+    const before = head();
     git("rebase", "-q", "origin/main");
+    syncDeps(before);
     const id = nextId();
     if (!id) {
       if (Date.now() > giveUpAt) break;

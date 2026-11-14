@@ -23,6 +23,7 @@ Order = the team's priority. Owners and dependencies are machine-readable in `do
 | Story | `position?` | `{ x: 0..1, y: 0..1, scale: 0.05..1 }` on the 1194×834 canvas; absent → use its Slot |
 | Room | `background` | `{ kind: "style", style: "garden"\|"kitchen"\|"living" } \| { kind: "photo", assetId, path? }`; `pendingBackground?` (same shape + `jobId`) kept until the job finishes |
 | HouseBundle | `version` | string that changes whenever the House content changes (for live refresh) |
+| HouseBundle scene | `bedUrl?` | quiet ambience loop under the scene sound (P9) |
 | HouseBundle story | `position` | always resolved `{ x, y, scale }` (from Story.position or Slot) |
 | Job type | `scene_sound` | sound-only job (P10) |
 | Collection | `lab_runs` | `{ id, approach: "questions"\|"free_text"\|"photo_questions"\|"agent", photoAssetId, inputs, sheet, prompts, outputs, scores?: { fidelity, motion, sound, liked } (1–5), createdAt }` |
@@ -92,6 +93,7 @@ Order = the team's priority. Owners and dependencies are machine-readable in `do
 ### H11 — House live refresh + gentle move
 - **Owner:** Yasir · **Order:** 9 · **Deps:** F7
 - **Files:** `lib/house/**`, `components/house/house-app.tsx`, `components/house/room-scene.tsx`, `app/api/h/**` (bundle `version` + resolved `position`).
+- **Already there (C3):** a 30 s refresh applied only when nothing plays. Add the `version` check, preload and fades on top of it; don't write a second poller.
 - **Do:** refetch the bundle every 30 s (skip while a Memory is playing); if `version` changed, preload new files, then objects that moved fade out and fade in at the new place (~1.2 s), new objects fade in, removed ones fade out. Rooms with a new background cross-fade. Never interrupt playback.
 - **Done when:** demo:check green; manual test: move an object in the Studio → House updates within 30 s with a fade.
 
