@@ -594,6 +594,17 @@
       ],
       "soft": [],
       "note": "Rewrite demo-assets/bundle.json from mh_demo by reusing H1's bundle builder"
+    },
+    {
+      "id": "B8",
+      "title": "House page breaks pnpm build (params outside Suspense)",
+      "owner": "yasir",
+      "priority": "FIX",
+      "deps": [
+        "H3"
+      ],
+      "soft": [],
+      "note": "Timoté STATUS request 20:15"
     }
   ]
 }
