@@ -154,8 +154,13 @@ _Fill in as you go (for the presentation):_ which frames were read through MCP, 
 
 ## 7. Evidence log
 
+S2 (2026-11-14): `Create · 1 Object`, node 20-331 → `/studio/stories/new?roomId=…`. Direct Figma MCP access is unavailable in this session; implementation uses the repository specifications, F5 components and the nine exported Object SVGs. No direct frame comparison is claimed. Code captures: `docs/design-evidence/create-object-code.png` and `create-object-phone-code.png`.
+
+S2 mapping: canvas `bg-background` / centred 1194 px / `sm:px-page`; heading `font-display text-40` (`text-32` phone); copy `text-ink/70`; choices = native radio controls in shared `Card` with `border-primary-strong`, keyboard focus and existing `/objects/*.svg`; title = shared `Label`/`Input`; actions = shared `Button` and lucide `ArrowRight`/`ChevronLeft`; completion = lucide `Check` and `success-strong`; errors = `warning-surface`. Phone stacks controls and uses a three-column library. Photo capture/upload, draft recovery, progress and completion are functional states added from S2 requirements. The sample 3D result is explicitly labelled in mock mode. Alexandre approved assigning a provisional free Slot without reserving it; S8 chooses and reserves the final Slot. S3 navigation awaits S3 rather than pointing to an absent page.
+
 | Date/time | Frame | Route | Figma image | Code image | MCP used? | Deviations |
 |---|---|---|---|---|---|---|
+| 2026-11-14 | Create · 1 Object (20-331) | `/studio/stories/new` | Pending MCP access | `docs/design-evidence/create-object-code.png`, `create-object-phone-code.png` | No direct read in this session | Repository specs/F5 assets; provisional Slot approved by Alexandre; progress uses a labelled sample Object until P5. |
 | 2026-11-14 | Family · Create the House (22-546) | `/studio/house/new` | Pending MCP access | `docs/design-evidence/create-house-code.png`, `create-house-phone-code.png` | No direct frame read; Alexandre explicitly approved using repository specs/assets | Exact frame comparison pending; see §9. Existing exported logo/rooms and F5 components reused. |
 | 2026-11-14 | Story · Memory playing (20-624) | `MemoryPlayer` | `docs/design-evidence/20-624-memory-playing-figma.png` | _after H-tasks_ | yes (get_design_context) | — |
 | 2026-11-14 | Story · Send love (20-668) | `HeartScreen` | `docs/design-evidence/20-668-send-love-figma.png` | _after H-tasks_ | yes | subtitle opacity 0.65 → 0.7 |

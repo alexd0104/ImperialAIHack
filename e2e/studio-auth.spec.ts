@@ -11,5 +11,5 @@ test("a wrong password shows a gentle message", async ({ page }) => {
   await page.goto("/studio/login");
   await page.getByLabel("Password").fill("definitely-not-the-password");
   await page.getByRole("button", { name: "Sign in" }).click();
-  await expect(page.getByRole("alert")).toBeVisible();
+  await expect(page.locator("form").getByRole("alert")).toBeVisible();
 });

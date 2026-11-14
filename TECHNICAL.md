@@ -308,6 +308,10 @@ export const HouseBundle = z.object({
 |---|---|---|
 | POST `/api/auth/login` | `{ password }` → `{ ok: true }` | Timoté |
 | POST `/api/houses` | `{ firstName, consent: true }` → `House` | Alexandre |
+| POST `/api/houses/:id/assets` | multipart `file` (Object photo, JPEG ≤ 15 MB after client resize) → `AssetView`; House-scoped, no Memory needed | Alexandre (S2) |
+| GET `/api/rooms/:id` | → `Room` (Studio session required) | Alexandre (S2) |
+| GET `/api/stories/:id` | → `Story` (including unpublished drafts, Studio only) | Alexandre (S2) |
+| GET `/api/stories/:id/object-job` | → `JobView`; temporary S2 mock progress adapter until P5, refuses non-mock generation | Alexandre (S2) |
 | GET `/api/houses/:id` | → `House` with rooms, stories summary | Alexandre |
 | PATCH `/api/houses/:id` | `{ firstName?, dontShow?: string[] }` → `House` | Alexandre |
 | DELETE `/api/houses/:id` | → `{ deleted: true }` (cascade, files included) | Timoté |

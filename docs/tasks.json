@@ -605,6 +605,17 @@
       ],
       "soft": [],
       "note": "Timoté STATUS request 20:15"
+    },
+    {
+      "id": "B9",
+      "title": "Studio auth browser test: scope error alert to sign-in form",
+      "owner": "alexandre",
+      "priority": "FIX",
+      "deps": [
+        "F6"
+      ],
+      "soft": [],
+      "note": "S2 regression: Next route announcer also has role alert; scope locator to sign-in form."
     }
   ]
 }

@@ -34,6 +34,7 @@ _(newest first: date — what changed — who)_
 ## Requests
 
 - 2026-11-14 20:20 — Raphaël → Alexandre — Kitchen/living Slot positions changed in `components/studio/room-styles.ts` (ids unchanged): Objects now sit on the counter top / floor. Please check your Room preview still looks right.
+- 2026-11-14 — Alexandre → Timoté — S2 provisional Slot assignment is explicitly approved by Alexandre (modifiable in S8, no reservation/publication here). P5 is still absent (mock jobs carry a permanent lease so P1 cannot process them): the temporary Studio object-job route persists Job/JobView and uses a sample GLB only in mock mode. Please replace that adapter with P5 when ready; normal persistence uses F4 MongoDB, explicit offline tests use STUDIO_MOCK_STORE. Object photos upload through POST /api/houses/:id/assets with existing Asset/AssetView schemas.
 - 2026-11-14 20:07 — Yasir → Timoté — Your 20:15 build request is fixed in eeb26e6 (B8): `/house/[token]` now reads params inside `<Suspense>`; `pnpm build` passes.
 - 2026-11-14 20:07 — Yasir → Timoté — Contract asks (House works around both, no edit made): (1) `BundleScene` has no still for a clip, so a failed clip falls back to the Memory's `polaroidUrl`, not that scene's own photo. Proposal: optional `stillUrl` on `BundleScene` (`lib/contracts/house-bundle.ts:5`), filled by `lib/house/bundle.ts` `buildMemory`. (2) `HouseBundle.house.avatars` has no source (no family members on `House`), so the DB bundle sends `[]`; tell me where family members will live.
 
@@ -64,6 +65,27 @@ _(newest first: date — from → to — what)_
 - Blocked: nothing.
 - Contract changes: none. Outside my zone: `components/studio/room-styles.ts` (Slot x/y/scale only, ids unchanged) → Alexandre, please check the Studio Room preview.
 - Next: re-run `MONGODB_DB=mh_demo pnpm seed:demo && MONGODB_DB=mh_demo pnpm export:demo` so the DB demo picks up the new Slots.
+
+### 2026-11-14 — Alexandre (studio, S2 final review)
+- Done: S2 library/photo creation, House-scoped upload, persisted object_3d mock progress, fallback and resumable drafts implemented. Provisional free Slot explicitly approved, never reserved or published by S2. Corrected and registered B9: auth E2E alert locator scoped to the sign-in form. Tablet/phone captures saved under docs/design-evidence/create-object-*.png; direct Figma MCP comparison remains unavailable and is documented.
+- In progress: Final checks and PR merge explicitly requested by Alexandre. Final integrated tree: verify passed (338 tests), production build passed, all 12 browser tests passed in development, and all 3 S2 scenarios passed against production, including invalid replacement upload recovery. The full production suite has one expected dev-only gallery failure (/dev/ui intentionally returns 404); its development run passes.
+- Blocked: No mock-flow blocker. P5 remains a soft dependency: the temporary Studio provider uses a labelled synthetic GLB, refuses non-mock photo generation, and preserves the library fallback. S3 navigation awaits S3.
+- Contract changes: None. New routes reuse CreateStoryRequest, Room, Story, Asset/AssetView and Job/JobView. Out-of-zone/shared edits: lib/copy.ts, e2e/create-story.spec.ts, e2e/studio-auth.spec.ts, TECHNICAL.md, docs/DESIGN.md, docs/tasks.json, design captures and this handoff; no new dependency or pipeline implementation edit.
+- Next: Merge S2/B9 after green CI. Timoté replaces the mock Object provider with P5; S8 selects/reserves the final Slot atomically. No live credits, family data or .env reads used for validation.
+
+### 2026-11-14 — Alexandre (studio, S2 implementation)
+- Done: Alexandre approved provisional Slot assignment, adjustable in S8. Implemented Room lookup, House-scoped photo upload, Story creation, persisted mock object_3d progress and library fallback; linked S1 to S2. Photos resize to 2048 px JPEG, drafts/uploads survive reload, retries preserve the Story id, no Slot reservation or publication occurs.
+- In progress: Browser checks and integration of current main before the requested merge. Unit/type/lint checks pass (245 tests); all 3 new S2 browser tests passed, including axe and photo resizing.
+- Blocked: Existing auth browser test has an ambiguous alert locator (Next route announcer also has role=alert); registering and fixing that one-line test issue next. P5 remains soft; mock output is explicitly labelled as a sample Object.
+- Contract changes: None; reuse existing entity/request/JobView/AssetView schemas. New Studio routes will be documented in TECHNICAL.md; P5 integration request follows.
+- Next: Finish regression/build and design captures, update handoff, then publish and merge S2 on green CI. Original placement question is resolved.
+
+### 2026-11-14 — Alexandre (studio, S2 orientation)
+- Done: Updated from main, checked S2 successfully and created feat/studio-S2-create-object. Read Studio requirements and current creation contracts; no application code or contract edited.
+- In progress: Preparing library/photo Object creation, Story naming, saved draft and mock generation progress.
+- Blocked: Product decision pending on provisional Slot assignment versus a reviewed contract change. P5 is only a soft dependency and does not block mock implementation.
+- Contract changes: None. Proposed behavior and upload-route gap recorded under Requests.
+- Next: Resolve placement representation, implement and validate S2, then open and merge its PR only when acceptance criteria and checks pass. No S2 implementation or merge is claimed yet.
 
 ### 2026-11-14 20:07 — Yasir (house)
 - Done: H1 (`GET /api/h/:token/bundle`, demo mode reads `DEMO_ASSETS_DIR/bundle.json`, alone filter via `okAlone` flags), H2–H8 (`/house/[token]`: preload → Choose a room → R3F Room with SVG Objects → polaroids → Memory player with Howler ducking + still-photo fallback → Heart + `POST /api/h/:token/events` → alone mode), Q3 (`pnpm demo:check`, network blocked), C3 (30 s refresh applied only when nothing plays), B8 (build fix).
@@ -148,4 +170,3 @@ _Older entries: `docs/status-archive.md`. Keep this file short: newest entries o
 - Contract changes:
 - Next:
 ```
-
