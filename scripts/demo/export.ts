@@ -43,7 +43,11 @@ export function exportDemoBundle(source: BundleSource): DemoBundleFile {
               memories: slot.story.memories.map((m) => ({
                 ...m,
                 polaroidUrl: stripToken(m.polaroidUrl),
-                scenes: m.scenes.map((s) => ({ ...s, url: stripToken(s.url) })),
+                scenes: m.scenes.map((s) => ({
+                  ...s,
+                  url: stripToken(s.url),
+                  stillUrl: opt(s.stillUrl),
+                })),
                 songUrl: opt(m.songUrl),
                 ambienceUrl: opt(m.ambienceUrl),
                 voiceUrl: opt(m.voiceUrl),

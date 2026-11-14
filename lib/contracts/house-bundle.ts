@@ -6,6 +6,8 @@ export const BundleScene = z.object({
   kind: z.enum(["clip", "photo", "video"]),
   url: z.string(),
   durationMs: z.number(),
+  /** The scene's chosen still; the House shows it if the clip can't play (B10). */
+  stillUrl: z.string().optional(),
 });
 export type BundleScene = z.infer<typeof BundleScene>;
 

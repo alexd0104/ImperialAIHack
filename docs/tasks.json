@@ -616,6 +616,15 @@
       ],
       "soft": [],
       "note": "S2 regression: Next route announcer also has role alert; scope locator to sign-in form."
+    },
+    {
+      "id": "B10",
+      "title": "House: per-scene still fallback (stillUrl)",
+      "owner": "yasir",
+      "priority": "FIX",
+      "deps": [],
+      "soft": [],
+      "note": ""
     }
   ]
 }

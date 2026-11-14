@@ -60,6 +60,8 @@ describe("buildBundle", () => {
         kind: "clip",
         url: `/api/files/${scenes[0]?.outputs.clip}?t=tok%20en`,
         durationMs: 5000,
+        // B10: the clip carries its own chosen still (restored, B&W) for a failed clip.
+        stillUrl: `/api/files/${scenes[0]?.outputs.restored}?t=tok%20en`,
       },
     ]);
     expect(built?.polaroidUrl).toContain("restore.png?t=");
@@ -139,5 +141,42 @@ describe("demo bundle helpers", () => {
       b.files.filter((f) => f.startsWith("/api/files/")).every((f) => f.endsWith("?t=demo-token")),
     ).toBe(true);
     expect(collectFiles(b).sort()).toEqual([...b.files].sort());
+  });
+});
+
+describe("buildMemory stillUrl (B10)", () => {
+  const [first] = scenes;
+  const memoryScene = (choice: NonNullable<Scene["choice"]>, outputs: Scene["outputs"]) =>
+    buildBundle(
+      source({ scenes: [Scene.parse({ ...first, choice, outputs })] }),
+    ).bundle.rooms[0]?.slots.find((s) => s.id === "bench")?.story?.memories[0]?.scenes[0];
+  const clip = "h/j/animate.mp4";
+
+  it("uses the colourised still when colour was chosen", () => {
+    const scene = memoryScene(
+      { use: "animated", colour: "colour", restored: true },
+      { clip, restored: "h/j/restore.png", colourised: "h/j/colour.png" },
+    );
+    expect(scene?.stillUrl).toBe("/api/files/h/j/colour.png?t=tok%20en");
+  });
+
+  it("uses the original photo when the family kept it unrestored", () => {
+    const scene = memoryScene(
+      { use: "animated", colour: "bw", restored: false },
+      { clip, restored: "h/j/restore.png" },
+    );
+    expect(scene?.stillUrl).toBe(`/api/files/${photo.path}?t=tok%20en`);
+  });
+
+  it("is preloaded and tokenised like every other file", () => {
+    const { bundle } = buildBundle(source());
+    const still = bundle.rooms[0]?.slots.find((s) => s.id === "bench")?.story?.memories[0]
+      ?.scenes[0]?.stillUrl;
+    expect(bundle.files).toContain(still);
+    const raw = tokeniseBundle(
+      { ...bundle, files: [], rooms: bundle.rooms },
+      TOKEN,
+    ).rooms[0]?.slots.find((s) => s.id === "bench")?.story?.memories[0]?.scenes[0]?.stillUrl;
+    expect(raw).toBe(still);
   });
 });

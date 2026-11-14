@@ -81,6 +81,8 @@ function buildMemory(
         kind: "clip",
         url: fileUrl(scene.outputs.clip, token),
         durationMs: CLIP_MS,
+        // This scene's own still, so a failed clip never shows another photo.
+        ...(still ? { stillUrl: fileUrl(still, token) } : {}),
       });
     } else if (still) {
       bundleScenes.push({ kind: "photo", url: fileUrl(still, token), durationMs: PHOTO_MS });
@@ -193,7 +195,10 @@ export function collectFiles(bundle: Pick<HouseBundle, "rooms">): string[] {
       add(story.object.url);
       for (const memory of story.memories) {
         add(memory.polaroidUrl);
-        for (const scene of memory.scenes) add(scene.url);
+        for (const scene of memory.scenes) {
+          add(scene.url);
+          add(scene.stillUrl);
+        }
         add(memory.songUrl);
         add(memory.ambienceUrl);
         add(memory.voiceUrl);
@@ -244,7 +249,7 @@ export function tokeniseBundle(bundle: HouseBundle, token: string): HouseBundle 
                 memories: slot.story.memories.map((m) => ({
                   ...m,
                   polaroidUrl: t(m.polaroidUrl),
-                  scenes: m.scenes.map((s) => ({ ...s, url: t(s.url) })),
+                  scenes: m.scenes.map((s) => ({ ...s, url: t(s.url), stillUrl: opt(s.stillUrl) })),
                   songUrl: opt(m.songUrl),
                   ambienceUrl: opt(m.ambienceUrl),
                   voiceUrl: opt(m.voiceUrl),

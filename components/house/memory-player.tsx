@@ -7,6 +7,7 @@ import { SegmentedProgress } from "@/components/ui/segmented-progress";
 import type { BundleMemory, BundleScene } from "@/lib/contracts";
 import { copy } from "@/lib/copy";
 import { MemoryAudio } from "@/lib/house/audio";
+import { sceneStill } from "@/lib/house/scene-still";
 import { memoryDuration, sceneIndexAt } from "@/lib/house/timeline";
 import { cn } from "@/lib/utils";
 
@@ -51,7 +52,7 @@ function SceneLayer({
     onVideoSound(sounding);
   }, [sounding, onVideoSound]);
 
-  const still = scene.kind === "photo" ? scene.url : fallbackUrl;
+  const still = sceneStill(scene, fallbackUrl);
   return (
     <div
       className={cn(
