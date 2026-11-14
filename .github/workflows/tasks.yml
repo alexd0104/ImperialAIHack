@@ -44,7 +44,7 @@ jobs:
             echo "No task ID in branch name ($HEAD_REF): docs/chore PR, skipping dependency check."
             exit 0
           fi
-          if ! echo "$PR_TITLE" | grep -Eq "\((([^)]*[ ,])?$id([ ,][^)]*)?)\)"; then
+          if ! echo "$PR_TITLE" | grep -Eq "\((([^)]*[ ,])?$id(-wip)?([ ,][^)]*)?)\)"; then
             echo "::error::PR title must contain the task ID in parentheses so it is marked done when merged, e.g. 'feat(zone): what you did ($id)'. Use '($id-wip)' for partial work."
             exit 1
           fi

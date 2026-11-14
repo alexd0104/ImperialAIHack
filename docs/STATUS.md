@@ -27,6 +27,8 @@ _(newest first: date — what changed — who)_
 
 _(newest first: date — from → to — what)_
 
+- 2026-11-14 — Raphaël → Timoté — The Tasks workflow rejected `(ID-wip)` PR titles although its error message recommends them (`.github/workflows/tasks.yml:47`). Fixed in `fix/shared-tasks-wip-title`; please review. Not registered as a B task because `tasks.mjs add` needs Node, which is not set up on my machine yet: please add it if you want it on the board.
+
 ## Log
 
 ### Template
