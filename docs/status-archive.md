@@ -2,6 +2,20 @@
 
 Older handoff entries moved out of `docs/STATUS.md` to keep agent context small. Newest first.
 
+### 2026-11-14 19:20 — Raphaël (design)
+- Done: B2 (contrast fix) shipped inside the F5 merge 9ab8f45; this entry marks it on the board. Q4: DESIGN.md §8 accessibility notes (contrast table, targets, focus, motion) and §6 MCP note for F5.
+- In progress: Q4 (ongoing: a Figma-vs-code row per screen as Studio/House screens land).
+- Blocked: Figma MCP needs re-auth for new captures and Figma Variables.
+- Contract changes: none.
+- Next: test 4 (Rodin vs Trellis); Figma Variables for the tokens once re-authed.
+
+### 2026-11-14 19:05 — Raphaël (design)
+- Done: B2 (PR #11 review by Alexandre). New tokens `primary-strong #B4552F` / `primary-strong-hover #A44B2C` for filled controls with white text (4.9 / 5.8:1), `success-strong #426B38` for the Approved badge; avatar initials in ink; checkbox/stepper checks on `success-text`. Contrast unit test for every pair + axe (WCAG 2.2 AA) e2e on `/dev/ui`.
+- In progress: PR #11 (F5) waiting for re-review.
+- Blocked: nothing.
+- Contract changes: none.
+- Next: everyone: use `bg-primary-strong` (not `bg-primary`) behind white text. Test 4.
+
 ### 2026-11-14 19:04 — Alexandre (studio)
 - Done: Merged #13 and #12 as requested; #11 was already merged with the contrast fix. #12 is merged at 5177df5 after resolving copy/status conflicts and preserving a concurrent remote handoff resolution. GitHub reports no open PRs. CI is green on the final PR head; mock verify passes with 143 tests, production build passes, and all 5 browser tests pass, including axe.
 - In progress: None for the PR-merging request; completed.
