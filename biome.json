@@ -14,7 +14,8 @@
       "!.claude",
       "!.husky/_",
       "!**/*.md",
-      "!scripts/tasks.mjs"
+      "!scripts/tasks.mjs",
+      "!public/**/*.svg"
     ]
   },
   "formatter": {
