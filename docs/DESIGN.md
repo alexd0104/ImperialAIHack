@@ -36,6 +36,19 @@ Owner: Raphaël. This file is both the **Figma → code map** for developers and
 | Family · Hear back | 23-737 | `/studio` | Alexandre | Stats, hearts, most-loved |
 | Family · Care & privacy | 23-937 | `/studio/care` | Alexandre | Don't show, alone, data, roles |
 
+**Row 4 · Missing frames (SH7, added 2026-11-14).** Each frame has a "Dev note" text under it on the canvas with behaviour details.
+
+| Frame | Node | Route / component | Owner | Notes |
+|---|---|---|---|---|
+| Create · 2c Questions | 57-624 | `/studio/memories/[id]/sheet` (form) | Alexandre (S4) | All 7 guided questions + optional free text; placeholders are examples, never pre-filled; colour = single choice; OK alone toggle |
+| Create · 2d Record a voice | 58-638 | voice recorder (SH5) | Alexandre | States Ready (mic 64) → Recording (Stop 124, timer, waveform) → Listen back; Record again / Use this recording |
+| Story · End — back to the Room | 58-812 | `StoryEnd` transition | Yasir (H7) | Polaroids fly back into the Object (reverse Smart Animate 0.9 s), warm glow, Room interactive again; no text |
+| States · loading, error, clip fallback | 60-709 | Studio job states + House fallback | Alexandre / Yasir | Studio: per-scene progress, safe to close; error = Try again + Keep original photo. House: still photo + slow zoom + sound, never an error |
+| Create · 4b Order memories | 61-734 | `/studio/stories/[id]/place` (order step) | Alexandre (S8) | Drag handle + up/down arrows, per-Memory OK alone, story summary |
+| Family · Room from a photo | 60-756 | room photo upload | Alexandre / Timoté | Upload → straighten (nothing added) → tap to place up to 5 Slots; fallback to illustrated room |
+| Create · 4c Sent to the House | 61-982 | publish confirmation (S8) | Alexandre | Object + glow, "Sent to Mum's house", family avatars, next actions |
+| Studio · Phone · Gather the memories | 61-1155 | Studio at 390 px | Alexandre | One column, compact stepper, 2 polaroids per row, bottom actions |
+
 **Vocabulary note:** Figma labels ("Create", "Choose a room", "Send love", "Bring to life", "Polaroid") stay as UI copy; code uses `House / Room / Slot / Story / Memory / Scene / Heart`.
 
 ## 3. Tokens
@@ -104,7 +117,11 @@ Objects keep their soft ground shadow and their in-room tilt (radio, camera) bec
 
 ## 5. Gaps (frames still to design — SH7)
 
-Free-text prompt · full set of guided questions · voice recording screen · animated vs still side-by-side · ordering Memories · publish confirmation · per-Memory OK-alone tick · Story end / return to Room · Stories for Kitchen and Living room Objects · room photo upload flow · Studio desktop and phone layouts · loading, error and "clip can't play" states · (sign-in / invites: out of scope).
+Designed on 2026-11-14 (row 4, see §2): free-text prompt · full set of guided questions · voice recording · ordering Memories · per-Memory OK-alone · publish confirmation · Story end / return to Room · loading, error and "clip can't play" states · room photo upload · Studio phone layout.
+
+Still open: animated vs still side-by-side (S7 can reuse the 3b before/after layout) · Stories for Kitchen and Living room Objects (same frames, other content) · Studio desktop (> 1194 px: centre the iPad layout) · (sign-in / invites: out of scope).
+
+New frames follow the code rules, not the old Figma leftovers: readable text at `ink` ≥ 0.7, Stepper ✓ is a vector check (no DM Sans), primary buttons in `primary` `#D9734E` (the local Button component's Primary variant is dark and is overridden on every instance).
 
 Accessibility gap: secondary text at 0.45–0.55 opacity on cream likely fails WCAG AA → code uses ≥ 0.7 for readable text.
 
@@ -114,6 +131,7 @@ _Fill in as you go (for the presentation):_ which frames were read through MCP, 
 
 - **2026-11-14 — spec extraction.** `get_metadata` on page 20:66 listed every frame and instance (no manual node hunting). `get_design_context` on 20-624, 20-668, 23-580 returned exact paddings, radii, shadows, opacities and font weights → §4.1 table in minutes instead of inspecting layers one by one. It also surfaced the Figma gaps we fix in code: leftover `#2B2420` and DM Sans in the Stepper, secondary text at 0.45–0.65 opacity (fails AA), avatar ring colour with no token.
 - **2026-11-14 — asset export.** `download_assets` exported the logo, 3 rooms and 9 Objects as SVG (13 files). By hand: removed the parent-frame rects the exporter adds, squared the room corners. Checked every file renders on its own.
+- **2026-11-14 — SH7, designing with the MCP server.** The 8 missing frames were built directly in the Figma file with `use_figma`: the Studio header was cloned from existing v5 frames so it stays identical, and every frame reuses the file's own components (Button, Toggle, Close, Polaroid, Family avatars, Empty Spot, logo, Object/Flower). Fixed in the new frames while building: DM Sans ✓ → vector check, low-opacity text → 0.7, dark Primary button → terracotta. One visual check per frame caught 3 layout bugs (clipped chips, polaroid captions squashed by `resize` instead of `rescale`, phone actions cut off), each fixed with a targeted edit.
 
 ## 7. Evidence log
 
@@ -122,3 +140,4 @@ _Fill in as you go (for the presentation):_ which frames were read through MCP, 
 | 2026-11-14 | Story · Memory playing (20-624) | `MemoryPlayer` | `docs/design-evidence/20-624-memory-playing-figma.png` | _after H-tasks_ | yes (get_design_context) | — |
 | 2026-11-14 | Story · Send love (20-668) | `HeartScreen` | `docs/design-evidence/20-668-send-love-figma.png` | _after H-tasks_ | yes | subtitle opacity 0.65 → 0.7 |
 | 2026-11-14 | Create · 3b Approve every scene (23-580) | `/studio/memories/[id]/approve` | `docs/design-evidence/23-580-approve-scenes-figma.png` | _after S-tasks_ | yes | stepper todo label 0.45 → 0.7, subtitle 0.6 → 0.7 |
+| 2026-11-14 | SH7 · 8 new frames (57-624 … 61-1155) | see §2 row 4 | `docs/design-evidence/sh7-*-figma.png` | _when built_ | yes (`use_figma` built them from local components; captures via `get_screenshot`) | — |
