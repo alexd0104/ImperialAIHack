@@ -185,7 +185,10 @@ function runAgent(prompt, label, usd) {
         try {
           const ev = JSON.parse(line);
           if (ev.type === "result") {
-            text = String(ev.result ?? ev.subtype ?? "");
+            text =
+              ev.is_error || ev.terminal_reason === "api_error"
+                ? `AGENT ERROR: ${ev.terminal_reason ?? ev.subtype ?? "unknown"} ${ev.result ?? ""}`
+                : String(ev.result ?? ev.subtype ?? "");
             cost = Number(ev.total_cost_usd ?? 0);
           }
         } catch {}
@@ -265,6 +268,14 @@ async function runTask(id, spent) {
   log(`▶ ${id} — ${t.title}`);
   const r = await runAgent(taskPrompt(t), id, taskUsd);
   spent.usd += r.cost;
+  if (r.text.startsWith("AGENT ERROR")) {
+    spent.errors = (spent.errors ?? 0) + 1;
+    log(`✗ ${r.text.slice(0, 200)}`);
+    if (spent.errors >= 2)
+      throw new Error("Agent errored twice in a row (login/credits/network?). Stopping.");
+    return skip(id, "agent error");
+  }
+  spent.errors = 0;
   const result = (r.text.match(/RESULT:\s*(DONE|PARTIAL|BLOCKED)[^\n]*/) ?? [
     "RESULT: PARTIAL (no result line)",
   ])[0];
@@ -297,14 +308,27 @@ async function runTask(id, spent) {
 }
 
 async function main() {
+  if (engine !== "dry" && !sh(engine, ["--version"], 30e3).ok) {
+    console.error(`'${engine}' CLI not found.`);
+    process.exit(1);
+  }
+  if (argv.includes("--check")) {
+    const r = await runAgent(
+      "Reply with exactly this line and nothing else: RESULT: DONE",
+      "check",
+      0.1,
+    );
+    console.log(
+      r.text.includes("RESULT: DONE")
+        ? `✅ ${engine} works unattended`
+        : `❌ ${r.text.slice(0, 300)}`,
+    );
+    return;
+  }
   if (dirty()) {
     console.error(
       "Working tree not clean. Commit/stash first (the autopilot needs a clean clone or worktree).",
     );
-    process.exit(1);
-  }
-  if (engine !== "dry" && !sh(engine, ["--version"], 30e3).ok) {
-    console.error(`'${engine}' CLI not found.`);
     process.exit(1);
   }
   if (!argv.includes("--keep-skips")) rmSync(join(dir, `skip-${person}`), { force: true });
@@ -331,7 +355,13 @@ async function main() {
       await sleep(10 * 60e3);
       continue;
     }
-    if (await runTask(id, spent)) done++;
+    try {
+      if (await runTask(id, spent)) done++;
+    } catch (e) {
+      log(`■ ${e.message}`);
+      summary.push(`- stopped: ${e.message}`);
+      break;
+    }
   }
   const report = `# Autopilot ${person} — ${new Date().toISOString().slice(0, 16)}\nDone: ${done} · spent ≈ $${spent.usd.toFixed(2)}\n${summary.join("\n")}\nLog: ${logFile}\n`;
   writeFileSync(join(dir, `summary-${person}.md`), report);

@@ -65,6 +65,8 @@ _(newest first: date — from → to — what)_
 
 ## Log
 
+- 2026-11-14 23:40 — Timoté — v2 round set up: 15 tasks in `docs/FEATURES-V2.md` (F7 contracts v2 first), overnight runner `pnpm autopilot <you>` (`docs/AUTOPILOT.md`). Autopilot handoffs and Human TODOs land in `docs/status/<you>.md`. Read your file every morning.
+
 ### 2026-11-14 23:10 — Raphaël (design, demo readiness pass, B11)
 - Done: full Studio → fal → House run **live** in the browser (House, photo Object via BiRefNet + Rodin, one scene restore + Kling + mmaudio, approve, place, publish, play). Then the same flow on the production build in mock mode: passes with no console or 5xx errors. Fixes: (1) pipeline: job lease 10 s → 120 s, live steps got stuck when a clip took over 10 s to upload/download (TECHNICAL §5.2, §10); (2) Studio: scene choice now sets the Memory `approved`; Place shows the Room picture; Object hint no longer says "sample" after a live job; login field `aria-invalid`; (3) House: GLB Objects sway gently (±17°) and float a little more; generated clips play their own ambience quietly when the Memory has no ambience track; (4) demo: Choose a room shows "Garden / Kitchen / Living room"; `pnpm demo` = build + `next start` with the offline demo House.
 - In progress: nothing.

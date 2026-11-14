@@ -67,6 +67,7 @@ Full paths: `docs/zones/*.md`. Shared files (`package.json`, `proxy.ts`, `lib/co
 - Before a task: `node scripts/tasks.mjs check <ID>`; if it fails, don't start — `node scripts/tasks.mjs next <timote|alexandre|yasir|raphael>`.
 - Work on `main`; commit subject ends with `(<ID>)` (partial: `(<ID>-wip)`) — that marks it done on the GitHub issue "📋 memorAI task board".
 - Before pushing or pausing: 5-line handoff at the top of the Log in `docs/STATUS.md` (Claude Code: `/handoff`). Needs from another zone → "Requests" in `docs/STATUS.md`.
+- **Round v2 (night 14→15 Nov):** briefs in `docs/FEATURES-V2.md`; overnight runs with `pnpm autopilot <you>` (`docs/AUTOPILOT.md`); autopilot handoffs go to `docs/status/<you>.md`, not STATUS.md.
 - Found extra work (bug, missing piece)? `node scripts/tasks.mjs add --title "..." --owner <person> [--deps X]` then `lint`; fix it with `(B<n>)` in the commit if it's yours.
 
 ## 11. Working well (full manual: `docs/playbooks/agent-manual.md`)
