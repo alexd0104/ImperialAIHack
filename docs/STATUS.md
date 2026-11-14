@@ -53,6 +53,13 @@ _(newest first: date — from → to — what)_
 
 ## Log
 
+### 2026-11-14 19:50 — Raphaël (design)
+- Done: B6 `pnpm seed:demo`. Reads `DEMO_ASSETS_DIR/demo.json` (format: `scripts/demo/demo.example.json`), copies the media into storage and writes one published House at `/house/<DEMO_HOUSE_TOKEN>`. Replaces the previous demo House; refuses unless `MONGODB_DB` ends with `demo`. Planner `scripts/demo/plan.ts` is pure and tested against the contracts.
+- In progress: nothing.
+- Blocked: B7 `pnpm export:demo` waits on H1 (Yasir's bundle builder). Not run against Atlas yet: run `MONGODB_DB=mh_demo pnpm seed:demo` once demo-assets exist.
+- Contract changes: none. Outside my zone: `package.json` (seed:demo script), `docs/tasks.json` (B6, B7; B5 was already taken on main).
+- Next: fill demo-assets with the team's real demo content; B7 after H1.
+
 ### 2026-11-14 19:45 — Raphaël (design)
 - Done: Test 4 (Rodin vs Trellis), result in the test table. Timoté: P5 can keep `fal-ai/hyper3d/rodin/v2.5/fast` as in TECHNICAL.md §7; Trellis 2 with `texture_size 1024, decimation_target 20000` works as fallback. Background must be cut out first. Rodin is also 3× cheaper ($0.10 vs $0.30); TECHNICAL.md §7 cost corrected.
 - In progress: Q4 (as screens land).
