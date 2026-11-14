@@ -24,13 +24,13 @@ export const PRESET_SLOTS: Record<RoomStyle, Slot[]> = {
     { id: "table", x: 0.5, y: 0.78, scale: 0.15 },
   ],
   kitchen: [
-    { id: "counter-left", x: 0.24, y: 0.62, scale: 0.18 },
-    { id: "counter-right", x: 0.72, y: 0.62, scale: 0.18 },
-    { id: "table", x: 0.5, y: 0.8, scale: 0.18 },
+    { id: "counter-left", x: 0.22, y: 0.565, scale: 0.18 },
+    { id: "counter-right", x: 0.76, y: 0.565, scale: 0.18 },
+    { id: "table", x: 0.5, y: 0.58, scale: 0.16 },
   ],
   living: [
-    { id: "shelf", x: 0.23, y: 0.48, scale: 0.18 },
-    { id: "side-table", x: 0.76, y: 0.65, scale: 0.18 },
+    { id: "shelf", x: 0.2, y: 0.71, scale: 0.18 },
+    { id: "side-table", x: 0.79, y: 0.675, scale: 0.18 },
     { id: "coffee-table", x: 0.5, y: 0.79, scale: 0.18 },
   ],
 };
