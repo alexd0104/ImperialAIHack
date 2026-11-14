@@ -63,4 +63,21 @@ export const copy = {
     stepCurrent: "current step",
     memoryProgress: "Memory progress",
   },
+  // House (viewer). Nothing here must be read to use the House: labels are short,
+  // supportive, and also serve as accessible names.
+  house: {
+    greeting: "Hello,",
+    chooseRoom: "Choose a room",
+    rooms: "Rooms",
+    together: "Watching together",
+    alone: "On your own",
+    emptySlot: "A place for a new memory",
+    openStory: "Open",
+    playMemory: "Play",
+    back: "Back",
+    pause: "Pause",
+    play: "Play",
+    returnToRoom: "Back to the room",
+    nextMemory: "Next memory",
+  },
 } as const;
