@@ -59,6 +59,13 @@ _(newest first: date — from → to — what)_
 
 ## Log
 
+### 2026-11-14 20:35 — Raphaël for Timoté (pipeline, P4)
+- Done: P4 routes. `POST /api/memories/:id/generate` makes one Scene per photo and one scene Job each (idempotent: scenes with a job keep it), `GET /api/jobs/:id` advances and returns `JobView`, `POST /api/scenes/:id/retry` starts a `bypassCache` job (reuses a running one; 429 `rate_limited` after 5 retries per House per 10 min, in-memory). Memory status is computed (`memoryStatusOf`, §5.2) on generate/retry and when a scene job settles. Logic in `lib/jobs/generation.ts` with unit tests.
+- In progress: P5 next.
+- Blocked: nothing.
+- Contract changes: none. Done outside Raphaël's zone, for Timoté. Shared edit: `lib/copy.ts` (+`studio.generation` API messages). Studio zone (Yasir/Alexandre): `pnpm build` failed on main (S3–S5 pages read `params` outside `<Suspense>`), so the 4 pages `app/studio/memories/[id]/{,questions/,sheet/}page.tsx` and `app/studio/stories/[id]/memories/new/page.tsx` now read params inside `<Suspense>` like B8.
+- Next: "Bring to life" (S5) now reaches a real route; S7 review can poll `/api/jobs/:id` and call retry. Routes read MongoDB (F4), not the offline `STUDIO_MOCK_STORE` file store.
+
 ### 2026-11-14 20:40 — Yasir (studio takeover, S3–S5)
 - Done: S3 Memory bank (`/studio/stories/[id]/memories/new` → `/studio/memories/[id]`: photo/video grid with remove, 2048 px JPEG client resize, song + voice clip, continue needs a photo/video), S4 guided questions with debounced PATCH autosave (`/questions`), S5 Memory sheet with "Change" links and "Bring to life" (`/sheet`). Routes: `POST /api/stories/:id/memories`, `GET/PATCH /api/memories/:id`, `POST /api/memories/:id/assets`, `DELETE /api/assets/:id`.
 - In progress: nothing. P4, S7, S8, S9, SH3, SH4 were **not done** (parallel agents stopped for token cost); they're still open for Alexandre/Timoté.
