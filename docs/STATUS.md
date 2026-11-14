@@ -38,6 +38,13 @@ _(newest first: date — from → to — what)_
 
 ## Log
 
+### 2026-11-14 19:03 — Alexandre (studio)
+- Done: Reconciled the concurrent push on #12: remote 06fdc5c includes the same main integration and application code already validated locally (143 unit tests, production build and 5 browser tests). Its only difference from the local resolution is the chronological order of handoff entries; retained the remote version.
+- In progress: Final GitHub verification and merge of #12 at the latest remote head, per the user's explicit request.
+- Blocked: No remaining code or merge conflict. Required checks need to report on the new resolved head.
+- Contract changes: None; this finalization changes only this shared handoff.
+- Next: Merge #12 once required checks report success, then confirm the open PR list is empty. No force-push or direct push to main.
+
 ### 2026-11-14 19:20 — Raphaël (design)
 - Done: B2 (contrast fix) shipped inside the F5 merge 9ab8f45; this entry marks it on the board. Q4: DESIGN.md §8 accessibility notes (contrast table, targets, focus, motion) and §6 MCP note for F5.
 - In progress: Q4 (ongoing: a Figma-vs-code row per screen as Studio/House screens land).
