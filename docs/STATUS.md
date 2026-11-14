@@ -48,6 +48,7 @@ _(newest first: date — what changed — who)_
 
 _(newest first: date — from → to — what)_
 
+- 2026-11-14 — Raphaël → Timoté — `/studio/login` (F6) a11y: when the error shows, set `aria-invalid` on the password `Input` and `aria-describedby` → the `role=alert` paragraph id (`app/studio/login/LoginForm.tsx:44-55`). `Input` already turns its border `danger` on `aria-invalid`. Axe passes otherwise (DESIGN.md §7).
 - ~~2026-11-14 — Raphaël → Timoté — The Tasks workflow rejected `(ID-wip)` PR titles although its error message recommends them (`.github/workflows/tasks.yml:47`). Fixed in `fix/shared-tasks-wip-title`; please review. Not registered as a B task because `tasks.mjs add` needs Node, which is not set up on my machine yet: please add it if you want it on the board.~~ Resolved by #9.
 
 ## Log

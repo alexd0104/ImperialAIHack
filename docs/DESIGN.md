@@ -163,6 +163,7 @@ _Fill in as you go (for the presentation):_ which frames were read through MCP, 
 | 2026-11-14 | SH7 · 8 new frames (57-624 … 61-1155) | see §2 row 4 | `docs/design-evidence/sh7-*-figma.png` | _when built_ | yes (`use_figma` built them from local components; captures via `get_screenshot`) | — |
 | 2026-11-14 | Button, Toggle, Polaroid, Family avatars, controls (20-624, 20-668, 23-580) | `/dev/ui` | `docs/design-evidence/20-624-*`, `20-668-*`, `23-580-*` | `docs/design-evidence/f5-dev-ui.png` | yes (`use_figma` read-only for exact sizes, radii, shadows) | see §4.3 |
 | 2026-11-14 | Button + every v5 Primary instance, e.g. 23-580 | `components/ui/button.tsx` | `docs/design-evidence/23-580-approve-scenes-figma-tokens.png` | `docs/design-evidence/f5-dev-ui.png` | yes (`use_figma` write: Variables + bindings) | none left on Button |
+| 2026-11-14 | — (no Figma frame: sign-in out of scope) | `/studio/login` (F6) | — | `docs/design-evidence/q4-studio-login-code.png`, `q4-studio-login-error-code.png` | no (code-only check) | tokens + `components/ui` only; axe WCAG 2.2 AA: 0 violations (empty and error states); targets 64 / 56 px. Gap: field not marked `aria-invalid` / linked to the error (`aria-describedby`) → request to Timoté |
 
 ## 8. Accessibility notes
 
