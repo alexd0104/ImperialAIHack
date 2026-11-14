@@ -32,11 +32,58 @@ _(newest first: date — what changed — who)_
 
 ## Requests
 
+- 2026-11-14 19:30 — Alexandre → Timoté — S1 mock creation is ready. F4 helpers are still absent from main: replace `app/api/houses/_mock-store.ts` with `lib/db` persistence when F4 lands, preserving consent timestamps, private tokens, stable Room Slots and idempotent retries. The temporary adapter only runs in AI_MODE=mock and writes to gitignored STORAGE_DIR/studio-mock. Also registered B5 (API playbook uses `input.error`, but `parseJson` exposes `message`) separately in https://github.com/alexd0104/ImperialAIHack/pull/17.
+- 2026-11-14 19:30 — Alexandre → Raphaël / Yasir — S1 reuses F5 and exported SVGs. Alexandre explicitly approved proceeding without direct Figma MCP access; frame 22-546 comparison remains pending (mapping and captures in DESIGN §9). Garden Slots reuse the F2 fixture; please review the provisional Kitchen/Living presets in `components/studio/room-styles.ts` before House integration. S1 has no fake link into unimplemented S2.
+
+- 2026-11-14 18:42 — Alexandre → Timoté — Update to #12 review: ba1cbcd/ac1ae03 corrects B3's error codes and uses F2 contracts; confirmed both error responses parse. B4 remains: a cookie signed with the synthetic short configured secret passes the actual proxy (200, `x-middleware-next=1`). Please enforce the same 32-character minimum at verification. Task registrations and current disposition: https://github.com/alexd0104/ImperialAIHack/pull/13.
+
+- 2026-11-14 18:38 — Alexandre → Raphaël — PR #11 changes requested (B2): `components/ui/button.tsx:13` renders white on primary at 3.22:1, 18px/700 (Chromium); Badge attention/photoPrimary and ToggleGroup primary share the issue. Use accessible token pairs including hover/selected states and add a contrast/axe regression. Review: https://github.com/alexd0104/ImperialAIHack/pull/11#pullrequestreview-5906434308.
+- 2026-11-14 18:38 — Alexandre → Timoté — PR #12 changes requested: B3, `app/api/auth/login/route.ts:36` emits codes rejected by F2 `ApiErrorResponse`; F2 is now merged, so replace temporary inline contracts/helpers. B4, `lib/session.ts:47` accepts cookies signed with a short configured secret despite login's 32-character minimum; reject at verification and test the proxy. Review: https://github.com/alexd0104/ImperialAIHack/pull/12#pullrequestreview-5906434698. B1 from your PR is preserved unchanged when registering B2–B4 to avoid allocating its ID twice.
+
+- 2026-11-14 17:37 — Alexandre → Timoté — S1 readiness check exits 1: F2 (Contracts v1) and F6 (Studio auth) are not merged on `origin/main`. Please hand off their merged contracts/auth before Studio implementation starts; no dependency bypass or contract edits made.
+- 2026-11-14 17:37 — Alexandre → Raphaël — S1 will use F5 tokens, Input, Checkbox, Button, Card and exported logo/room SVGs. F5 is a soft dependency; any missing UI primitive will stay temporarily in `components/studio/`, with a promotion request. Exact frame inventory awaits Figma MCP access.
+
 _(newest first: date — from → to — what)_
 
 - ~~2026-11-14 — Raphaël → Timoté — The Tasks workflow rejected `(ID-wip)` PR titles although its error message recommends them (`.github/workflows/tasks.yml:47`). Fixed in `fix/shared-tasks-wip-title`; please review. Not registered as a B task because `tasks.mjs add` needs Node, which is not set up on my machine yet: please add it if you want it on the board.~~ Resolved by #9.
 
 ## Log
+
+### 2026-11-14 19:30 — Alexandre (studio)
+- Done: Implemented S1 on feat/studio-S1-create-house: /studio/house/new, POST /api/houses and style-only POST /api/houses/:id/rooms. Required consent, shared contracts, fixed empty Slots, private token withheld, session guard, saved tab draft, idempotent retries including lost responses, and expired-session recovery. Self-review complete; pnpm verify passes (161 tests), production build passes, 9 browser tests pass in dev and 4 S1 scenarios pass against production, including axe on tablet/phone. Captures in docs/design-evidence/create-house-{code,phone-code}.png.
+- In progress: Publishing and merging the S1 PR, explicitly requested by Alexandre. Prior local review handoffs are preserved in this file.
+- Blocked: No mock-flow blocker. F4 MongoDB integration and exact Figma comparison remain follow-ups; the mock store is deliberately disabled outside AI_MODE=mock. Completion stays on S1 until S2 is implemented. No live AI calls or .env file reads.
+- Contract changes: None. Shared/out-of-zone edits: lib/copy.ts, package.json, pnpm-lock.yaml, e2e/create-house.spec.ts, docs/DESIGN.md, docs/design-evidence/ and this handoff. Added React Hook Form for form state, @hookform/resolvers for existing Zod validation, and TanStack Query for typed API mutations (all prescribed by the stack).
+- Next: Merge after green CI; Timoté handles F4 adapter integration and B5, Raphaël checks frame 22-546, Yasir reviews Slot positions. S2 can consume the created House/Room; no contract or shared UI component changes required.
+
+### 2026-11-14 19:04 — Alexandre (studio)
+- Done: Merged #13 and #12 as requested; #11 was already merged with the contrast fix. #12 is merged at 5177df5 after resolving copy/status conflicts and preserving a concurrent remote handoff resolution. GitHub reports no open PRs. CI is green on the final PR head; mock verify passes with 143 tests, production build passes, and all 5 browser tests pass, including axe.
+- In progress: None for the PR-merging request; completed.
+- Blocked: No merge blocker remains. Figma access is still unverified for the earlier S1 design-reading request.
+- Contract changes: None by the integration. Shared `lib/copy.ts` and handoffs preserved; Studio sign-in adapted to the merged UI primitives and typography tokens. No force-push or direct push to main.
+- Next: `node scripts/tasks.mjs check S1 --no-fetch` now passes against main. Resume the requested Figma-to-component mapping before S1 implementation; B1 remains the separately registered login-throttling follow-up.
+
+### 2026-11-14 18:42 — Alexandre (studio)
+- CI follow-up: #13 at da5a67c has a successful verify/build run (43628141766). Its replacement Tasks run (43628143748) is pending after the prior task-board job was cancelled during the PR update; the PR remains open for review. The three requested PR reviews are complete.
+- Done: Follow-up review of F6 ba1cbcd (updated during the review). Contract-error reproduction now passes after ac1ae03; mock verify passes with 93 tests and all 3 Playwright tests pass again. The short-secret cookie still passes the proxy, reproduced directly with synthetic credentials. Posted a follow-up review acknowledging the corrected part; changes requested remains appropriate for B4.
+- In progress: #13, documentation-only task registration (B1 preserved, B2–B4 registered); B3's note updated to reflect the correction already present in F6. No bug is marked merged by this registration PR.
+- Blocked: #11 needs B2 (contrast); #12 needs B4 (minimum secret length at verification), plus the noted API-playbook alignment. Both remain unmerged. #10 is merged at 17082e2. S1 therefore still waits for F6.
+- Contract changes: None by this review; the updated F6 reuses merged F2. No `.env*` read and no `env:check` execution.
+- Next: Owners address the remaining review findings, then rerun CI and request review. Keep #13 open for task-registry review. The Studio working tree retains only the requested handoff changes in this file.
+
+### 2026-11-14 18:38 — Alexandre (studio)
+- Done: Reviewed PRs #10 (F2, 3e3d77e), #11 (F5, 3aeb65e), #12 (F6, 8a17b59) in isolated worktrees; task checks pass. Approved and squash-merged #10 at 17082e2. Submitted changes-requested reviews with inline findings on #11/#12. Local mock `pnpm verify` passes on all three (45/39/53 tests); Playwright passes on F5 (2) and F6 (3) with synthetic credentials. Chromium confirms F5 primary-button colours and type size. No `.env*` file opened.
+- In progress: Documentation-only task-registration PR from `chore/tasks-review-findings`: B2 (primary text contrast), B3 (login API contract), B4 (minimum signing-secret length); B1 copied unchanged from #12 via `tasks.mjs add` to preserve its allocated ID. The PR contains only `docs/tasks.json`; this handoff stays on the existing Studio branch.
+- Blocked: #11 and #12 are not compliant yet and remain unmerged; S1 still waits for F6 and verified Figma access. Existing green checks do not cover the reproduced contrast, error-envelope and short-secret cases.
+- Contract changes: None made by this review. F2 contracts are now merged; F6 must reuse them. No application source edited, no push to main, no force-push, no fallback removed.
+- Next: Raphaël fixes B2 in #11; Timoté fixes B3/B4 and rebases #12 onto merged F2. Rerun checks and review those commits before approval. The task-registration PR is a handoff, not completion of B1–B4. Recheck S1 only after F6 merges.
+
+### 2026-11-14 17:37 — Alexandre (studio)
+- Done: Completed AGENTS.md §11.1 orientation and read the Studio zone, TECHNICAL.md §§3.5/4, FEATURES.md S1–S9, DESIGN.md and both requested playbooks. Clean main was already up to date; created `feat/studio-S1-create-house` for this documentation-only handoff. Node 24.21.0 / pnpm 12.4.1; no `.env*` file opened; `.env.local` absent, shell AI_MODE unset, no listener on port 3000.
+- In progress: Step 1 access verification for Figma v5 “Family · Create the House” (22-546). Figma plugin discovery reports not installed; setup offered. No Figma MCP tool is available, so design context/screenshot and the element-by-element mapping remain unverified. Documentation maps the canvas to `bg-background`, headings/body to `font-display`/`font-body` and `text-ink`, name to Input, room choices to Cards with `public/rooms/{garden,kitchen,living}.svg`, consent to Checkbox, and the primary action to Button; these are planned mappings, not observations of the frame.
+- Blocked: `node scripts/tasks.mjs check S1` exits 1 for F2 and F6; F5 is only a soft warning. `node scripts/tasks.mjs next alexandre` reports nothing ready. Application scaffold, `lib/contracts/`, `components/ui/` and `package.json` are absent, so implementation and `pnpm verify` have not started. No push or PR; only this local handoff changed.
+- Contract changes: None. Reuse merged Zod API/entity schemas; any required contract change needs Timoté review. No application code, task dependencies or design evidence changed.
+- Next: Enable Figma access, read node 22-546 design context + screenshot, and finish the verified mapping. After F2/F6 merge, update from main and rerun `check S1`; show the concrete implementation plan, then build `/studio/house/new`, `POST /api/houses` and style-only `POST /api/houses/:id/rooms` with required consent. Validate in mock mode, capture 1194 × 834 evidence, run `pnpm verify` before any push, and open `feat(studio): create the House (S1)` with all shared/out-of-zone files listed.
 
 ### 2026-11-14 19:03 — Alexandre (studio)
 - Done: Reconciled the concurrent push on #12: remote 06fdc5c includes the same main integration and application code already validated locally (143 unit tests, production build and 5 browser tests). Its only difference from the local resolution is the chronological order of handoff entries; retained the remote version.
