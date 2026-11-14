@@ -180,9 +180,9 @@ function HouseForm() {
         <Image
           src={roomStyles[createdRoom.style ?? "garden"].image}
           alt=""
-          width={360}
-          height={250}
-          className="h-auto max-w-full rounded-card"
+          width={1194}
+          height={834}
+          className="h-auto w-90 max-w-full rounded-card"
         />
         <p className="text-20 font-bold">
           {firstName} · {createdRoom.name}

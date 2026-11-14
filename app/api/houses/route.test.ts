@@ -16,6 +16,7 @@ beforeEach(async () => {
   directory = await mkdtemp(join(tmpdir(), "memorai-s1-"));
   vi.stubEnv("STORAGE_DIR", directory);
   vi.stubEnv("AI_MODE", "mock");
+  vi.stubEnv("STUDIO_MOCK_STORE", "true");
 });
 afterEach(async () => {
   vi.unstubAllEnvs();
@@ -118,7 +119,7 @@ describe("S1 House and style Room routes", () => {
     expect(await readdir(join(directory, "studio-mock", "rooms"))).toHaveLength(1);
     const conflict = await createHouse(request({ firstName: "Mary", consent: true }, houseKey));
     expect(conflict.status).toBe(409);
-    expect((await findMockHouse(houseKey))?.firstName).toBe("Frank");
+    expect((await findMockHouse(houses[0].id))?.firstName).toBe("Frank");
     expect((await room(houses[0].id, { ...roomInput, style: "living" }, roomKey)).status).toBe(409);
   });
 

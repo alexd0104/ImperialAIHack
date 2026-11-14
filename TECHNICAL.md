@@ -446,6 +446,7 @@ Not in MUST. Go/no-go at 02:00 Sunday (see `PLAN.md`). If go: an ElevenLabs conv
 |---|---|---|
 | `AI_MODE` | `mock` | `mock` \| `live` |
 | `MOCK_FAIL_RATE` | `0.1` | mock failure rate |
+| `STUDIO_MOCK_STORE` | `false` | Explicit offline S1 test store; only allowed with `AI_MODE=mock`. Unset/false uses F4 MongoDB even in AI mock mode. Playwright enables it for its test server. |
 | `FAL_KEY` | — | personal fal key (server only) |
 | `FAL_KEY_LABEL` | `dev-timote` / `demo` | budget accounting per key |
 | `FAL_BUDGET_USD` | `5` | switch to mock above this spend |
@@ -495,6 +496,8 @@ Rules: nothing secret in `NEXT_PUBLIC_*`; pre-commit secret scan (husky); Claude
 | Story starts silent (Safari/iPad) | Autoplay policy | Start Howler only inside the tap handler; call `Howler.ctx.resume()` |
 | Video won't play or seek on Safari | No Range support | `/api/files` must return 206 with `Content-Range`, `Accept-Ranges: bytes` |
 | `MongoServerSelectionError` | IP not allowed / no network | Atlas Network Access: allow 0.0.0.0/0; check Wi-Fi; use demo mode |
+| Not sure the DB works | — | `pnpm db:ping` (connect + insert + read + delete, prints the DB name only), then `pnpm db:indexes` once per DB |
+| Node script crashes with "This module cannot be imported from a Client Component" or cannot resolve `@/` | `lib/db/*` starts with `import "server-only"` and uses the `@/` alias, which plain Node does not resolve | Scripts use the raw `mongodb` driver like `scripts/db-ping.mts`, importing only dependency-free files with a `.ts` extension (e.g. `lib/db/indexes.ts`) |
 | New file in `public/` 404 in production | Next serves `public/` as of build time | Serve generated files from `storage/` via `/api/files` |
 | fal output URL 404 later | CDN expiry (we set 1 h) | Always download outputs to `storage/` when the step completes |
 | Jobs stuck "IN_QUEUE" | Account concurrency = 2, other dev on same key | One key per developer; `FAL_MAX_CONCURRENCY=2` |

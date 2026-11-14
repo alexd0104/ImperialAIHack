@@ -2,7 +2,7 @@ import "server-only";
 import { CreateRoomRequest, IdParams } from "@/lib/contracts";
 import { copy } from "@/lib/copy";
 import { fail, ok, parseJson } from "@/lib/http";
-import { createMockRoom, creationId, findMockHouse } from "../../_mock-store";
+import { createRoom, creationId, findHouse } from "../../_store";
 
 export async function POST(request: Request, context: { params: Promise<{ id: string }> }) {
   const params = IdParams.safeParse(await context.params);
@@ -13,9 +13,9 @@ export async function POST(request: Request, context: { params: Promise<{ id: st
   if (input.data.source !== "style")
     return fail("unsupported_type", copy.studio.createHouse.styleOnly, 422);
   try {
-    if (!(await findMockHouse(params.data.id)))
+    if (!(await findHouse(params.data.id)))
       return fail("not_found", copy.studio.createHouse.missingHouse);
-    const room = await createMockRoom(id, params.data.id, input.data);
+    const room = await createRoom(id, params.data.id, input.data);
     if (
       room.houseId !== params.data.id ||
       room.style !== input.data.style ||

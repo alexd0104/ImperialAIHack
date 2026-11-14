@@ -17,6 +17,17 @@ const RULES = {
     check: (v) => v.length >= 32,
     hint: "32+ chars, e.g. node -e \"console.log(crypto.randomBytes(32).toString('base64url'))\"",
   },
+  // F4: Studio needs the DB; House demo mode does not, so these are not required.
+  MONGODB_URI: {
+    required: false,
+    check: (v) => /^mongodb(\+srv)?:\/\//.test(v),
+    hint: "mongodb+srv://… from Atlas (Connect → Drivers)",
+  },
+  MONGODB_DB: {
+    required: false,
+    check: (v) => /^mh_[a-z]+$/.test(v),
+    hint: "your own DB: mh_timote | mh_alexandre | mh_yasir | mh_raphael | mh_demo",
+  },
   OWNER_ZONE: {
     required: false,
     check: (v) => ["pipeline", "studio", "house", "design"].includes(v),

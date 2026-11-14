@@ -1,31 +1,25 @@
 import "server-only";
-import { randomBytes, randomUUID } from "node:crypto";
+import { randomUUID } from "node:crypto";
 import { link, mkdir, readFile, unlink, writeFile } from "node:fs/promises";
 import { join } from "node:path";
 import type { z } from "zod";
-import { roomStyles } from "@/components/studio/room-styles";
-import { type CreateHouseRequest, type CreateRoomRequest, House, Room } from "@/lib/contracts";
+import { House, Room } from "@/lib/contracts";
 
-// Temporary Studio adapter until F4 publishes lib/db helpers. Kept explicitly
-// mock-only; its files survive reloads but are not MongoDB documents or demo data.
+// Explicit offline test adapter. Normal Studio requests use F4's MongoDB helpers;
+// these files survive test-server reloads but are not MongoDB or demo documents.
 function directory(collection: "houses" | "rooms") {
   if ((process.env.AI_MODE ?? "mock") !== "mock") throw new Error("Mock adapter disabled");
   return join(process.env.STORAGE_DIR ?? "storage", "studio-mock", collection);
 }
 
-const uuid = /^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/i;
-
-export function creationId(request: Request): string | null {
-  const key = request.headers.get("Idempotency-Key");
-  return key === null ? randomUUID() : uuid.test(key) ? key.toLowerCase() : null;
-}
+const entityId = /^[a-f0-9]{24}$/i;
 
 function hasCode(error: unknown, code: string) {
   return error instanceof Error && "code" in error && error.code === code;
 }
 
 async function read<S extends z.ZodType>(collection: "houses" | "rooms", id: string, schema: S) {
-  if (!uuid.test(id)) return null;
+  if (!entityId.test(id)) return null;
   try {
     return schema.parse(
       JSON.parse(await readFile(join(directory(collection), `${id}.json`), "utf8")),
@@ -62,39 +56,5 @@ async function insert<S extends z.ZodType>(
 
 export const findMockHouse = (id: string) => read("houses", id, House);
 
-export async function createMockHouse(id: string, input: CreateHouseRequest) {
-  const now = new Date().toISOString();
-  return insert(
-    "houses",
-    id,
-    House,
-    House.parse({
-      id,
-      firstName: input.firstName,
-      consentAt: now,
-      createdAt: now,
-      token: randomBytes(32).toString("base64url"),
-    }),
-  );
-}
-
-export async function createMockRoom(
-  id: string,
-  houseId: string,
-  input: Extract<CreateRoomRequest, { source: "style" }>,
-) {
-  const preset = roomStyles[input.style];
-  return insert(
-    "rooms",
-    id,
-    Room,
-    Room.parse({
-      ...input,
-      id,
-      houseId,
-      backgroundPath: preset.image,
-      slots: preset.slots,
-      createdAt: new Date().toISOString(),
-    }),
-  );
-}
+export const insertMockHouse = (house: House) => insert("houses", house.id, House, house);
+export const insertMockRoom = (room: Room) => insert("rooms", room.id, Room, room);

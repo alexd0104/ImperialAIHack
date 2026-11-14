@@ -23,6 +23,7 @@ Async coordination. **Append only; never edit someone else's lines.** Newest ent
 
 _(newest first: date — what changed — who)_
 
+- 2026-11-14 — **`GenerationCacheEntry` added (F4)** — Timoté. `lib/contracts/jobs.ts`: {id, key, model, outputPath, costUsd, createdAt}, the `generation_cache` document of TECHNICAL.md §6. Additive only.
 - 2026-11-14 — **Contracts v1 published (F2)** — Timoté. `import { … } from "@/lib/contracts"`; types are `z.infer`. Fixtures in `lib/contracts/__fixtures__/` (Frank, garden room, one Memory with 2 scenes, a bundle).
   1. Entities (`entities.ts`): `House`, `Room` with embedded `Slot` {id, x, y, scale normalised 0..1 on 1194×834, storyId?}, `Story` {object {kind glb|svg, path, jobId?}, memoryOrder}, `Memory` {answers, freeText?, sheet?, okAlone, status draft|generating|ready_for_review|approved|published}, `Asset`, `Scene` {outputs {restored?, colourised?, clip?, ambience?} as storage paths, choice? {use, colour, restored}, status pending|generating|done|fallback|failed}, `Event`. String ids, ISO date strings.
   2. `MemorySheet` = TECHNICAL.md §4.2 exactly. `MemoryAnswers` = the sheet minus freeText/okAlone/source, all optional and **without defaults** (what PATCH `/api/memories/:id` sends as `answers`; merge it, do not replace).
@@ -31,6 +32,8 @@ _(newest first: date — what changed — who)_
   5. Errors: `{ error: { code, message, retryable } }`, 10 codes of §4.4 with default HTTP status. Route helpers in `lib/http.ts`: `ok(data, status?)`, `fail(code, message, status?, retryable?)`, `parseJson(req, Schema)` (safe-parse result, never throws).
 
 ## Requests
+
+- 2026-11-14 19:37 — Alexandre → Timoté — F4 arrived during S1 finalization; the earlier persistence request is resolved in S1. Default creation now uses db.houses/db.rooms with ObjectId-compatible ids and duplicate-key replay. The offline adapter requires STUDIO_MOCK_STORE=true plus AI_MODE=mock; no silent DB fallback. B5 remains in #17. F4's existing lib/storage/index.ts:19 emits a Turbopack whole-project tracing warning; build still passes, source unchanged by S1.
 
 - 2026-11-14 19:30 — Alexandre → Timoté — S1 mock creation is ready. F4 helpers are still absent from main: replace `app/api/houses/_mock-store.ts` with `lib/db` persistence when F4 lands, preserving consent timestamps, private tokens, stable Room Slots and idempotent retries. The temporary adapter only runs in AI_MODE=mock and writes to gitignored STORAGE_DIR/studio-mock. Also registered B5 (API playbook uses `input.error`, but `parseJson` exposes `message`) separately in https://github.com/alexd0104/ImperialAIHack/pull/17.
 - 2026-11-14 19:30 — Alexandre → Raphaël / Yasir — S1 reuses F5 and exported SVGs. Alexandre explicitly approved proceeding without direct Figma MCP access; frame 22-546 comparison remains pending (mapping and captures in DESIGN §9). Garden Slots reuse the F2 fixture; please review the provisional Kitchen/Living presets in `components/studio/room-styles.ts` before House integration. S1 has no fake link into unimplemented S2.
@@ -48,6 +51,13 @@ _(newest first: date — from → to — what)_
 - ~~2026-11-14 — Raphaël → Timoté — The Tasks workflow rejected `(ID-wip)` PR titles although its error message recommends them (`.github/workflows/tasks.yml:47`). Fixed in `fix/shared-tasks-wip-title`; please review. Not registered as a B task because `tasks.mjs add` needs Node, which is not set up on my machine yet: please add it if you want it on the board.~~ Resolved by #9.
 
 ## Log
+
+### 2026-11-14 19:37 — Alexandre (studio)
+- Done: Integrated concurrent F4 fa2b4c4, preserving dependencies, contracts and all handoffs. S1 now uses F4 MongoDB collections by default, including in AI_MODE=mock. Added collection-level integration tests for ObjectId mapping, private tokens, duplicate-key replay, parent lookup and no fallback on DB failure. Offline browser testing requires an explicit STUDIO_MOCK_STORE=true; documented in TECHNICAL.md and enabled by Playwright.
+- In progress: Final browser regression and CI for PR #18, then merge as requested. pnpm verify passes with 195 tests; production build passes (existing F4 storage tracing warning).
+- Blocked: No implementation blocker. Exact frame 22-546 comparison remains deferred by Alexandre's explicit approval; Kitchen/Living Slot presets still need House-owner review before House integration.
+- Contract changes: None by S1; F4's additive GenerationCacheEntry is preserved. Additional shared files: playwright.config.ts (explicit test store) and TECHNICAL.md (configuration). No lib/db or lib/storage implementation edited.
+- Next: Merge #18 on green checks. S2 uses the persisted House/Room. #17 registers B5 for Timoté separately; do not mistake registration for its fix.
 
 ### 2026-11-14 19:30 — Alexandre (studio)
 - Done: Implemented S1 on feat/studio-S1-create-house: /studio/house/new, POST /api/houses and style-only POST /api/houses/:id/rooms. Required consent, shared contracts, fixed empty Slots, private token withheld, session guard, saved tab draft, idempotent retries including lost responses, and expired-session recovery. Self-review complete; pnpm verify passes (161 tests), production build passes, 9 browser tests pass in dev and 4 S1 scenarios pass against production, including axe on tablet/phone. Captures in docs/design-evidence/create-house-{code,phone-code}.png.
@@ -84,6 +94,13 @@ _(newest first: date — from → to — what)_
 - Blocked: `node scripts/tasks.mjs check S1` exits 1 for F2 and F6; F5 is only a soft warning. `node scripts/tasks.mjs next alexandre` reports nothing ready. Application scaffold, `lib/contracts/`, `components/ui/` and `package.json` are absent, so implementation and `pnpm verify` have not started. No push or PR; only this local handoff changed.
 - Contract changes: None. Reuse merged Zod API/entity schemas; any required contract change needs Timoté review. No application code, task dependencies or design evidence changed.
 - Next: Enable Figma access, read node 22-546 design context + screenshot, and finish the verified mapping. After F2/F6 merge, update from main and rerun `check S1`; show the concrete implementation plan, then build `/studio/house/new`, `POST /api/houses` and style-only `POST /api/houses/:id/rooms` with required consent. Validate in mock mode, capture 1194 × 834 evidence, run `pnpm verify` before any push, and open `feat(studio): create the House (S1)` with all shared/out-of-zone files listed.
+### 2026-11-14 19:25 — Timoté (pipeline)
+- Done: F4. `lib/db` (`import { db, findHouseByToken, deleteHouseDocuments } from "@/lib/db"`): client singleton on `globalThis`, env read lazily; `db.houses|rooms|stories|memories|assets|scenes|jobs|events|generationCache` with `insert/findById/findOne/find/update/deleteById/deleteMany/raw`, all parsed with the contracts. `lib/storage`: `saveFile(houseId, name, bytes|stream) → {path, bytes, sha256}`, `statFile`, `openReadStream`, `sha256File`, `deleteHouseFolder`, `contentTypeFor`, traversal-safe. `GET/HEAD /api/files/<houseId>/...` with Range (206/416), access = Studio session or `?t=<House token>` of the House owning the folder. `pnpm db:ping`, `pnpm db:indexes`. Checked on real Atlas (`mh_timote`): ping, the 5 indexes, typed insert/read/update/delete OK.
+- In progress: nothing.
+- Blocked: nothing.
+- Contract changes: `GenerationCacheEntry` (additive).
+- Next: P1 job engine.
+- Notes for everyone: **in Mongo only `_id` is an ObjectId; foreign keys (`houseId`, `roomId`…) stay strings**, dates are BSON `Date`, so query with `{ roomId }` directly. Ids passed to `findById` that are not 24-hex return `null` (→ 404). Stored paths are relative (`<houseId>/...`); the API turns them into `/api/files/<path>` (House adds `?t=<token>`). In `HOUSE_DEMO_MODE` the token in `DEMO_HOUSE_TOKEN` (must be set, no default) opens any file, since there is no DB to look up the House. Files are cached 5 min (`private`). Run `pnpm env:check`, then `pnpm db:ping` and `pnpm db:indexes` once for your own DB. `.gitignore` now anchors `/storage/` and `/demo-assets/` (the old `storage/` pattern also ignored `lib/storage/`). Scripts that need the DB (Raphaël: `seed-demo`) use the raw driver like `scripts/db-ping.mts`: plain Node cannot load `lib/db` (`server-only`, `@/` alias); see TECHNICAL.md §10.
 
 ### 2026-11-14 19:03 — Alexandre (studio)
 - Done: Reconciled the concurrent push on #12: remote 06fdc5c includes the same main integration and application code already validated locally (143 unit tests, production build and 5 browser tests). Its only difference from the local resolution is the chronological order of handoff entries; retained the remote version.

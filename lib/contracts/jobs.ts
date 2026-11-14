@@ -81,3 +81,14 @@ export const JobView = Job.omit({
   bypassCache: true,
 }).extend({ steps: z.array(JobStepView).min(1) });
 export type JobView = z.infer<typeof JobView>;
+
+/** One cached model output (TECHNICAL.md §5.2 step 3): same key → reuse, no fal call. */
+export const GenerationCacheEntry = z.object({
+  id: Id,
+  key: z.string().min(1),
+  model: z.string(),
+  outputPath: z.string(),
+  costUsd: z.number().nonnegative(),
+  createdAt: IsoDate,
+});
+export type GenerationCacheEntry = z.infer<typeof GenerationCacheEntry>;
