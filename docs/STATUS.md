@@ -38,6 +38,13 @@ _(newest first: date — from → to — what)_
 
 ## Log
 
+### 2026-11-14 19:03 — Alexandre (studio)
+- Done: Reconciled the concurrent push on #12: remote 06fdc5c includes the same main integration and application code already validated locally (143 unit tests, production build and 5 browser tests). Its only difference from the local resolution is the chronological order of handoff entries; retained the remote version.
+- In progress: Final GitHub verification and merge of #12 at the latest remote head, per the user's explicit request.
+- Blocked: No remaining code or merge conflict. Required checks need to report on the new resolved head.
+- Contract changes: None; this finalization changes only this shared handoff.
+- Next: Merge #12 once required checks report success, then confirm the open PR list is empty. No force-push or direct push to main.
+
 ### 2026-11-14 19:20 — Raphaël (design)
 - Done: B2 (contrast fix) shipped inside the F5 merge 9ab8f45; this entry marks it on the board. Q4: DESIGN.md §8 accessibility notes (contrast table, targets, focus, motion) and §6 MCP note for F5.
 - In progress: Q4 (ongoing: a Figma-vs-code row per screen as Studio/House screens land).
@@ -52,12 +59,34 @@ _(newest first: date — from → to — what)_
 - Contract changes: none.
 - Next: everyone: use `bg-primary-strong` (not `bg-primary`) behind white text. Test 4.
 
+### 2026-11-14 18:58 — Alexandre (studio)
+- Done: F6 integration validated after resolving `lib/copy.ts` and `docs/STATUS.md` conflicts with main. Mock `pnpm verify` passes (143 tests), production build passes, and all 5 Playwright tests pass including the shared UI axe check. B3/B4 regressions pass; sign-in uses F5 primitives and readable type tokens.
+- In progress: Push the tested merge commit to the existing PR #12 branch, approve and merge at that exact commit. #13 has been merged; #11 was already merged.
+- Blocked: None locally; awaiting the final GitHub checks and merge result.
+- Contract changes: None. Shared files touched for integration: `lib/copy.ts` and `docs/STATUS.md`; application adjustments are within `app/studio/login/`. Existing main changes were preserved without force-push.
+- Next: Confirm #12 merged and the open PR list is empty. S1 can be rechecked once F6 is on main; B1 remains a separate tracked follow-up.
+
+### 2026-11-14 18:55 — Alexandre (studio)
+- Done: User requested accepting all remaining PRs and resolving conflicts. #11 was already merged with its B2 contrast fix; merged #13 (task registry). Integrated main into #12, preserving both `copy.ui` and `copy.auth`/`copy.studio`, and all design/pipeline handoff entries. Studio sign-in now uses the merged Button/Input/Label primitives and current type tokens.
+- In progress: Verify/build/browser checks of the combined F5 + F6 tree, then approve and merge #12 (F6, B3, B4). Reviewed the author's fixes: shared API errors, 422 validation responses, minimum signing-secret length enforced during both issuance and verification, and proxy regression coverage.
+- Blocked: None after conflict resolution; integration validation pending.
+- Contract changes: None. Outside Studio: conflict resolution in shared `lib/copy.ts` and this handoff; upstream main changes retained, including AGENTS.md. No pipeline behavior or shared component source changed by this integration; no `.env*` file read.
+- Next: Complete checks, push the merge commit to the existing #12 branch without force-push, approve the tested commit and merge it. Confirm no PR remains open and recheck S1 readiness.
+
 ### 2026-11-14 18:30 — Raphaël (design)
 - Done: F5. Tokens in `app/globals.css` (TECHNICAL.md §3.2 + shadcn mapping), fonts in `app/fonts.ts`, 14 components in `components/ui/` (Button, Switch, Badge, Card, Input/Textarea/Label, Checkbox, Tabs, ToggleGroup, Polaroid, IconButton 64/76/92/124, HeartButton, AvatarGroup, Stepper, SegmentedProgress). Gallery at `/dev/ui` (dev only, 404 in prod). Evidence `docs/design-evidence/f5-dev-ui.png`, deviations in `docs/DESIGN.md` §4.3.
 - In progress: PR "feat(design): tokens, fonts and base components (F5)".
 - Blocked: nothing. Figma MCP needs re-auth (`/mcp`) for new captures.
 - Contract changes: none. New tokens: `switch-on #3F8A55`, `avatar-ring`, `shadow-house-control`, `shadow-knob`, `spacing-page`.
 - Next: Test 4 (Rodin vs Trellis). Everyone: Tailwind's default palette, `text-sm/lg…` and `shadow-sm…` are gone; use our tokens (`text-16`, `text-ink/70`, `shadow-card`, `rounded-card`). Import components from `@/components/ui/*`; `cn` is in `@/lib/utils`. House screens: IconButton 76+ and HeartButton only (Switch/Checkbox/Button sm are Studio-only).
+
+### 2026-11-14 18:26 — Timoté (pipeline)
+- Done: F6 Studio auth on `feat/pipeline-F6-studio-auth`: `POST /api/auth/login` (signed `mh_session`, 7 days, Secure only on https), `POST /api/auth/logout`, `proxy.ts` guard (pages → `/studio/login?next=`, APIs → 401 envelope, `/api/h` + `/api/files` + login/logout open, `X-Robots-Tag: noindex` everywhere), minimal `/studio/login`, `pnpm env:check`. 97 unit tests + 3 e2e, `pnpm build` green.
+- In progress: PR #12 (F6, B3, B4), rebased on main after #10. Fixed Alexandre's review: sessions signed with a SESSION_SECRET under 32 chars are now rejected by `verifySessionToken` (so by the proxy) and refused by `createSessionToken`; invalid login body returns 422; every error parses with `ApiErrorResponse`; API messages live in `copy.auth.*`.
+- Blocked: #12 needs Alexandre's re-review. B1 moved to #13 (it registers B1–B4), so #12 no longer touches `docs/tasks.json`.
+- Contract changes: none.
+- Next: F4 (DB + storage), then P1. Known gaps: login has no throttle (registered as B1); logout does not revoke a copied cookie (stateless HMAC token, fine for the hackathon).
+- Notes for everyone: run **`pnpm env:check`** after pulling: it validates `.env.local` (names only, never values). You need `STUDIO_PASSWORD` and a `SESSION_SECRET` of **32+ characters**, otherwise sign-in returns 500 "not configured". Studio routes call `/api/**` with the cookie automatically; `/api/files` stays open in the proxy, so its F4 handler must check session-or-House-token itself. `biome.json` now ignores `public/**/*.svg` (the exported SVGs broke `pnpm lint` on main). Raphaël/Alexandre: `/studio/login` is unstyled until F5; restyle freely, keep the label "Password" and the `role="alert"` (e2e uses them).
 
 ### 2026-11-14 17:55 — Raphaël (design)
 - Done: SH7, 8 missing frames on Figma v5 row 4 (Questions + free text, Record a voice, Story end, loading/error/clip fallback, Order memories, Room from a photo, Sent confirmation, Studio phone). Mapped in `docs/DESIGN.md` §2, captures in `docs/design-evidence/sh7-*`.
