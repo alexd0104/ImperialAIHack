@@ -34,9 +34,23 @@ _(newest first: date — what changed — who)_
 
 _(newest first: date — from → to — what)_
 
-- 2026-11-14 — Raphaël → Timoté — The Tasks workflow rejected `(ID-wip)` PR titles although its error message recommends them (`.github/workflows/tasks.yml:47`). Fixed in `fix/shared-tasks-wip-title`; please review. Not registered as a B task because `tasks.mjs add` needs Node, which is not set up on my machine yet: please add it if you want it on the board.
+- ~~2026-11-14 — Raphaël → Timoté — The Tasks workflow rejected `(ID-wip)` PR titles although its error message recommends them (`.github/workflows/tasks.yml:47`). Fixed in `fix/shared-tasks-wip-title`; please review. Not registered as a B task because `tasks.mjs add` needs Node, which is not set up on my machine yet: please add it if you want it on the board.~~ Resolved by #9.
 
 ## Log
+
+### 2026-11-14 19:20 — Raphaël (design)
+- Done: B2 (contrast fix) shipped inside the F5 merge 9ab8f45; this entry marks it on the board. Q4: DESIGN.md §8 accessibility notes (contrast table, targets, focus, motion) and §6 MCP note for F5.
+- In progress: Q4 (ongoing: a Figma-vs-code row per screen as Studio/House screens land).
+- Blocked: Figma MCP needs re-auth for new captures and Figma Variables.
+- Contract changes: none.
+- Next: test 4 (Rodin vs Trellis); Figma Variables for the tokens once re-authed.
+
+### 2026-11-14 19:05 — Raphaël (design)
+- Done: B2 (PR #11 review by Alexandre). New tokens `primary-strong #B4552F` / `primary-strong-hover #A44B2C` for filled controls with white text (4.9 / 5.8:1), `success-strong #426B38` for the Approved badge; avatar initials in ink; checkbox/stepper checks on `success-text`. Contrast unit test for every pair + axe (WCAG 2.2 AA) e2e on `/dev/ui`.
+- In progress: PR #11 (F5) waiting for re-review.
+- Blocked: nothing.
+- Contract changes: none.
+- Next: everyone: use `bg-primary-strong` (not `bg-primary`) behind white text. Test 4.
 
 ### 2026-11-14 18:58 — Alexandre (studio)
 - Done: F6 integration validated after resolving `lib/copy.ts` and `docs/STATUS.md` conflicts with main. Mock `pnpm verify` passes (143 tests), production build passes, and all 5 Playwright tests pass including the shared UI axe check. B3/B4 regressions pass; sign-in uses F5 primitives and readable type tokens.
@@ -51,13 +65,6 @@ _(newest first: date — from → to — what)_
 - Blocked: None after conflict resolution; integration validation pending.
 - Contract changes: None. Outside Studio: conflict resolution in shared `lib/copy.ts` and this handoff; upstream main changes retained, including AGENTS.md. No pipeline behavior or shared component source changed by this integration; no `.env*` file read.
 - Next: Complete checks, push the merge commit to the existing #12 branch without force-push, approve the tested commit and merge it. Confirm no PR remains open and recheck S1 readiness.
-
-### 2026-11-14 19:05 — Raphaël (design)
-- Done: B2 (PR #11 review by Alexandre). New tokens `primary-strong #B4552F` / `primary-strong-hover #A44B2C` for filled controls with white text (4.9 / 5.8:1), `success-strong #426B38` for the Approved badge; avatar initials in ink; checkbox/stepper checks on `success-text`. Contrast unit test for every pair + axe (WCAG 2.2 AA) e2e on `/dev/ui`.
-- In progress: PR #11 (F5) waiting for re-review.
-- Blocked: nothing.
-- Contract changes: none.
-- Next: everyone: use `bg-primary-strong` (not `bg-primary`) behind white text. Test 4.
 
 ### 2026-11-14 18:30 — Raphaël (design)
 - Done: F5. Tokens in `app/globals.css` (TECHNICAL.md §3.2 + shadcn mapping), fonts in `app/fonts.ts`, 14 components in `components/ui/` (Button, Switch, Badge, Card, Input/Textarea/Label, Checkbox, Tabs, ToggleGroup, Polaroid, IconButton 64/76/92/124, HeartButton, AvatarGroup, Stepper, SegmentedProgress). Gallery at `/dev/ui` (dev only, 404 in prod). Evidence `docs/design-evidence/f5-dev-ui.png`, deviations in `docs/DESIGN.md` §4.3.
