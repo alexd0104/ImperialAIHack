@@ -35,6 +35,8 @@ _(newest first: date — what changed — who)_
 
 ## Requests
 
+- 2026-11-14 22:00 — Raphaël → Yasir — Q4 found (Studio): (1) after `POST /api/scenes/:id/choice` on every scene the Memory stays `ready_for_review`; the choice route should call `refreshMemoryStatusById` (`lib/jobs/generation.ts`) so it becomes `approved`. (2) Place (`components/studio/PlaceStory.tsx:133`) draws Slots on a plain box: Figma 20-536 shows the Room SVG with its Objects, room tabs and "Send to Mum's house". (3) Studio screens lack the 4-step stepper and family avatars of Figma; full list in `docs/DESIGN.md` §7.
+- 2026-11-14 22:00 — Raphaël → Yasir — Q4 found (House): Choose a room shows style ids ("garden", "living") instead of Room names; alone mode doesn't fade Stories that aren't OK alone (Figma 20-701). Details in `docs/DESIGN.md` §7.
 - 2026-11-14 20:20 — Raphaël → Alexandre — Kitchen/living Slot positions changed in `components/studio/room-styles.ts` (ids unchanged): Objects now sit on the counter top / floor. Please check your Room preview still looks right.
 - 2026-11-14 — Alexandre → Timoté — S2 provisional Slot assignment is explicitly approved by Alexandre (modifiable in S8, no reservation/publication here). P5 is still absent (mock jobs carry a permanent lease so P1 cannot process them): the temporary Studio object-job route persists Job/JobView and uses a sample GLB only in mock mode. Please replace that adapter with P5 when ready; normal persistence uses F4 MongoDB, explicit offline tests use STUDIO_MOCK_STORE. Object photos upload through POST /api/houses/:id/assets with existing Asset/AssetView schemas.
 - 2026-11-14 20:07 — Yasir → Timoté — Your 20:15 build request is fixed in eeb26e6 (B8): `/house/[token]` now reads params inside `<Suspense>`; `pnpm build` passes.
@@ -61,6 +63,11 @@ _(newest first: date — from → to — what)_
 
 ## Log
 
+### 2026-11-14 22:00 — Raphaël (design, Q4)
+- Done: Q4. 14 Figma frames captured through the MCP (`get_screenshot`) and 8 new Studio code captures, all in `docs/design-evidence/`; `docs/DESIGN.md` §6 (MCP usage), §7 (13 new rows with deviations), §8 (axe WCAG 2.2 AA: 0 violations on 9 Studio screens; House already 0 on 8).
+- Out-of-zone (Studio, Yasir): `app/studio/{page.tsx,care/page.tsx,stories/[id]/place/page.tsx,memories/[id]/review/page.tsx}` now read params/searchParams inside `<Suspense>`, because `pnpm build` (and main's CI) failed on 62be5c5. Same pattern as B8.
+- In progress: nothing. Blocked: nothing.
+- Next: Yasir: Requests above (Memory status after choices, Place background, Room names).
 ### 2026-11-14 21:10 — Yasir (studio takeover, S6–S9, SH3, SH4)
 - Done: S9 Hear back `/studio?house=` (+ GET/PATCH/DELETE `/api/houses/:id`, GET `feedback`, `link`). SH3+SH4 `/studio/care` (Don't show list on House, whole-word warning on Memory sheet and Place; OK-alone default; privacy text; delete with confirmation). S8 `/studio/stories/[id]/place` (Slot map, up/down order, OK alone, publish + confirmation; `PATCH /api/stories/:id`, `POST /api/stories/:id/publish` refuses until every scene has a choice). S6+S7 `/studio/memories/[id]/review` (progress with slow zoom + live step name, then before/after, colour, motion, Use / Try again / Keep original; `POST /api/scenes/:id/choice`).
 - In progress: nothing. SH5 (voice recording) not started.
