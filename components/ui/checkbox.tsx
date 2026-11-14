@@ -5,7 +5,7 @@ import { Check } from "lucide-react";
 import type * as React from "react";
 import { cn } from "@/lib/utils";
 
-// Figma v5 Questions frame: 26 px box, 8 px radius, sage when checked.
+// Figma v5 Questions frame: 26 px box, 8 px radius, green when checked (success-text, so the white check reaches 3:1).
 export function Checkbox({
   className,
   ...props
@@ -13,7 +13,7 @@ export function Checkbox({
   return (
     <CheckboxPrimitive.Root
       className={cn(
-        "peer inline-flex size-6.5 shrink-0 cursor-pointer items-center justify-center rounded-[8px] border-[1.5px] border-ink/45 bg-surface transition-colors duration-200 ease-memorai disabled:cursor-not-allowed disabled:opacity-50 data-[state=checked]:border-success data-[state=checked]:bg-success",
+        "peer inline-flex size-6.5 shrink-0 cursor-pointer items-center justify-center rounded-[8px] border-[1.5px] border-ink/45 bg-surface transition-colors duration-200 ease-memorai disabled:cursor-not-allowed disabled:opacity-50 data-[state=checked]:border-success-text data-[state=checked]:bg-success-text",
         className,
       )}
       {...props}

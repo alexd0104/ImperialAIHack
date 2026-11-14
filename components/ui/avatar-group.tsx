@@ -2,6 +2,7 @@ import type * as React from "react";
 import { cn } from "@/lib/utils";
 
 // Figma v5 "Family avatars": overlapping initials discs with a cream ring.
+// Initials in ink, not Figma's white: white on these pastels is about 2:1.
 const tones = ["bg-avatar-honey", "bg-avatar-sage", "bg-avatar-rose"] as const;
 
 /** Stable colour per position so the same family member keeps a colour across screens. */
@@ -41,7 +42,7 @@ export function AvatarGroup({ people, size = 40, className, ...props }: AvatarGr
           title={person.name}
           aria-label={person.name}
           className={cn(
-            "flex shrink-0 items-center justify-center rounded-full border-avatar-ring font-body font-bold text-white",
+            "flex shrink-0 items-center justify-center rounded-full border-avatar-ring font-body font-bold text-ink",
             sizes[size],
             avatarTone(i),
           )}

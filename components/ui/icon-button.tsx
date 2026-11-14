@@ -17,7 +17,7 @@ export const iconButtonVariants = cva(
       tone: {
         surface: "bg-surface text-ink hover:bg-surface-muted",
         glass: "bg-surface/92 text-ink backdrop-blur-sm hover:bg-surface",
-        primary: "bg-primary text-white hover:bg-primary/90",
+        primary: "bg-primary text-white hover:bg-primary-strong",
       },
       elevation: {
         studio: "shadow-round-button",

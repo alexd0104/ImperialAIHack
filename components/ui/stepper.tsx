@@ -33,8 +33,8 @@ export function Stepper({ steps, current, className, ...props }: StepperProps) {
               aria-hidden
               className={cn(
                 "flex size-7.5 shrink-0 items-center justify-center rounded-full text-14 font-bold",
-                state === "done" && "bg-success text-white",
-                state === "current" && "bg-primary text-white",
+                state === "done" && "bg-success-text text-white",
+                state === "current" && "bg-primary-strong text-white",
                 state === "todo" && "border-[1.5px] border-ink/20 text-ink/70",
               )}
             >

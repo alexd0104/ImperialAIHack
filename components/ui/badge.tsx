@@ -9,13 +9,13 @@ export const badgeVariants = cva(
   {
     variants: {
       variant: {
-        approved: "bg-success-surface px-2.5 py-1 text-12 font-bold text-success-text",
-        attention: "bg-primary px-2.5 py-1 text-12 font-bold text-white",
+        approved: "bg-success-surface px-2.5 py-1 text-12 font-bold text-success-strong",
+        attention: "bg-primary-strong px-2.5 py-1 text-12 font-bold text-white",
         neutral: "bg-surface-muted px-2.5 py-1 text-12 font-bold text-ink/80",
         media:
           "gap-2.5 border-[1.5px] border-surface/30 bg-overlay/45 py-2.25 pr-4 pl-3.5 text-17 font-semibold text-white backdrop-blur-[7px]",
         photo: "bg-surface/92 px-3.5 py-2 text-14 font-semibold text-ink",
-        photoPrimary: "bg-primary/85 px-3.5 py-2 text-14 font-semibold text-white",
+        photoPrimary: "bg-primary-strong px-3.5 py-2 text-14 font-semibold text-white",
       },
     },
     defaultVariants: { variant: "neutral" },

@@ -7,9 +7,9 @@ test("dev UI kit renders every base component", async ({ page }) => {
   await expect(page.getByRole("button", { name: "Send love" })).toBeVisible();
   await expect(page.getByRole("switch").first()).toBeVisible();
 
-  // Tokens and fonts are wired: primary button uses terracotta and Nunito.
+  // Tokens and fonts are wired: primary button uses the AA terracotta (primary-strong) and Nunito.
   const primary = page.getByRole("button", { name: "Bring to life" });
-  await expect(primary).toHaveCSS("background-color", "rgb(217, 115, 78)");
+  await expect(primary).toHaveCSS("background-color", "rgb(180, 85, 47)");
   const font = await primary.evaluate((el) => getComputedStyle(el).fontFamily);
   expect(font).toMatch(/Nunito/i);
 

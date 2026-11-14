@@ -42,3 +42,50 @@ describe("design tokens", () => {
     expect(css).not.toContain("dm sans");
   });
 });
+
+// WCAG 2.2 contrast for the colour pairs our components actually use (PR #11 review).
+// Covers hover/selected states that axe cannot reach on a static page.
+function token(name: string): string {
+  const match = css.match(new RegExp(`--color-${name}: (#[0-9a-f]{6});`));
+  if (!match) throw new Error(`token --color-${name} not found`);
+  return match[1];
+}
+
+function luminance(hex: string): number {
+  const [r, g, b] = [1, 3, 5].map((i) => {
+    const c = Number.parseInt(hex.slice(i, i + 2), 16) / 255;
+    return c <= 0.03928 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4;
+  });
+  return 0.2126 * r + 0.7152 * g + 0.0722 * b;
+}
+
+function contrast(a: string, b: string): number {
+  const [hi, lo] = [luminance(a), luminance(b)].sort((x, y) => y - x);
+  return (hi + 0.05) / (lo + 0.05);
+}
+
+const pairs: [fg: string, bg: string, min: number, usedBy: string][] = [
+  [
+    "white",
+    "primary-strong",
+    4.5,
+    "Button primary, Badge attention/photoPrimary, ToggleGroup primary, Stepper current",
+  ],
+  ["white", "primary-strong-hover", 4.5, "Button primary hover"],
+  ["success-strong", "success-surface", 4.5, "Badge approved"],
+  ["white", "success-text", 4.5, "Stepper done, Checkbox checked"],
+  ["ink", "avatar-honey", 4.5, "AvatarGroup initials"],
+  ["ink", "avatar-sage", 4.5, "AvatarGroup initials"],
+  ["ink", "avatar-rose", 4.5, "AvatarGroup initials"],
+  ["ink", "background", 4.5, "body text"],
+  ["ink", "surface", 4.5, "cards, inputs"],
+  ["ink", "surface-muted", 4.5, "Tabs, ToggleGroup track"],
+  ["white", "primary", 3, "IconButton primary (icon only)"],
+  ["white", "switch-on", 3, "Switch knob (non-text)"],
+];
+
+describe("colour contrast", () => {
+  it.each(pairs)("%s on %s ≥ %d:1 (%s)", (fg, bg, min) => {
+    expect(contrast(token(fg), token(bg))).toBeGreaterThanOrEqual(min);
+  });
+});

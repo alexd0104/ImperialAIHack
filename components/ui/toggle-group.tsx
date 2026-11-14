@@ -13,7 +13,8 @@ const itemVariants = cva(segmentedItem, {
     tone: {
       surface:
         "data-[state=on]:bg-surface data-[state=on]:font-bold data-[state=on]:text-ink data-[state=on]:shadow-card",
-      primary: "data-[state=on]:bg-primary data-[state=on]:font-bold data-[state=on]:text-white",
+      primary:
+        "data-[state=on]:bg-primary-strong data-[state=on]:font-bold data-[state=on]:text-white",
     },
   },
   defaultVariants: { tone: "surface" },

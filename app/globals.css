@@ -19,9 +19,15 @@
   /* Figma's #2B2420 (old Button component) is merged into ink. */
   --color-ink: #3b2a20;
   --color-primary: #d9734e;
+  /* Filled controls that carry text: white on primary is only 3.2:1, below AA (PR #11 review).
+     primary stays for icons, accents and large shapes (≥ 3:1 is enough there). */
+  --color-primary-strong: #b4552f;
+  --color-primary-strong-hover: #a44b2c;
   --color-success: #7fa36f;
   --color-success-surface: #e3ecd9;
   --color-success-text: #4f7a44;
+  /* success-text on success-surface is 4.1:1; badges need 4.5:1. */
+  --color-success-strong: #426b38;
   --color-warning-surface: #fbe6d8;
   --color-danger: #c2412d;
   --color-switch-off: #dcd5cb;
@@ -99,7 +105,7 @@
   --card-foreground: var(--color-ink);
   --popover: var(--color-surface);
   --popover-foreground: var(--color-ink);
-  --primary: var(--color-primary);
+  --primary: var(--color-primary-strong);
   --primary-foreground: var(--color-white);
   --secondary: var(--color-surface);
   --secondary-foreground: var(--color-ink);

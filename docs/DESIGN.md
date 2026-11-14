@@ -120,12 +120,15 @@ Objects keep their soft ground shadow and their in-room tilt (radio, camera) bec
 Every component is visible on the dev-only page `/dev/ui` (404 in production); full capture `docs/design-evidence/f5-dev-ui.png` (1194 px wide, tablet).
 
 Deviations from Figma, on purpose:
-- **Button Primary**: Figma component is dark `#2B2420` in DM Sans; code is `primary` `#D9734E` in Nunito Bold 18, as used on every v5 screen.
+- **Button Primary**: Figma component is dark `#2B2420` in DM Sans; code is terracotta in Nunito Bold 18, as used on every v5 screen.
+- **Accessible terracotta (PR #11 review, B2)**: white on `primary #D9734E` is 3.2:1, below AA for 16–18 px text. Filled controls with text (Button primary, Badge attention/photoPrimary, ToggleGroup primary, Stepper current) use `primary-strong #B4552F` (4.9:1), hover `primary-strong-hover #A44B2C` (5.8:1). `primary` stays for icons, accents and the 124 px play button (≥ 3:1 is enough for non-text).
+- **Greens**: Badge approved text uses `success-strong #426B38` (5.1:1 on success-surface; `success-text` was 4.1:1). Stepper done and Checkbox checked fill with `success-text` so the white check is 5:1.
+- **Avatar initials** are ink, not Figma's white (white on the pastels is about 2:1).
 - **Switch on**: `#3F8A55` (new token `switch-on`), the Figma Toggle On colour, not `success #7FA36F`: the white knob needs the contrast.
 - **Stepper**: done/todo labels `ink/0.7` (Figma 0.75 / 0.45); ✓ is a lucide vector.
-- **Avatar initials**: white on honey is below AA (Figma value kept); each avatar has the full name as accessible name and tooltip.
 - **Checkbox radius 8** is not on the radius scale; kept as an explicit value to match Figma.
-- **Added tokens** beyond `TECHNICAL.md` §3.2: `switch-on`, `avatar-ring #FFF8EE`, `shadow-house-control`, `shadow-knob`, `spacing-page 72px`.
+- **Added tokens** beyond `TECHNICAL.md` §3.2: `primary-strong`, `primary-strong-hover`, `success-strong`, `switch-on`, `avatar-ring #FFF8EE`, `shadow-house-control`, `shadow-knob`, `spacing-page 72px`.
+- Regression: `app/tokens.test.ts` checks the contrast of every colour pair used (incl. hover); `e2e/dev-ui-a11y.spec.ts` runs axe (WCAG 2.2 AA) on `/dev/ui`.
 - Studio-only sizes: Switch (56×32), Checkbox (26), Button `sm` (48) are below the 64 px House minimum; House screens use Button `md`, IconButton 76+ and HeartButton only.
 - SVGs in `public/` now carry a `<title>` (Biome a11y lint).
 
