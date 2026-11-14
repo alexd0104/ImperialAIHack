@@ -524,6 +524,44 @@
         "P4"
       ],
       "soft": []
+    },
+    {
+      "id": "B1",
+      "title": "Studio login: throttle repeated wrong passwords",
+      "owner": "timote",
+      "priority": "FIX",
+      "deps": [
+        "F6"
+      ],
+      "soft": [],
+      "note": "F6 review: /api/auth/login allows unlimited guesses; small in-memory per-IP delay is enough"
+    },
+    {
+      "id": "B2",
+      "title": "Base UI: fix contrast of primary text controls",
+      "owner": "raphael",
+      "priority": "FIX",
+      "deps": [],
+      "soft": [],
+      "note": "PR #11 review: Button white on primary is 3.22:1 at 18px/700 and 16px; Badge attention/photoPrimary and ToggleGroup primary also fail. Fix token pairing including hover/selected states and add contrast or axe regression before merging F5. Review: https://github.com/alexd0104/ImperialAIHack/pull/11#pullrequestreview-5906434308"
+    },
+    {
+      "id": "B3",
+      "title": "Studio auth: align login errors with shared contracts",
+      "owner": "timote",
+      "priority": "FIX",
+      "deps": [],
+      "soft": [],
+      "note": "PR #12 review: invalid_password, bad_request and not_configured are rejected by F2 ApiErrorResponse. F2 is merged; rebase F6 and use LoginRequest plus ok/fail/parseJson, supported codes and copy.ts. Add contract-valid error response tests before merging F6. Review: https://github.com/alexd0104/ImperialAIHack/pull/12#pullrequestreview-5906434698"
+    },
+    {
+      "id": "B4",
+      "title": "Studio auth: reject short signing secrets in session verification",
+      "owner": "timote",
+      "priority": "FIX",
+      "deps": [],
+      "soft": [],
+      "note": "PR #12 review: verifySessionToken accepts a cookie signed with the synthetic secret short although login requires 32 characters. Apply SESSION_SECRET_MIN_LENGTH at verification and cover proxy rejection of short-secret cookies before merging F6. Review: https://github.com/alexd0104/ImperialAIHack/pull/12#pullrequestreview-5906434698"
     }
   ]
 }
