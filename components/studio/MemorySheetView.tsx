@@ -5,8 +5,11 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import { HouseDetail } from "@/lib/contracts";
 import { copy } from "@/lib/copy";
-import { StudioApiError } from "./api";
+import { requestStudio, StudioApiError } from "./api";
+import { DontShowWarning } from "./DontShowWarning";
+import { dontShowMatches } from "./dont-show";
 import { hasVisual } from "./memory-bank";
 import { fetchMemory, generateMemory, memoryKey } from "./memory-client";
 import { sheetRows } from "./memory-sheet-rows";
@@ -25,6 +28,12 @@ export function MemorySheetView({ memoryId }: { memoryId: string }) {
 function Sheet({ memoryId }: { memoryId: string }) {
   const router = useRouter();
   const memory = useQuery({ queryKey: memoryKey(memoryId), queryFn: () => fetchMemory(memoryId) });
+  const houseId = memory.data?.houseId;
+  const house = useQuery({
+    queryKey: ["house", houseId],
+    enabled: Boolean(houseId),
+    queryFn: () => requestStudio(`/api/houses/${houseId}`, HouseDetail),
+  });
   // Nothing is made until the family presses the button (product rule: family approves).
   const generate = useMutation({
     mutationFn: () => generateMemory(memoryId),
@@ -39,6 +48,10 @@ function Sheet({ memoryId }: { memoryId: string }) {
     );
   if (!memory.data) return null;
   const canGenerate = hasVisual(memory.data.assets);
+  const mentions = dontShowMatches(
+    { ...memory.data.answers, freeText: memory.data.freeText },
+    house.data?.dontShow ?? [],
+  );
 
   return (
     <div className="space-y-6">
@@ -68,6 +81,7 @@ function Sheet({ memoryId }: { memoryId: string }) {
         </dl>
       </Card>
 
+      {mentions.length > 0 && <DontShowWarning mentions={mentions} />}
       {generate.isError && (
         <p role="alert" className="rounded-lg bg-warning-surface p-4 text-16">
           {generate.error instanceof StudioApiError ? generate.error.message : words.generateError}

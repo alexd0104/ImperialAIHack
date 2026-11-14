@@ -8,7 +8,8 @@ import { Card } from "@/components/ui/card";
 import { Input, Label } from "@/components/ui/input";
 import { copy } from "@/lib/copy";
 import { StudioApiError } from "./api";
-import { createMemory } from "./memory-client";
+import { readOkAloneDefault } from "./dont-show";
+import { createMemory, patchMemory } from "./memory-client";
 import { StudioQuery } from "./StudioQuery";
 
 const words = copy.studio.memory;
@@ -25,7 +26,12 @@ function NewMemory({ storyId }: { storyId: string }) {
   const router = useRouter();
   const [title, setTitle] = useState("");
   const create = useMutation({
-    mutationFn: () => createMemory(storyId, title.trim()),
+    mutationFn: async () => {
+      const memory = await createMemory(storyId, title.trim());
+      // SH4: the family's "OK alone by default" choice seeds each new Memory.
+      if (readOkAloneDefault()) await patchMemory(memory.id, { okAlone: true });
+      return memory;
+    },
     onSuccess: (memory) => router.push(`/studio/memories/${memory.id}`),
   });
   const submit = (event: FormEvent) => {
