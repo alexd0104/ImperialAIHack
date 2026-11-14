@@ -53,6 +53,13 @@ _(newest first: date — from → to — what)_
 
 ## Log
 
+### 2026-11-14 19:50 — Raphaël (design)
+- Done: B6 `pnpm seed:demo`. Reads `DEMO_ASSETS_DIR/demo.json` (format: `scripts/demo/demo.example.json`), copies the media into storage and writes one published House at `/house/<DEMO_HOUSE_TOKEN>`. Replaces the previous demo House; refuses unless `MONGODB_DB` ends with `demo`. Planner `scripts/demo/plan.ts` is pure and tested against the contracts.
+- In progress: nothing.
+- Blocked: B7 `pnpm export:demo` waits on H1 (Yasir's bundle builder). Not run against Atlas yet: run `MONGODB_DB=mh_demo pnpm seed:demo` once demo-assets exist.
+- Contract changes: none. Outside my zone: `package.json` (seed:demo script), `docs/tasks.json` (B6, B7; B5 was already taken on main).
+- Next: fill demo-assets with the team's real demo content; B7 after H1.
+
 ### 2026-11-14 19:40 — Alexandre (studio)
 - Verification: Combined S1/F3/F4 tree passes pnpm verify (232 tests) and production build. No new S1 application behavior changed by the F3 integration.
 - Done: Final S1 production browser checks pass (4/4), with MongoDB integration covered separately by collection tests. Integrated concurrent F3 0e664fc as well; dependency conflicts retain both AI SDKs and the Studio form/query packages. All pipeline source and media are preserved unchanged.

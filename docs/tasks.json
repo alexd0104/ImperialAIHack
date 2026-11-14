@@ -571,6 +571,29 @@
       "deps": [],
       "soft": [],
       "note": "Parallel agent worktrees made pnpm test pick up their node_modules tests"
+    },
+    {
+      "id": "B6",
+      "title": "Demo seed script (pnpm seed:demo)",
+      "owner": "raphael",
+      "priority": "FIX",
+      "deps": [
+        "F2",
+        "F4"
+      ],
+      "soft": [],
+      "note": "demo-assets/demo.json manifest → published demo House in mh_demo (token DEMO_HOUSE_TOKEN), media copied to storage; idempotent; refuses non-demo DB"
+    },
+    {
+      "id": "B7",
+      "title": "Demo export script (pnpm export:demo)",
+      "owner": "raphael",
+      "priority": "FIX",
+      "deps": [
+        "H1"
+      ],
+      "soft": [],
+      "note": "Rewrite demo-assets/bundle.json from mh_demo by reusing H1's bundle builder"
     }
   ]
 }
