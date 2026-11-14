@@ -18,12 +18,18 @@ export const SECRET_RULES = [
     name: "MongoDB Atlas URI with credentials (mongodb+srv://)",
     pattern: /mongodb\+srv:\/\/[^\s:@/<>]+:[^\s@<>]+@/,
   },
+  { name: "private key block", pattern: /-----BEGIN (?:[A-Z]+ )?PRIVATE KEY-----/ },
 ];
 
 /** `.env.example` is the only env file allowed in git. */
 export function isForbiddenEnvFile(path) {
   const name = basename(path);
   return /^\.env(\..+)?$/.test(name) && name !== ".env.example";
+}
+
+/** Local data (family media, generated files) must stay out of the public repo. */
+export function isForbiddenDataPath(path) {
+  return /^(storage|demo-assets)\//.test(path);
 }
 
 /**
@@ -68,6 +74,10 @@ function main() {
   for (const file of files) {
     if (isForbiddenEnvFile(file)) {
       problems.push(`${file}: env files must never be committed`);
+      continue;
+    }
+    if (isForbiddenDataPath(file)) {
+      problems.push(`${file}: storage/ and demo-assets/ must never be committed`);
       continue;
     }
     let text;
