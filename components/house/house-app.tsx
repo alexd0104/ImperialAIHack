@@ -19,6 +19,7 @@ import { MemoryPlayer } from "./memory-player";
 import { RoomScene } from "./room-scene";
 
 const RETRY_MS = 5000;
+const REFRESH_MS = 30_000;
 
 /**
  * The whole House for one link. Preload first (warm background only, no spinner), then
@@ -51,9 +52,49 @@ export function HouseApp({ token, mode }: { token: string; mode: HouseMode }) {
     };
   }, [token, mode]);
 
+  // C3: a Story the family publishes appears without reloading. The new bundle is
+  // preloaded in the background and applied only while nothing is playing.
+  const loaded = bundle !== null;
+  const [pending, setPending] = useState<{ bundle: HouseBundle; failed: Set<string> } | null>(null);
+  const [calm, setCalm] = useState(true);
+  const latest = useRef<string>("");
+  useEffect(() => {
+    if (!loaded) return;
+    let cancelled = false;
+    const poll = setInterval(async () => {
+      const next = await fetchHouseBundle(token, mode);
+      if (cancelled || !next) return;
+      const key = JSON.stringify(next);
+      if (key === latest.current) return;
+      const failed = await preloadFiles(next.files);
+      if (cancelled) return;
+      latest.current = key;
+      setPending({ bundle: next, failed });
+    }, REFRESH_MS);
+    return () => {
+      cancelled = true;
+      clearInterval(poll);
+    };
+  }, [loaded, token, mode]);
+
+  useEffect(() => {
+    if (bundle && !latest.current) latest.current = JSON.stringify(bundle);
+  }, [bundle]);
+
+  useEffect(() => {
+    if (!pending || !calm) return;
+    if (JSON.stringify(pending.bundle) !== JSON.stringify(bundle)) {
+      setFailedFiles(pending.failed);
+      setBundle(pending.bundle);
+    }
+    setPending(null);
+  }, [pending, calm, bundle]);
+
   return (
     <HouseStage>
-      {bundle && <HouseFlow bundle={bundle} token={token} failedFiles={failedFiles} />}
+      {bundle && (
+        <HouseFlow bundle={bundle} token={token} failedFiles={failedFiles} onCalm={setCalm} />
+      )}
     </HouseStage>
   );
 }
@@ -62,10 +103,12 @@ function HouseFlow({
   bundle,
   token,
   failedFiles,
+  onCalm,
 }: {
   bundle: HouseBundle;
   token: string;
   failedFiles: ReadonlySet<string>;
+  onCalm: (calm: boolean) => void;
 }) {
   const bundleRef = useRef(bundle);
   bundleRef.current = bundle;
@@ -75,6 +118,10 @@ function HouseFlow({
   );
   // Back on the first Memory restarts it: a new key remounts the player.
   const [replay, setReplay] = useState(0);
+
+  // Only Choose a room and a closed Room may change under the person's eyes.
+  const calm = state.screen === "rooms" || state.screen === "room";
+  useEffect(() => onCalm(calm), [calm, onCalm]);
 
   const pickMemory = useCallback((index: number) => dispatch({ type: "playMemory", index }), []);
   const closeObject = useCallback(() => dispatch({ type: "closeObject" }), []);

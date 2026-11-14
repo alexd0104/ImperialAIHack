@@ -46,7 +46,8 @@ function useSvgTexture(url: string): { texture: THREE.Texture; aspect: number } 
 }
 
 function useEased(target: ObjectLook, reducedMotion: boolean) {
-  const current = useRef({ ...target });
+  // Starts transparent so every Object fades in, including one just published (C3).
+  const current = useRef({ ...target, opacity: 0 });
   useFrame((_, delta) => {
     // Critically damped ease ≈ 0.9 s to settle; reduced motion keeps the fade, drops the scale.
     const k = 1 - Math.exp(-delta * 6);
