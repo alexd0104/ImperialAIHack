@@ -64,7 +64,21 @@ _(newest first: date — from → to — what)_
 - In progress: P5 next.
 - Blocked: nothing.
 - Contract changes: none. Done outside Raphaël's zone, for Timoté. Shared edit: `lib/copy.ts` (+`studio.generation` API messages).
-- Next: Alexandre can call generate/poll jobs/retry from the Studio review screen.
+- Next: "Bring to life" (S5) now reaches a real route; S7 review can poll `/api/jobs/:id` and call retry. Routes read MongoDB (F4), not the offline `STUDIO_MOCK_STORE` file store.
+
+### 2026-11-14 20:40 — Yasir (studio takeover, S3–S5)
+- Done: S3 Memory bank (`/studio/stories/[id]/memories/new` → `/studio/memories/[id]`: photo/video grid with remove, 2048 px JPEG client resize, song + voice clip, continue needs a photo/video), S4 guided questions with debounced PATCH autosave (`/questions`), S5 Memory sheet with "Change" links and "Bring to life" (`/sheet`). Routes: `POST /api/stories/:id/memories`, `GET/PATCH /api/memories/:id`, `POST /api/memories/:id/assets`, `DELETE /api/assets/:id`.
+- In progress: nothing. P4, S7, S8, S9, SH3, SH4 were **not done** (parallel agents stopped for token cost); they're still open for Alexandre/Timoté.
+- Blocked: "Bring to life" calls `POST /api/memories/:id/generate` (P4, not built yet) and then goes to `/studio/memories/[id]/review` (S7, not built yet). Until P4 lands it shows the friendly retry message.
+- Contract changes: none. Out-of-zone edits (Studio zone, Alexandre): app/api/stories/_store.ts (+memories/scenes collections, `listEntities`, `deleteEntity`), app/api/{memories,assets}/**, app/api/stories/[id]/memories/route.ts, app/studio/{memories,stories/[id]}/**, components/studio/{MemoryBank,MemoryQuestions,MemorySheetView,NewMemoryForm,StudioPage,StudioQuery}.tsx, components/studio/{memory-client,memory-bank,memory-answers,memory-sheet-rows}.ts (+tests), CreateStoryForm.tsx ("Add a Memory" link), lib/copy.ts (studio.memory/bank/questions/sheet).
+- Next: Alexandre to check the S3–S5 screens against the Figma frames "Create · 2 Memories" / "2b Memory sheet" (built from DESIGN.md + existing Studio styling, not the Figma MCP).
+
+### 2026-11-14 20:35 — Timoté (pipeline, P2)
+- Done: P2 scene chain live. Live run (`AI_MODE=live pnpm scene:run mocks/media/photo.jpg --colourise`): compile (Claude) 6 s → restore (Topaz Recover 3) 30 s $0.08 → colourise (Bria, returns PNG) 18 s $0.04 → animate (Kling 2.5 Turbo Pro) 94 s $0.35 → ambience (mmaudio) 9 s $0.005. **Total 157 s, ≈ $0.48**, 5.04 s 1656×1248 H.264 + AAC clip, all outputs in storage/. Models checked on fal's API pages; Bria colour guard; outputs keep their real extension (flac/png); `pnpm scene:run <photo> [--colourise] [--still]` runs one scene without Studio or P4.
+- In progress: nothing. Note: the run used the generated mock test photo (480×360), not a real old family photo; fidelity on real photos is Test 2 / P6.
+- Blocked: nothing.
+- Contract changes: none. Out-of-zone/shared edits: scripts/ts-resolve.mjs (Node resolve hook for `@/` + extensionless imports, no new dependency), scripts/run-scene.mts, package.json (`scene:run`), lib/house/preload.ts (+`flac: "audio"`).
+- Next: P5 (Object 3D job). Set `FAL_KEY_LABEL=dev-timote` in .env.local (it still says `dev-yourname`).
 
 ### 2026-11-14 20:20 — Raphaël (design)
 - Done: Slot review (Alexandre's request): kitchen and living Slots now rest Objects on drawn surfaces (counter top, floor); garden unchanged. SH2: the demo House has Garden, Kitchen and Living, and Choose a room shows all three. Q4: House evidence in `docs/DESIGN.md` §7/§8, 7 captures, axe WCAG 2.2 AA: 0 violations on 8 House screens.
@@ -72,13 +86,6 @@ _(newest first: date — from → to — what)_
 - Blocked: nothing.
 - Contract changes: none. Outside my zone: `components/studio/room-styles.ts` (Slot x/y/scale only, ids unchanged) → Alexandre, please check the Studio Room preview.
 - Next: re-run `MONGODB_DB=mh_demo pnpm seed:demo && MONGODB_DB=mh_demo pnpm export:demo` so the DB demo picks up the new Slots.
-### 2026-11-14 20:25 — Timoté (pipeline, P2 wip)
-- Done: scene models checked on fal's API pages (2026-11-14). Topaz `model: "Recover 3"`, priced $0.08 per started 4 MP; Kling price confirmed; mmaudio duration 5 s (its default is 8); text-to-audio returns FLAC. Bria colour guard keeps only Bria's 4 enum values. Stored outputs take the URL's own extension (mock .wav vs live .flac). New `pnpm scene:run <photo> [--colourise] [--still]` runs one scene through the real chain without the Studio or P4 (throwaway House in your MONGODB_DB). Mock run: colourised scene 23 s, still scene 13 s.
-- In progress: one live run on a real photo (`AI_MODE=live pnpm scene:run ~/photo.jpg`); time and cost to be logged here.
-- Blocked: nothing.
-- Contract changes: none. Out-of-zone/shared edits: scripts/ts-resolve.mjs (Node resolve hook for `@/` + extensionless imports, no new dependency), scripts/run-scene.mts, package.json (`scene:run`), lib/house/preload.ts (+`flac: "audio"`, one line).
-- Next: live run → P2 done, then P5.
-
 ### 2026-11-14 — Alexandre (studio, S2 final review)
 - Done: S2 library/photo creation, House-scoped upload, persisted object_3d mock progress, fallback and resumable drafts implemented. Provisional free Slot explicitly approved, never reserved or published by S2. Corrected and registered B9: auth E2E alert locator scoped to the sign-in form. Tablet/phone captures saved under docs/design-evidence/create-object-*.png; direct Figma MCP comparison remains unavailable and is documented.
 - In progress: Final checks and PR merge explicitly requested by Alexandre. Final integrated tree: verify passed (338 tests), production build passed, all 12 browser tests passed in development, and all 3 S2 scenarios passed against production, including invalid replacement upload recovery. The full production suite has one expected dev-only gallery failure (/dev/ui intentionally returns 404); its development run passes.

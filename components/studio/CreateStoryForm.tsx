@@ -335,6 +335,13 @@ function StoryForm({ roomId }: { roomId: string }) {
           )}
           <p className="text-16 text-ink/70">{words.placement}</p>
           {done && (
+            <Button asChild>
+              <Link href={`/studio/stories/${story.id}/memories/new`}>
+                {copy.studio.memory.start.addToStory}
+              </Link>
+            </Button>
+          )}
+          {done && (
             <Button variant="secondary" type="button" onClick={startAgain}>
               {words.another}
             </Button>
