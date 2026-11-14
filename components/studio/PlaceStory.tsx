@@ -131,6 +131,17 @@ function Place({ storyId }: { storyId: string }) {
         <h2 className="font-display text-22">{words.slotLegend}</h2>
         {/* Slots sit where they will in the Room (normalised 0..1 on 1194×834); once published they never move. */}
         <div className="relative aspect-[1194/834] w-full overflow-hidden rounded-xl bg-ink/5">
+          {/* biome-ignore lint/performance/noImgElement: Room picture from /rooms or /api/files, not optimised by Next. */}
+          <img
+            src={
+              room.data.backgroundPath.startsWith("/")
+                ? room.data.backgroundPath
+                : `/api/files/${room.data.backgroundPath}`
+            }
+            alt=""
+            draggable={false}
+            className="absolute inset-0 size-full object-cover"
+          />
           {room.data.slots.map((slot, index) => {
             const chosen = slot.id === story.data?.slotId;
             const taken = Boolean(slot.storyId && slot.storyId !== storyId);

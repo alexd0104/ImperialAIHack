@@ -47,9 +47,11 @@ export function LoginForm() {
         required
         value={password}
         onChange={(event) => setPassword(event.target.value)}
+        aria-invalid={error ? true : undefined}
+        aria-describedby={error ? "studio-login-error" : undefined}
       />
       {error ? (
-        <p role="alert" className="text-14 text-ink">
+        <p id="studio-login-error" role="alert" className="text-14 text-ink">
           {error}
         </p>
       ) : null}

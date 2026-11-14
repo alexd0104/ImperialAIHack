@@ -65,6 +65,13 @@ _(newest first: date — from → to — what)_
 
 ## Log
 
+### 2026-11-14 23:10 — Raphaël (design, demo readiness pass, B11)
+- Done: full Studio → fal → House run **live** in the browser (House, photo Object via BiRefNet + Rodin, one scene restore + Kling + mmaudio, approve, place, publish, play). Then the same flow on the production build in mock mode: passes with no console or 5xx errors. Fixes: (1) pipeline: job lease 10 s → 120 s, live steps got stuck when a clip took over 10 s to upload/download (TECHNICAL §5.2, §10); (2) Studio: scene choice now sets the Memory `approved`; Place shows the Room picture; Object hint no longer says "sample" after a live job; login field `aria-invalid`; (3) House: GLB Objects sway gently (±17°) and float a little more; generated clips play their own ambience quietly when the Memory has no ambience track; (4) demo: Choose a room shows "Garden / Kitchen / Living room"; `pnpm demo` = build + `next start` with the offline demo House.
+- In progress: nothing.
+- Blocked: nothing. Not tested live: a Memory with several photos, song and voice together.
+- Contract changes: none. Outside my zone (asked by Raphaël for the demo): `lib/jobs/config.ts`, `TECHNICAL.md` (Timoté); `app/api/scenes/[id]/choice/route.ts`, `components/studio/PlaceStory.tsx`, `app/studio/login/LoginForm.tsx`, `lib/copy.ts` (Alexandre/Yasir); `components/house/{room-canvas,memory-player}.tsx` (Yasir); `package.json` (`demo`).
+- Next: two dev servers on the same `MONGODB_DB` (one mock, one live) both tick the same jobs: run one at a time. Re-run `seed:demo` + `export:demo` after pulling.
+
 ### 2026-11-14 22:35 — Yasir (house, Q2 + B10)
 - Done: Q2 `e2e/create-publish-play.spec.ts`: Studio start Memory → photo → answers → sheet → approve → publish, then House Choose a room → Object → polaroid → Memory plays (still fallback). B10 `BundleScene.stillUrl`: bundle fills it, it's preloaded and tokenised, the player falls back stillUrl → polaroidUrl (`lib/house/scene-still.ts`). `pnpm verify`, `pnpm test:e2e` (13/13) and `pnpm demo:check` all green.
 - In progress: nothing. Avatars stay `[]` until Timoté says where family members live.

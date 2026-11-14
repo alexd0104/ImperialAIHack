@@ -44,7 +44,7 @@ export const copy = {
         "We couldn’t prepare your Object. We’ve kept a familiar camera in its place. You can choose another Object below.",
       ready: "Your Story is ready for Memories",
       readyHint: "Your Story stays private until your family has added and approved its Memories.",
-      sampleHint: "Your photo is saved. This demo uses a sample 3D Object.",
+      sampleHint: "Your photo is saved and your Object is ready.",
       placement: "You’ll choose its final place in the Room later.",
       back: "Back to the House",
       another: "Create another Story",

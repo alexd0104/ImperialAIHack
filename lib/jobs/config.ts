@@ -24,7 +24,10 @@ function numberEnv(name: string, fallback: number): number {
 /** Read lazily so CI and tests never need these variables at import time. */
 export function jobConfig(): JobConfig {
   return {
-    leaseMs: 10_000,
+    // Long enough to upload a clip to fal and download its result on a slow network: a
+    // shorter lease let job polling steal the job mid-download, so the step never saved.
+    // The lease is released as soon as an advance ends; this only delays crash recovery.
+    leaseMs: 120_000,
     maxRetries: 2,
     backoffMs: [5_000, 15_000],
     maxConcurrency: Math.max(1, Math.floor(numberEnv("FAL_MAX_CONCURRENCY", 2))),
