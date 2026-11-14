@@ -20,7 +20,7 @@
 |---|---|
 | Timoté (after F7 is pushed) | `pnpm autopilot timote --total-usd 20` |
 | Yasir (now) | `pnpm autopilot yasir --total-usd 20` |
-| Alexandre (from 01:00) | `pnpm autopilot alexandre --total-usd 20` |
+| Alexandre (now) | `pnpm autopilot alexandre --total-usd 20` |
 | Raphaël (only the GLB task; SH8 is done by hand) | `pnpm autopilot raphael --only S14 --wait-hours 10` |
 
 Options: `--engine claude|codex|dry` · `--model sonnet` (default; `opus` for hard tasks) · `--only P7,P8` · `--max-tasks 8` · `--task-usd 4` (per task cap) · `--total-usd 25` (night cap) · `--wait-hours 8` · `--minutes 50` (per task time cap) · `--all` (include first-round leftovers).
