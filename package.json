@@ -18,7 +18,7 @@
     "demo": "node scripts/todo.mjs demo",
     "demo:check": "node scripts/todo.mjs demo:check",
     "seed:demo": "node --conditions=react-server --env-file-if-exists=.env.local scripts/seed-demo.mts",
-    "export:demo": "node scripts/todo.mjs export:demo",
+    "export:demo": "node --conditions=react-server --env-file-if-exists=.env.local scripts/export-demo.mts",
     "prepare": "husky"
   },
   "dependencies": {

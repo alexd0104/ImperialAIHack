@@ -53,6 +53,13 @@ _(newest first: date — from → to — what)_
 
 ## Log
 
+### 2026-11-14 20:10 — Raphaël (design)
+- Done: B7 `pnpm export:demo`. Reads the demo House (token `DEMO_HOUSE_TOKEN`) from `MONGODB_DB`, builds it with H1's `buildBundle` and writes `DEMO_ASSETS_DIR/bundle.json` without tokens, with `okAlone: true` markers for alone mode. Test: seed plan → export → `loadDemoBundle` steps round trip.
+- In progress: nothing.
+- Blocked: not run against Atlas yet (needs demo-assets). Flow: `MONGODB_DB=mh_demo pnpm seed:demo`, then `MONGODB_DB=mh_demo pnpm export:demo`. Demo mode still reads files from STORAGE_DIR, so seed on the demo laptop.
+- Contract changes: none. Outside my zone: `package.json` (export:demo script).
+- Next: real demo content into demo-assets with the team.
+
 _Older entries: `docs/status-archive.md`. Keep this file short: newest entries on top; when the Log has more than ~10 entries, move the oldest to the archive._
 
 ### 2026-11-14 19:50 — Raphaël (design)
