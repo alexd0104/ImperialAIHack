@@ -13,7 +13,7 @@ Async coordination. **Append only; never edit someone else's lines.** Newest ent
 
 | # | Test | Result | Decision | Who |
 |---|---|---|---|---|
-| 1 | GLB on room SVG | | | Yasir |
+| 1 | GLB on room SVG | No GLB exists yet; library SVGs render well as R3F textured planes on the room SVGs (float, fade, scale) | Demo default = library SVG Objects; the `object.kind === "glb"` path (useGLTF, fit to Slot width) stays in `components/house/room-canvas.tsx`, untested until a GLB lands | Yasir |
 | 2 | Memory chain fidelity (Kling vs Veo) | | | Timoté |
 | 3 | Room from real photo | | | Timoté |
 | 4 | Rodin vs Trellis | 3 photos (teapot, radio, watering can), same input, via fal API. Speed and weight equal: 18–74 s, 0.8–1.4 MB, ~19–20K triangles each. Rodin: 3/3 clean, faithful shapes, simplified/saturated texture (fits the illustrated rooms). Trellis 2: richer teapot glaze, but radio grille texture is noise and the watering can kept a disc of the decking (background bled). | Keep **Rodin v2.5 fast** as default, Trellis 2 as fallback. Cutout before model3d is mandatory (busy backgrounds). Cost (fal usage export): Rodin **$0.10** / generation (not $0.40), Trellis 2 **$0.30** / run (6 units × $0.05). Whole test: $1.20. | Raphaël |
@@ -33,8 +33,12 @@ _(newest first: date — what changed — who)_
 
 ## Requests
 
-- 2026-11-14 — Alexandre → Timoté — S2 provisional Slot assignment is explicitly approved by Alexandre (modifiable in S8, no reservation/publication here). P5 is still absent: the temporary Studio object-job route persists Job/JobView and uses a sample GLB only in mock mode. Please replace that adapter with P5 when ready; normal persistence uses F4 MongoDB, explicit offline tests use STUDIO_MOCK_STORE. Object photos upload through POST /api/houses/:id/assets with existing Asset/AssetView schemas.
+- 2026-11-14 — Alexandre → Timoté — S2 provisional Slot assignment is explicitly approved by Alexandre (modifiable in S8, no reservation/publication here). P5 is still absent (mock jobs carry a permanent lease so P1 cannot process them): the temporary Studio object-job route persists Job/JobView and uses a sample GLB only in mock mode. Please replace that adapter with P5 when ready; normal persistence uses F4 MongoDB, explicit offline tests use STUDIO_MOCK_STORE. Object photos upload through POST /api/houses/:id/assets with existing Asset/AssetView schemas.
 
+- 2026-11-14 20:07 — Yasir → Timoté — Your 20:15 build request is fixed in eeb26e6 (B8): `/house/[token]` now reads params inside `<Suspense>`; `pnpm build` passes.
+- 2026-11-14 20:07 — Yasir → Timoté — Contract asks (House works around both, no edit made): (1) `BundleScene` has no still for a clip, so a failed clip falls back to the Memory's `polaroidUrl`, not that scene's own photo. Proposal: optional `stillUrl` on `BundleScene` (`lib/contracts/house-bundle.ts:5`), filled by `lib/house/bundle.ts` `buildMemory`. (2) `HouseBundle.house.avatars` has no source (no family members on `House`), so the DB bundle sends `[]`; tell me where family members will live.
+
+- 2026-11-14 20:15 — Timoté → Yasir — `pnpm build` fails on main: `/house/[token]` reads runtime data outside `<Suspense>` during prerender (Next 16 cache components). Wrap the data read in `<Suspense>` or call `connection()` first.
 - 2026-11-14 19:37 — Alexandre → Timoté — F4 arrived during S1 finalization; the earlier persistence request is resolved in S1. Default creation now uses db.houses/db.rooms with ObjectId-compatible ids and duplicate-key replay. The offline adapter requires STUDIO_MOCK_STORE=true plus AI_MODE=mock; no silent DB fallback. B5 remains in #17. F4's existing lib/storage/index.ts:19 emits a Turbopack whole-project tracing warning; build still passes, source unchanged by S1.
 
 - 2026-11-14 19:30 — Alexandre → Timoté — S1 mock creation is ready. F4 helpers are still absent from main: replace `app/api/houses/_mock-store.ts` with `lib/db` persistence when F4 lands, preserving consent timestamps, private tokens, stable Room Slots and idempotent retries. The temporary adapter only runs in AI_MODE=mock and writes to gitignored STORAGE_DIR/studio-mock. Also registered B5 (API playbook uses `input.error`, but `parseJson` exposes `message`) separately in https://github.com/alexd0104/ImperialAIHack/pull/17.
@@ -56,11 +60,11 @@ _(newest first: date — from → to — what)_
 ## Log
 
 ### 2026-11-14 — Alexandre (studio, S2 final review)
-- Done: S2 library/photo creation, House-scoped upload, persisted object_3d mock progress, fallback and resumable drafts implemented. Provisional free Slot explicitly approved, never reserved or published by S2. Corrected and registered B8: auth E2E alert locator scoped to the sign-in form. Tablet/phone captures saved under docs/design-evidence/create-object-*.png; direct Figma MCP comparison remains unavailable and is documented.
+- Done: S2 library/photo creation, House-scoped upload, persisted object_3d mock progress, fallback and resumable drafts implemented. Provisional free Slot explicitly approved, never reserved or published by S2. Corrected and registered B9: auth E2E alert locator scoped to the sign-in form. Tablet/phone captures saved under docs/design-evidence/create-object-*.png; direct Figma MCP comparison remains unavailable and is documented.
 - In progress: Final checks and PR merge explicitly requested by Alexandre. Combined-tree verify passed (291 tests), all 12 browser tests passed, and 3 S2 scenarios passed against the production build; final regression additionally checks that a failed replacement upload cannot reuse an older photo silently.
 - Blocked: No mock-flow blocker. P5 remains a soft dependency: the temporary Studio provider uses a labelled synthetic GLB, refuses non-mock photo generation, and preserves the library fallback. S3 navigation awaits S3.
 - Contract changes: None. New routes reuse CreateStoryRequest, Room, Story, Asset/AssetView and Job/JobView. Out-of-zone/shared edits: lib/copy.ts, e2e/create-story.spec.ts, e2e/studio-auth.spec.ts, TECHNICAL.md, docs/DESIGN.md, docs/tasks.json, design captures and this handoff; no new dependency or pipeline implementation edit.
-- Next: Merge S2/B8 after green CI. Timoté replaces the mock Object provider with P5; S8 selects/reserves the final Slot atomically. No live credits, family data or .env reads used for validation.
+- Next: Merge S2/B9 after green CI. Timoté replaces the mock Object provider with P5; S8 selects/reserves the final Slot atomically. No live credits, family data or .env reads used for validation.
 
 ### 2026-11-14 — Alexandre (studio, S2 implementation)
 - Done: Alexandre approved provisional Slot assignment, adjustable in S8. Implemented Room lookup, House-scoped photo upload, Story creation, persisted mock object_3d progress and library fallback; linked S1 to S2. Photos resize to 2048 px JPEG, drafts/uploads survive reload, retries preserve the Story id, no Slot reservation or publication occurs.
@@ -76,6 +80,26 @@ _(newest first: date — from → to — what)_
 - Contract changes: None. Proposed behavior and upload-route gap recorded under Requests.
 - Next: Resolve placement representation, implement and validate S2, then open and merge its PR only when acceptance criteria and checks pass. No S2 implementation or merge is claimed yet.
 
+### 2026-11-14 20:07 — Yasir (house)
+- Done: H1 (`GET /api/h/:token/bundle`, demo mode reads `DEMO_ASSETS_DIR/bundle.json`, alone filter via `okAlone` flags), H2–H8 (`/house/[token]`: preload → Choose a room → R3F Room with SVG Objects → polaroids → Memory player with Howler ducking + still-photo fallback → Heart + `POST /api/h/:token/events` → alone mode), Q3 (`pnpm demo:check`, network blocked), C3 (30 s refresh applied only when nothing plays), B8 (build fix).
+- In progress: nothing.
+- Blocked: Q2 waits on S8 (Alexandre).
+- Contract changes: none. Shared files: `lib/copy.ts` (`house.*`), `package.json` (three, @react-three/fiber, @react-three/drei, howler + types; `demo:check` script), `docs/tasks.json` (B8).
+- Next: Q2 once S8 lands. Everyone: `pnpm demo:check` needs `HOUSE_DEMO_MODE`-capable demo-assets; without them run `DEMO_ASSETS_DIR=e2e/fixtures/demo-assets pnpm demo:check` (a test bundle of public SVGs only). No Zustand: the flow is a pure reducer in `lib/house/flow.ts`. Slot `x,y` = Object centre, `scale` = width / 1194.
+
+### 2026-11-14 20:15 — Timoté (pipeline)
+- Done: P1 job engine in `lib/jobs/`. `advanceJob(id, defaultEngineDeps())` with DB lease (lease value doubles as write token), step plans (disabled steps kept as `skipped`), 2 retries with 5 s / 15 s backoff, then `fallback` (scene) or `failed` (object/room), concurrency cap `FAL_MAX_CONCURRENCY`, budget guard per `FAL_KEY_LABEL` (switches to mock, `step.error = "budget_exceeded"`), cache keyed on model + sorted params + input sha256 (live outputs only). Ticker started once from `instrumentation.ts` (5 s, 4 jobs). `settleJob` writes scene outputs/status, room background, story GLB. 24 unit tests.
+- In progress: nothing.
+- Blocked: nothing. Gap: `Job` has no asset id for `object_3d`, so its source photo cannot be found yet (P5 adds it, additive change).
+- Contract changes: none. Outside lib/jobs: `lib/ai/fal.ts` (`getFal(mode)`, `isMockRequestId`), `instrumentation.ts`.
+- Next: P4 routes (generate / job / retry), then P2 live. Note: Rodin price in `models.ts` is still $0.40, Test 4 measured $0.10 (fix in P5).
+
+### 2026-11-14 20:10 — Raphaël (design)
+- Done: B7 `pnpm export:demo`. Reads the demo House (token `DEMO_HOUSE_TOKEN`) from `MONGODB_DB`, builds it with H1's `buildBundle` and writes `DEMO_ASSETS_DIR/bundle.json` without tokens, with `okAlone: true` markers for alone mode. Test: seed plan → export → `loadDemoBundle` steps round trip.
+- In progress: nothing.
+- Blocked: not run against Atlas yet (needs demo-assets). Flow: `MONGODB_DB=mh_demo pnpm seed:demo`, then `MONGODB_DB=mh_demo pnpm export:demo`. Demo mode still reads files from STORAGE_DIR, so seed on the demo laptop.
+- Contract changes: none. Outside my zone: `package.json` (export:demo script).
+- Next: real demo content into demo-assets with the team.
 
 _Older entries: `docs/status-archive.md`. Keep this file short: newest entries on top; when the Log has more than ~10 entries, move the oldest to the archive._
 
@@ -129,20 +153,6 @@ _Older entries: `docs/status-archive.md`. Keep this file short: newest entries o
 - Contract changes: `GenerationCacheEntry` (additive).
 - Next: P1 job engine.
 - Notes for everyone: **in Mongo only `_id` is an ObjectId; foreign keys (`houseId`, `roomId`…) stay strings**, dates are BSON `Date`, so query with `{ roomId }` directly. Ids passed to `findById` that are not 24-hex return `null` (→ 404). Stored paths are relative (`<houseId>/...`); the API turns them into `/api/files/<path>` (House adds `?t=<token>`). In `HOUSE_DEMO_MODE` the token in `DEMO_HOUSE_TOKEN` (must be set, no default) opens any file, since there is no DB to look up the House. Files are cached 5 min (`private`). Run `pnpm env:check`, then `pnpm db:ping` and `pnpm db:indexes` once for your own DB. `.gitignore` now anchors `/storage/` and `/demo-assets/` (the old `storage/` pattern also ignored `lib/storage/`). Scripts that need the DB (Raphaël: `seed-demo`) use the raw driver like `scripts/db-ping.mts`: plain Node cannot load `lib/db` (`server-only`, `@/` alias); see TECHNICAL.md §10.
-
-### 2026-11-14 19:20 — Raphaël (design)
-- Done: B2 (contrast fix) shipped inside the F5 merge 9ab8f45; this entry marks it on the board. Q4: DESIGN.md §8 accessibility notes (contrast table, targets, focus, motion) and §6 MCP note for F5.
-- In progress: Q4 (ongoing: a Figma-vs-code row per screen as Studio/House screens land).
-- Blocked: Figma MCP needs re-auth for new captures and Figma Variables.
-- Contract changes: none.
-- Next: test 4 (Rodin vs Trellis); Figma Variables for the tokens once re-authed.
-
-### 2026-11-14 19:05 — Raphaël (design)
-- Done: B2 (PR #11 review by Alexandre). New tokens `primary-strong #B4552F` / `primary-strong-hover #A44B2C` for filled controls with white text (4.9 / 5.8:1), `success-strong #426B38` for the Approved badge; avatar initials in ink; checkbox/stepper checks on `success-text`. Contrast unit test for every pair + axe (WCAG 2.2 AA) e2e on `/dev/ui`.
-- In progress: PR #11 (F5) waiting for re-review.
-- Blocked: nothing.
-- Contract changes: none.
-- Next: everyone: use `bg-primary-strong` (not `bg-primary`) behind white text. Test 4.
 
 ### Template
 ```

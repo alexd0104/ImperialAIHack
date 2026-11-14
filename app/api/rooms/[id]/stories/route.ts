@@ -64,6 +64,8 @@ export async function POST(request: Request, context: { params: Promise<{ id: st
         current: 1,
         status: "queued",
         falKeyLabel: "studio-mock",
+        // This mock provider owns progression; keep P1 from processing its synthetic steps.
+        lockedUntil: "9999-12-31T23:59:59.999Z",
         createdAt: now,
         updatedAt: now,
       });

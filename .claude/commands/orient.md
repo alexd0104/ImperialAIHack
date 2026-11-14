@@ -2,7 +2,7 @@
 description: Orient yourself — branch, repo state, task board, environment — before doing anything. Cheap on tokens.
 ---
 
-Follow `AGENTS.md` §11.1 and report in at most 10 lines. Keep every command's output short; do not open whole docs.
+Follow `AGENTS.md` §11 and report in at most 10 lines. Keep every command's output short; do not open whole docs.
 
 1. `git branch --show-current && git status --short | head -20 && git log --oneline -3`
 2. `git fetch --quiet origin && git status -sb | head -1` — behind `origin/main`? Suggest `git pull --rebase`.

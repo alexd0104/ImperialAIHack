@@ -183,6 +183,8 @@ describe("S2 creation and mock progression", () => {
         ).json(),
       ).data;
       expect(story.object.jobId).toBeTruthy();
+      const job = await getEntity("jobs", story.object.jobId ?? "");
+      expect(job?.lockedUntil).toBe("9999-12-31T23:59:59.999Z");
       const initial = await (
         await progress(new Request("http://localhost/job"), context(story.id))
       ).json();

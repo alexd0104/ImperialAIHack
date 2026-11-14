@@ -6,7 +6,7 @@ The rules above are shared with Codex. This file only adds what is specific to C
 
 ## Start of every session
 
-1. Run `/orient` (or follow `AGENTS.md` §11.1): branch, repo state, STATUS, board, environment.
+1. Run `/orient` (or follow `AGENTS.md` §11): branch, repo state, STATUS, board, environment.
 2. Read `docs/zones/<OWNER_ZONE>.md` (your zone is set in `.env.local` as `OWNER_ZONE`; the hooks use it).
 3. Work on `main` directly: `git pull --rebase`, commit with `(<ID>)` at the end of the subject, `pnpm verify`, push.
 

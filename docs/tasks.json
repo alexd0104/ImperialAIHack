@@ -597,6 +597,17 @@
     },
     {
       "id": "B8",
+      "title": "House page breaks pnpm build (params outside Suspense)",
+      "owner": "yasir",
+      "priority": "FIX",
+      "deps": [
+        "H3"
+      ],
+      "soft": [],
+      "note": "Timoté STATUS request 20:15"
+    },
+    {
+      "id": "B9",
       "title": "Studio auth browser test: scope error alert to sign-in form",
       "owner": "alexandre",
       "priority": "FIX",
@@ -604,7 +615,7 @@
         "F6"
       ],
       "soft": [],
-      "note": "S2 full regression: getByRole(alert) matches both login error and Next route announcer. Restrict to the sign-in form; retain assertion."
+      "note": "S2 regression: Next route announcer also has role alert; scope locator to sign-in form."
     }
   ]
 }
