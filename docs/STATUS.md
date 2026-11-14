@@ -59,6 +59,13 @@ _(newest first: date — from → to — what)_
 
 ## Log
 
+### 2026-11-14 20:40 — Yasir (studio takeover, S3–S5)
+- Done: S3 Memory bank (`/studio/stories/[id]/memories/new` → `/studio/memories/[id]`: photo/video grid with remove, 2048 px JPEG client resize, song + voice clip, continue needs a photo/video), S4 guided questions with debounced PATCH autosave (`/questions`), S5 Memory sheet with "Change" links and "Bring to life" (`/sheet`). Routes: `POST /api/stories/:id/memories`, `GET/PATCH /api/memories/:id`, `POST /api/memories/:id/assets`, `DELETE /api/assets/:id`.
+- In progress: nothing. P4, S7, S8, S9, SH3, SH4 were **not done** (parallel agents stopped for token cost); they're still open for Alexandre/Timoté.
+- Blocked: "Bring to life" calls `POST /api/memories/:id/generate` (P4, not built yet) and then goes to `/studio/memories/[id]/review` (S7, not built yet). Until P4 lands it shows the friendly retry message.
+- Contract changes: none. Out-of-zone edits (Studio zone, Alexandre): app/api/stories/_store.ts (+memories/scenes collections, `listEntities`, `deleteEntity`), app/api/{memories,assets}/**, app/api/stories/[id]/memories/route.ts, app/studio/{memories,stories/[id]}/**, components/studio/{MemoryBank,MemoryQuestions,MemorySheetView,NewMemoryForm,StudioPage,StudioQuery}.tsx, components/studio/{memory-client,memory-bank,memory-answers,memory-sheet-rows}.ts (+tests), CreateStoryForm.tsx ("Add a Memory" link), lib/copy.ts (studio.memory/bank/questions/sheet).
+- Next: Alexandre to check the S3–S5 screens against the Figma frames "Create · 2 Memories" / "2b Memory sheet" (built from DESIGN.md + existing Studio styling, not the Figma MCP).
+
 ### 2026-11-14 20:35 — Timoté (pipeline, P2)
 - Done: P2 scene chain live. Live run (`AI_MODE=live pnpm scene:run mocks/media/photo.jpg --colourise`): compile (Claude) 6 s → restore (Topaz Recover 3) 30 s $0.08 → colourise (Bria, returns PNG) 18 s $0.04 → animate (Kling 2.5 Turbo Pro) 94 s $0.35 → ambience (mmaudio) 9 s $0.005. **Total 157 s, ≈ $0.48**, 5.04 s 1656×1248 H.264 + AAC clip, all outputs in storage/. Models checked on fal's API pages; Bria colour guard; outputs keep their real extension (flac/png); `pnpm scene:run <photo> [--colourise] [--still]` runs one scene without Studio or P4.
 - In progress: nothing. Note: the run used the generated mock test photo (480×360), not a real old family photo; fidelity on real photos is Test 2 / P6.
