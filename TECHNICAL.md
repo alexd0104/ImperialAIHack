@@ -408,13 +408,13 @@ All model IDs and default params live in `lib/ai/models.ts`. Verify each ID and 
 | ambience (clip) | `fal-ai/mmaudio-v2` | `video_url`, `prompt` = ambiencePrompt + "no music" | $0.001 / s | text-only below |
 | ambience (still) | `fal-ai/mmaudio-v2/text-to-audio` | `prompt`, duration = scene length | $0.001 / s | silence (song only) |
 | cutout | a background-removal model (e.g. BiRefNet on fal — verify ID) | `image_url` | measure | send photo as is |
-| model3d | `fal-ai/hyper3d/rodin/v2.5/fast` | image, tier `Gen-2.5-Extreme-Low`, GLB | $0.40 / generation (20K faces max) | `fal-ai/trellis-2` (texture 1024, low decimation; compare in Test 4) → library SVG |
+| model3d | `fal-ai/hyper3d/rodin/v2.5/fast` | image, tier `Gen-2.5-Extreme-Low`, GLB | $0.10 / generation (20K faces max; measured in Test 4) | `fal-ai/trellis-2` (texture 1024, decimation 20000; $0.30 / run, weaker on busy photos, Test 4) → library SVG |
 | compress | local `@gltf-transform/cli` (`optimize --texture-compress webp`) | target < 3 MB per GLB | free | keep raw GLB |
 | room_edit | `fal-ai/nano-banana-2/edit` | family room photo + "warm, tidy, soft light, keep the room" | $0.08 / image | default illustrated style |
 
 Default room styles are **not generated**: they are the 3 Figma SVG scenes (garden, kitchen, living) in `public/rooms/`.
 
-**Estimated cost:** ≈ $0.45–0.50 per scene, ≈ $1.50 per Memory of 3 photos, $0.40 per Object. One $25 demo key ≈ 5–6 complete Stories.
+**Estimated cost:** ≈ $0.45–0.50 per scene, ≈ $1.50 per Memory of 3 photos, $0.10 per Object. One $25 demo key ≈ 5–6 complete Stories.
 
 **Limits:** new fal accounts run **2 requests concurrently**; extra queue requests wait (never dropped). Each developer uses **their own key**; the demo key is used only for final demo content.
 
@@ -523,7 +523,7 @@ Rules: nothing secret in `NEXT_PUBLIC_*`; pre-commit secret scan (husky); Claude
 ## 11. Open items
 
 - Exact Kling 2.5 Turbo Pro endpoint ID and input schema (verify in playground).
-- Topaz, DDColor, cutout model and Trellis 2 prices (measure after first call).
+- Topaz, DDColor, cutout model prices (Trellis 2: $0.30 / run, measured in Test 4) (measure after first call).
 - Test 1 result: GLB vs library SVG as demo Objects.
 - Test 2 result: Kling vs Veo 3.1 for demo scenes.
 - Missing Figma frames (see `docs/DESIGN.md` → Gaps): free text, full question set, voice recording, ordering, publish confirmation, Story end, loading/error states, room photo upload, phone/desktop Studio.
