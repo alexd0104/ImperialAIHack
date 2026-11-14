@@ -26,6 +26,14 @@ export default defineConfig({
     reuseExistingServer: !process.env.CI,
     timeout: 120_000,
     // E2E never spends live credits (AGENTS.md §7).
-    env: { AI_MODE: "mock", MOCK_FAIL_RATE: "0", STUDIO_MOCK_STORE: "true" },
+    env: {
+      AI_MODE: "mock",
+      MOCK_FAIL_RATE: "0",
+      STUDIO_MOCK_STORE: "true",
+      // Q2 plays the House from the e2e fixture bundle (offline demo mode, no MongoDB).
+      HOUSE_DEMO_MODE: "true",
+      DEMO_HOUSE_TOKEN: "e2e-demo",
+      DEMO_ASSETS_DIR: "e2e/fixtures/demo-assets",
+    },
   },
 });
