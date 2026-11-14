@@ -33,6 +33,8 @@ _(newest first: date — what changed — who)_
 
 ## Requests
 
+- 2026-11-14 — Alexandre → Timoté — S2 orientation: FEATURES requires Slot selection only in S8, while CreateStoryRequest.slotId and Story.slotId are required today. Proposed compatible approach: assign a free provisional Slot to an unpublished Story, allow reassignment in S8, and never expose it to the House until publish. Alexandre has been asked to confirm that behavior; otherwise a separate contract PR needs your review. Object-photo upload also needs a House-scoped upload route because the existing documented upload route requires a Memory that does not exist yet in S2.
+
 - 2026-11-14 19:37 — Alexandre → Timoté — F4 arrived during S1 finalization; the earlier persistence request is resolved in S1. Default creation now uses db.houses/db.rooms with ObjectId-compatible ids and duplicate-key replay. The offline adapter requires STUDIO_MOCK_STORE=true plus AI_MODE=mock; no silent DB fallback. B5 remains in #17. F4's existing lib/storage/index.ts:19 emits a Turbopack whole-project tracing warning; build still passes, source unchanged by S1.
 
 - 2026-11-14 19:30 — Alexandre → Timoté — S1 mock creation is ready. F4 helpers are still absent from main: replace `app/api/houses/_mock-store.ts` with `lib/db` persistence when F4 lands, preserving consent timestamps, private tokens, stable Room Slots and idempotent retries. The temporary adapter only runs in AI_MODE=mock and writes to gitignored STORAGE_DIR/studio-mock. Also registered B5 (API playbook uses `input.error`, but `parseJson` exposes `message`) separately in https://github.com/alexd0104/ImperialAIHack/pull/17.
@@ -52,6 +54,20 @@ _(newest first: date — from → to — what)_
 - ~~2026-11-14 — Raphaël → Timoté — The Tasks workflow rejected `(ID-wip)` PR titles although its error message recommends them (`.github/workflows/tasks.yml:47`). Fixed in `fix/shared-tasks-wip-title`; please review. Not registered as a B task because `tasks.mjs add` needs Node, which is not set up on my machine yet: please add it if you want it on the board.~~ Resolved by #9.
 
 ## Log
+
+### 2026-11-14 — Alexandre (studio, S2 implementation)
+- Done: Alexandre approved provisional Slot assignment, adjustable in S8. Implemented Room lookup, House-scoped photo upload, Story creation, persisted mock object_3d progress and library fallback; linked S1 to S2. Photos resize to 2048 px JPEG, drafts/uploads survive reload, retries preserve the Story id, no Slot reservation or publication occurs.
+- In progress: Browser checks and integration of current main before the requested merge. Unit/type/lint checks pass (245 tests); all 3 new S2 browser tests passed, including axe and photo resizing.
+- Blocked: Existing auth browser test has an ambiguous alert locator (Next route announcer also has role=alert); registering and fixing that one-line test issue next. P5 remains soft; mock output is explicitly labelled as a sample Object.
+- Contract changes: None; reuse existing entity/request/JobView/AssetView schemas. New Studio routes will be documented in TECHNICAL.md; P5 integration request follows.
+- Next: Finish regression/build and design captures, update handoff, then publish and merge S2 on green CI. Original placement question is resolved.
+
+### 2026-11-14 — Alexandre (studio, S2 orientation)
+- Done: Updated from main, checked S2 successfully and created feat/studio-S2-create-object. Read Studio requirements and current creation contracts; no application code or contract edited.
+- In progress: Preparing library/photo Object creation, Story naming, saved draft and mock generation progress.
+- Blocked: Product decision pending on provisional Slot assignment versus a reviewed contract change. P5 is only a soft dependency and does not block mock implementation.
+- Contract changes: None. Proposed behavior and upload-route gap recorded under Requests.
+- Next: Resolve placement representation, implement and validate S2, then open and merge its PR only when acceptance criteria and checks pass. No S2 implementation or merge is claimed yet.
 
 ### 2026-11-14 19:40 — Alexandre (studio)
 - Verification: Combined S1/F3/F4 tree passes pnpm verify (232 tests) and production build. No new S1 application behavior changed by the F3 integration.
