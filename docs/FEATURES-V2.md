@@ -73,6 +73,7 @@ Order = the team's priority. Owners and dependencies are machine-readable in `do
 - **Owner:** Alexandre · **Order:** 6 · **Deps:** none
 - **Files:** `app/studio/stories/**`, `app/studio/memories/[id]/**` layout/routing, new `components/studio/StepNav.tsx`.
 - **Do:** each step is a route under a shared layout with a clickable stepper and a Back button; browser Back works; autosave keeps every input. After generation started, "Change answers" asks for confirmation and regenerates (retry route with cache bypass).
+- **Already there (B12, Yasir):** `components/studio/StudioNav.tsx`, `studio-nav.ts` (header, back links to parent, "Step n of 5"). Build on them, don't duplicate: what's missing is the clickable stepper, browser-Back between steps and autosave.
 - **Boundaries:** do not rewrite the step contents (P7 mounts MotionPicker in the per-photo options; H9 edits ReviewMemory's media). Move components, don't fork them.
 - **Done when:** you can go back and forth through all steps without losing input; e2e smoke still green.
 
@@ -101,7 +102,7 @@ Order = the team's priority. Owners and dependencies are machine-readable in `do
 - **Human:** the live run (`AI_MODE=live pnpm objects:make`, ≈ $1.50, ~5 min), then commit the 3 GLBs + thumbs.
 - **Done when:** mock run produces 3 files, library lists them, House renders them; test for the script's file naming.
 
-### S13 — Studio logout button
+### S13 — Studio logout button (done by B12)
 - **Owner:** Alexandre · **Order:** 11 · **Deps:** none
 - **Files:** Studio header component, `lib/copy.ts` (one string).
 - **Do:** keep the existing studio password login (`STUDIO_PASSWORD`, no new account). Add a "Log out" button in the Studio header calling the existing `POST /api/auth/logout`, then go to `/studio/login`.
