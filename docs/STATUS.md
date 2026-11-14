@@ -39,12 +39,12 @@ _(newest first: date — from → to — what)_
 ## Log
 
 ### 2026-11-14 18:26 — Timoté (pipeline)
-- Done: F6 Studio auth on `feat/pipeline-F6-studio-auth`: `POST /api/auth/login` (signed `mh_session`, 7 days, Secure only on https), `POST /api/auth/logout`, `proxy.ts` guard (pages → `/studio/login?next=`, APIs → 401 envelope, `/api/h` + `/api/files` + login/logout open, `X-Robots-Tag: noindex` everywhere), minimal `/studio/login`. 53 unit tests + 2 e2e, `pnpm build` green.
-- In progress: PR "feat(pipeline): studio password auth and proxy guard (F6)". Schema + error envelope are inline: after F2 merges I rebase and switch to `lib/contracts` + `ok()`/`fail()`.
-- Blocked: nothing. (Push from my worktree failed: no SSH key there.)
+- Done: F6 Studio auth on `feat/pipeline-F6-studio-auth`: `POST /api/auth/login` (signed `mh_session`, 7 days, Secure only on https), `POST /api/auth/logout`, `proxy.ts` guard (pages → `/studio/login?next=`, APIs → 401 envelope, `/api/h` + `/api/files` + login/logout open, `X-Robots-Tag: noindex` everywhere), minimal `/studio/login`, `pnpm env:check`. 93 unit tests (with F2) + 3 e2e, `pnpm build` green.
+- In progress: PR #12 (F6), now on top of F2 (`feat/pipeline-F2-contracts` merged into it): login uses `LoginRequest` from `lib/contracts` and `ok()`/`fail()`. **Merge order: #10 (F2) first, then #12.** Both need an approving review (branch protection).
+- Blocked: #10 and #12 wait for a review (anyone but me). CI is green on both.
 - Contract changes: none.
-- Next: F2 contracts, then the F6 rebase onto `ok()`/`fail()`. Known gaps: login has no throttle (registered as B1); logout does not revoke a copied cookie (stateless HMAC token, fine for the hackathon).
-- Notes for everyone: `.env.local` needs `STUDIO_PASSWORD` and `SESSION_SECRET` of **32+ characters**; a shorter secret refuses sign-in (500 `not_configured`). Studio routes call `/api/**` with the cookie automatically; `/api/files` stays open in the proxy, so its F4 handler must check session-or-House-token itself. `biome.json` now ignores `public/**/*.svg` (the exported SVGs broke `pnpm lint` on main). Raphaël/Alexandre: `/studio/login` is unstyled until F5; restyle freely, keep the label "Password" and the `role="alert"` (e2e uses them).
+- Next: F4 (DB + storage), then P1. Known gaps: login has no throttle (registered as B1); logout does not revoke a copied cookie (stateless HMAC token, fine for the hackathon).
+- Notes for everyone: run **`pnpm env:check`** after pulling: it validates `.env.local` (names only, never values). You need `STUDIO_PASSWORD` and a `SESSION_SECRET` of **32+ characters**, otherwise sign-in returns 500 "not configured". Studio routes call `/api/**` with the cookie automatically; `/api/files` stays open in the proxy, so its F4 handler must check session-or-House-token itself. `biome.json` now ignores `public/**/*.svg` (the exported SVGs broke `pnpm lint` on main). Raphaël/Alexandre: `/studio/login` is unstyled until F5; restyle freely, keep the label "Password" and the `role="alert"` (e2e uses them).
 
 ### 2026-11-14 17:55 — Raphaël (design)
 - Done: SH7, 8 missing frames on Figma v5 row 4 (Questions + free text, Record a voice, Story end, loading/error/clip fallback, Order memories, Room from a photo, Sent confirmation, Studio phone). Mapped in `docs/DESIGN.md` §2, captures in `docs/design-evidence/sh7-*`.
