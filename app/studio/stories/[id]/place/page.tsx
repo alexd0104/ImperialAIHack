@@ -1,11 +1,21 @@
+import { Suspense } from "react";
 import { PlaceStory } from "@/components/studio/PlaceStory";
 import { StudioPage } from "@/components/studio/StudioPage";
 
-export default async function PlacePage({ params }: { params: Promise<{ id: string }> }) {
-  const { id } = await params;
+type Params = { params: Promise<{ id: string }> };
+
+// Params are read inside <Suspense> (Next 16 cache components), as in /house/[token] (B8).
+export default function PlacePage({ params }: Params) {
   return (
     <StudioPage>
-      <PlaceStory storyId={id} />
+      <Suspense fallback={null}>
+        <Content params={params} />
+      </Suspense>
     </StudioPage>
   );
+}
+
+async function Content({ params }: Params) {
+  const { id } = await params;
+  return <PlaceStory storyId={id} />;
 }
