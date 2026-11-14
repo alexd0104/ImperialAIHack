@@ -16,7 +16,7 @@ permissions:
   pull-requests: read
 
 concurrency:
-  group: tasks-${{ github.ref }}
+  group: tasks-${{ github.event_name }}-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
