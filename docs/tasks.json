@@ -1,0 +1,62 @@
+{
+  "$comment": "Task registry used by scripts/tasks.mjs, the Claude Code hook and the GitHub task workflow. Source of IDs, owners and dependencies (mirrors FEATURES.md). 'deps' block starting a task until they are merged on main; 'soft' only warn. A task is DONE when a commit on main has the ID in parentheses in its title, e.g. 'feat(studio): memory bank (S3)'. Use '(S3-wip)' for partial work.",
+  "people": {
+    "timote": { "name": "Timoté", "github": "Tmt-L", "zone": "pipeline" },
+    "alexandre": { "name": "Alexandre", "github": "alexd0104", "zone": "studio" },
+    "yasir": { "name": "Yasir", "github": "yasiralzaid", "zone": "house" },
+    "raphael": { "name": "Raphaël", "github": "raphael-verger", "zone": "design" }
+  },
+  "tasks": [
+    { "id": "F1", "title": "Scaffold", "owner": "timote", "priority": "MUST", "deps": [], "soft": [] },
+    { "id": "F2", "title": "Contracts v1", "owner": "timote", "priority": "MUST", "deps": ["F1"], "soft": [] },
+    { "id": "F3", "title": "Mock layer", "owner": "timote", "priority": "MUST", "deps": ["F2"], "soft": [] },
+    { "id": "F4", "title": "DB + storage + /api/files", "owner": "timote", "priority": "MUST", "deps": ["F2"], "soft": [] },
+    { "id": "F5", "title": "Tokens, fonts, base UI", "owner": "raphael", "priority": "MUST", "deps": ["F1"], "soft": [] },
+    { "id": "F6", "title": "Studio auth", "owner": "timote", "priority": "MUST", "deps": ["F1"], "soft": [] },
+
+    { "id": "P1", "title": "Job engine", "owner": "timote", "priority": "MUST", "deps": ["F2", "F3", "F4"], "soft": [] },
+    { "id": "P2", "title": "Scene chain live", "owner": "timote", "priority": "MUST", "deps": ["P1"], "soft": ["P3"] },
+    { "id": "P3", "title": "Prompt compiler", "owner": "timote", "priority": "MUST", "deps": ["F3"], "soft": [] },
+    { "id": "P4", "title": "Generate / job / retry routes", "owner": "timote", "priority": "MUST", "deps": ["P1"], "soft": [] },
+    { "id": "P5", "title": "Object 3D job", "owner": "timote", "priority": "MUST", "deps": ["P1"], "soft": [] },
+    { "id": "P6", "title": "Demo content generation", "owner": "timote", "priority": "MUST", "deps": ["P2", "P5", "S8"], "soft": ["H7"] },
+
+    { "id": "S1", "title": "Create the House", "owner": "alexandre", "priority": "MUST", "deps": ["F2", "F6"], "soft": ["F5"] },
+    { "id": "S2", "title": "Create · 1 Object", "owner": "alexandre", "priority": "MUST", "deps": ["F2"], "soft": ["S1", "P5"] },
+    { "id": "S3", "title": "Create · 2 Memory bank", "owner": "alexandre", "priority": "MUST", "deps": ["F4"], "soft": ["S2"] },
+    { "id": "S4", "title": "Guided questions + free text", "owner": "alexandre", "priority": "MUST", "deps": ["F2"], "soft": ["S3"] },
+    { "id": "S5", "title": "Memory sheet", "owner": "alexandre", "priority": "MUST", "deps": ["F2"], "soft": ["S4"] },
+    { "id": "S6", "title": "Bring to life (progress)", "owner": "alexandre", "priority": "MUST", "deps": ["P4"], "soft": ["S5"] },
+    { "id": "S7", "title": "Approve every scene", "owner": "alexandre", "priority": "MUST", "deps": ["F2"], "soft": ["S6"] },
+    { "id": "S8", "title": "Place + order + publish", "owner": "alexandre", "priority": "MUST", "deps": ["F2"], "soft": ["S7"] },
+    { "id": "S9", "title": "Hear back (home)", "owner": "alexandre", "priority": "MUST", "deps": ["F2"], "soft": ["S8"] },
+
+    { "id": "H1", "title": "Bundle route + demo mode", "owner": "yasir", "priority": "MUST", "deps": ["F2", "F4"], "soft": [] },
+    { "id": "H2", "title": "Preloader", "owner": "yasir", "priority": "MUST", "deps": ["F2"], "soft": ["H1"] },
+    { "id": "H3", "title": "Choose a room", "owner": "yasir", "priority": "MUST", "deps": ["F2"], "soft": ["H2", "F5"] },
+    { "id": "H4", "title": "Room scene", "owner": "yasir", "priority": "MUST", "deps": ["F2"], "soft": ["H3"] },
+    { "id": "H5", "title": "Object opens (polaroids)", "owner": "yasir", "priority": "MUST", "deps": ["F2"], "soft": ["H4"] },
+    { "id": "H6", "title": "Memory player", "owner": "yasir", "priority": "MUST", "deps": ["F2"], "soft": ["H5"] },
+    { "id": "H7", "title": "Heart + end of Story", "owner": "yasir", "priority": "MUST", "deps": ["F2"], "soft": ["H6"] },
+    { "id": "H8", "title": "Alone mode", "owner": "yasir", "priority": "MUST", "deps": ["F2"], "soft": ["H4"] },
+
+    { "id": "Q1", "title": "CI + pre-commit", "owner": "timote", "priority": "MUST", "deps": ["F1"], "soft": [] },
+    { "id": "Q2", "title": "E2E smoke", "owner": "yasir", "priority": "MUST", "deps": ["S8", "H7"], "soft": [] },
+    { "id": "Q3", "title": "demo:check", "owner": "yasir", "priority": "MUST", "deps": ["H1"], "soft": ["H7"] },
+    { "id": "Q4", "title": "DESIGN.md evidence", "owner": "raphael", "priority": "MUST", "deps": [], "soft": ["F5"] },
+
+    { "id": "SH1", "title": "Room from family photo", "owner": "timote", "priority": "SHOULD", "deps": ["P1", "S1"], "soft": [] },
+    { "id": "SH2", "title": "Second Room in demo", "owner": "raphael", "priority": "SHOULD", "deps": ["H3"], "soft": [] },
+    { "id": "SH3", "title": "Don't show list", "owner": "alexandre", "priority": "SHOULD", "deps": ["S1"], "soft": [] },
+    { "id": "SH4", "title": "Care & privacy screen", "owner": "alexandre", "priority": "SHOULD", "deps": ["S1"], "soft": ["SH3"] },
+    { "id": "SH5", "title": "Voice recording screen", "owner": "alexandre", "priority": "SHOULD", "deps": ["S3"], "soft": ["SH7"] },
+    { "id": "SH6", "title": "ElevenLabs voice agent", "owner": "timote", "priority": "SHOULD", "deps": ["S4"], "soft": ["S9", "H8", "P6"] },
+    { "id": "SH7", "title": "Missing Figma frames", "owner": "raphael", "priority": "SHOULD", "deps": [], "soft": [] },
+
+    { "id": "C1", "title": "Fidelity check (vision)", "owner": "timote", "priority": "COULD", "deps": ["P2"], "soft": [] },
+    { "id": "C2", "title": "Old video restoration", "owner": "timote", "priority": "COULD", "deps": ["P1"], "soft": [] },
+    { "id": "C3", "title": "Live update on publish", "owner": "yasir", "priority": "COULD", "deps": ["H7"], "soft": [] },
+    { "id": "C4", "title": "Text agent", "owner": "timote", "priority": "COULD", "deps": ["P3"], "soft": [] },
+    { "id": "C5", "title": "Public deployment", "owner": "timote", "priority": "COULD", "deps": ["P4"], "soft": [] }
+  ]
+}

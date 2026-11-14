@@ -19,11 +19,12 @@ The rules above are shared with Codex. This file only adds what is specific to C
 | Skill | `add-api-route` | Adding or changing an API route (contract → route → mock → test). |
 | Skill | `add-fal-step` | Adding or swapping a fal model in the generation chain. |
 | Skill | `figma-to-component` | Turning a Figma frame into code (uses the Figma MCP server). |
+| Command | `/start <ID>` | Starting any task: checks dependencies, creates the branch, plans. |
 | Command | `/verify` | Typecheck + lint + tests, with fixes for what fails. |
 | Command | `/demo-check` | Checks the House demo mode works offline. |
 | Command | `/handoff` | Writes your status lines into `docs/STATUS.md` before pushing or pausing. |
 
-Hooks (automatic): Biome formats every file you edit · reading/editing `.env*` is blocked · editing outside your zone triggers a warning you must acknowledge in the PR · `git push --force` and pushes to `main` are blocked.
+Hooks (automatic): Biome formats every file you edit · reading/editing `.env*` is blocked · editing outside your zone triggers a warning you must acknowledge in the PR · `git push --force` and pushes to `main` are blocked · creating a task branch whose dependencies are not merged is blocked.
 
 ## Figma
 

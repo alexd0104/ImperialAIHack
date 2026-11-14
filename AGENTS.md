@@ -105,6 +105,9 @@ Details: `docs/zones/*.md`. Shared files (`package.json`, `proxy.ts`, `lib/copy.
 
 ## 10. Working without talking
 
+**Task guardrail (mandatory):** before starting any task, run `node scripts/tasks.mjs check <ID>`. If it fails, do not start: the task's dependencies are not merged on `main`. Pick a ready task with `node scripts/tasks.mjs next <timote|alexandre|yasir|raphael>`. Branches are `feat/<zone>-<ID>-<topic>`; the PR title must end with `(<ID>)` (use `(<ID>-wip)` for partial work) — that is how a task is marked done when merged. The live board (who did what, what is ready) is the GitHub issue **"📋 memorAI task board"**, refreshed automatically; locally: `node scripts/tasks.mjs board`. Tasks, owners and dependencies live in `docs/tasks.json`.
+
+
 - Before starting: `git pull`, read `docs/STATUS.md`.
 - Before pushing or pausing: add 5 lines to `docs/STATUS.md` (done / in progress / blocked / contract changes / next). Claude Code: `/handoff`.
 - Need something from another zone: write it under "Requests" in `docs/STATUS.md` with your name.
