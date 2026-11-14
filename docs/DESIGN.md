@@ -149,6 +149,7 @@ _Fill in as you go (for the presentation):_ which frames were read through MCP, 
 - **2026-11-14 — spec extraction.** `get_metadata` on page 20:66 listed every frame and instance (no manual node hunting). `get_design_context` on 20-624, 20-668, 23-580 returned exact paddings, radii, shadows, opacities and font weights → §4.1 table in minutes instead of inspecting layers one by one. It also surfaced the Figma gaps we fix in code: leftover `#2B2420` and DM Sans in the Stepper, secondary text at 0.45–0.65 opacity (fails AA), avatar ring colour with no token.
 - **2026-11-14 — asset export.** `download_assets` exported the logo, 3 rooms and 9 Objects as SVG (13 files). By hand: removed the parent-frame rects the exporter adds, squared the room corners. Checked every file renders on its own.
 - **2026-11-14 — SH7, designing with the MCP server.** The 8 missing frames were built directly in the Figma file with `use_figma`: the Studio header was cloned from existing v5 frames so it stays identical, and every frame reuses the file's own components (Button, Toggle, Close, Polaroid, Family avatars, Empty Spot, logo, Object/Flower). Fixed in the new frames while building: DM Sans ✓ → vector check, low-opacity text → 0.7, dark Primary button → terracotta. One visual check per frame caught 3 layout bugs (clipped chips, polaroid captions squashed by `resize` instead of `rescale`, phone actions cut off), each fixed with a targeted edit.
+- **2026-11-14 — F5, code from exact values.** Two read-only `use_figma` calls returned the Toggle, Polaroid, Button, Close/Rooms, avatar, input, checkbox, segmented and stepper values in one pass (sizes, radii, paddings, shadows, opacities), so the 14 `components/ui` pieces were written straight from numbers instead of eyeballing. By hand: tokens deduplicated (`#2B2420` → `ink`), and accessibility fixes applied on top of Figma (§4.3, §8).
 
 ## 7. Evidence log
 
@@ -159,3 +160,25 @@ _Fill in as you go (for the presentation):_ which frames were read through MCP, 
 | 2026-11-14 | Create · 3b Approve every scene (23-580) | `/studio/memories/[id]/approve` | `docs/design-evidence/23-580-approve-scenes-figma.png` | _after S-tasks_ | yes | stepper todo label 0.45 → 0.7, subtitle 0.6 → 0.7 |
 | 2026-11-14 | SH7 · 8 new frames (57-624 … 61-1155) | see §2 row 4 | `docs/design-evidence/sh7-*-figma.png` | _when built_ | yes (`use_figma` built them from local components; captures via `get_screenshot`) | — |
 | 2026-11-14 | Button, Toggle, Polaroid, Family avatars, controls (20-624, 20-668, 23-580) | `/dev/ui` | `docs/design-evidence/20-624-*`, `20-668-*`, `23-580-*` | `docs/design-evidence/f5-dev-ui.png` | yes (`use_figma` read-only for exact sizes, radii, shadows) | see §4.3 |
+
+## 8. Accessibility notes
+
+Target: WCAG 2.2 AA everywhere; House rules from `AGENTS.md` §3 (no reading, single tap, ≥ 64 px, gentle motion). Checked automatically: `app/tokens.test.ts` (contrast of every colour pair the components use, incl. hover) and `e2e/dev-ui-a11y.spec.ts` (axe, WCAG 2.2 AA, 0 violations on `/dev/ui`).
+
+| Pair | Ratio | Used by | Verdict |
+|---|---|---|---|
+| white on `primary` `#D9734E` | 3.2:1 | Figma filled buttons | fails AA text → replaced |
+| white on `primary-strong` `#B4552F` | 4.9:1 | Button primary, Badge attention/photoPrimary, ToggleGroup primary, Stepper current | AA |
+| white on `primary-strong-hover` `#A44B2C` | 5.8:1 | Button primary hover | AA |
+| white on `primary` | 3.2:1 | IconButton primary (icon only), Polaroid play icon | OK, non-text ≥ 3:1 |
+| `success-text` on `success-surface` | 4.1:1 | Figma Approved badge | fails AA → `success-strong` 5.1:1 |
+| white on `success-text` | 5.0:1 | Checkbox checked, Stepper done | AA |
+| white on avatar pastels | ~2:1 | Figma avatar initials | fails → ink, 5.7–7.5:1 |
+| `ink` at 0.7 on `background` | ≥ 4.5:1 | secondary text, labels, placeholders | AA (Figma used 0.45–0.65) |
+
+Other choices:
+- **Targets:** House controls 76 / 92 / 124 px and Heart 230 px; Studio-only controls (Switch 56×32, Checkbox 26, Button `sm` 48) never go on House screens.
+- **Focus:** global 3 px `primary` outline with 3 px offset on `:focus-visible`.
+- **Motion:** all transitions use `--ease-memorai`; `prefers-reduced-motion` cuts animations and transitions to near zero.
+- **Names:** icon-only buttons require a `label` (from `lib/copy.ts`); avatars expose the full name; decorative icons are `aria-hidden`; the stepper announces "done" / "current step".
+- **Language:** "a person living with Alzheimer's"; no clinical claims (`AGENTS.md` §3).

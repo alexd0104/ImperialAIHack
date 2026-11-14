@@ -34,9 +34,16 @@ _(newest first: date — what changed — who)_
 
 _(newest first: date — from → to — what)_
 
-- 2026-11-14 — Raphaël → Timoté — The Tasks workflow rejected `(ID-wip)` PR titles although its error message recommends them (`.github/workflows/tasks.yml:47`). Fixed in `fix/shared-tasks-wip-title`; please review. Not registered as a B task because `tasks.mjs add` needs Node, which is not set up on my machine yet: please add it if you want it on the board.
+- ~~2026-11-14 — Raphaël → Timoté — The Tasks workflow rejected `(ID-wip)` PR titles although its error message recommends them (`.github/workflows/tasks.yml:47`). Fixed in `fix/shared-tasks-wip-title`; please review. Not registered as a B task because `tasks.mjs add` needs Node, which is not set up on my machine yet: please add it if you want it on the board.~~ Resolved by #9.
 
 ## Log
+
+### 2026-11-14 19:20 — Raphaël (design)
+- Done: B2 (contrast fix) shipped inside the F5 merge 9ab8f45; this entry marks it on the board. Q4: DESIGN.md §8 accessibility notes (contrast table, targets, focus, motion) and §6 MCP note for F5.
+- In progress: Q4 (ongoing: a Figma-vs-code row per screen as Studio/House screens land).
+- Blocked: Figma MCP needs re-auth for new captures and Figma Variables.
+- Contract changes: none.
+- Next: test 4 (Rodin vs Trellis); Figma Variables for the tokens once re-authed.
 
 ### 2026-11-14 19:05 — Raphaël (design)
 - Done: B2 (PR #11 review by Alexandre). New tokens `primary-strong #B4552F` / `primary-strong-hover #A44B2C` for filled controls with white text (4.9 / 5.8:1), `success-strong #426B38` for the Approved badge; avatar initials in ink; checkbox/stepper checks on `success-text`. Contrast unit test for every pair + axe (WCAG 2.2 AA) e2e on `/dev/ui`.
