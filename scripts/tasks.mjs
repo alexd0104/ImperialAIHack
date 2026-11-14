@@ -7,6 +7,7 @@
 //   node scripts/tasks.mjs id-from <text>    print the first task ID found in a branch name / title
 //   node scripts/tasks.mjs add --title "..." --owner <person> [--deps A,B] [--soft C] [--note "..."]
 //                                            append a new B<n> task (bug / troubleshooting / missing piece)
+//   node scripts/tasks.mjs next-id <person>  first ready task by order (deps merged, required files present, not skipped)
 //   node scripts/tasks.mjs lint              validate docs/tasks.json (duplicate IDs, unknown deps/owners, cycles)
 //
 // Options: --base <ref> (default origin/main), --no-fetch, --prs <file.json> (open PRs, from gh),
@@ -16,7 +17,7 @@
 // e.g. "feat(studio): memory bank (S3)" or a merge commit whose body is the PR title.
 // "(S3-wip)" does not count.
 
-import { readFileSync, writeFileSync, existsSync } from "node:fs";
+import { readFileSync, writeFileSync, existsSync, readdirSync } from "node:fs";
 import { execSync } from "node:child_process";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -91,11 +92,21 @@ function loadInProgress(done) {
 const who = (key) => people[key]?.name ?? key;
 const gh = (key) => (people[key]?.github ? `@${people[key].github}` : "");
 
+const filesMissing = (task) =>
+  task.requiresFiles && !(existsSync(join(root, task.requiresFiles)) && readdirSync(join(root, task.requiresFiles)).length > 0)
+    ? task.requiresFiles
+    : null;
+
+function skipped(person) {
+  const f = join(root, ".autopilot", `skip-${person}`);
+  return existsSync(f) ? readFileSync(f, "utf8").split(/\s+/).filter(Boolean) : [];
+}
+
 function status(task, done, wip) {
   if (done.has(task.id)) return "done";
   const missing = task.deps.filter((d) => !done.has(d));
   if (wip.has(task.id)) return "wip";
-  return missing.length ? "blocked" : "ready";
+  return missing.length || filesMissing(task) ? "blocked" : "ready";
 }
 
 function check(id) {
@@ -113,6 +124,10 @@ function check(id) {
   for (const d of softMissing) {
     const t = byId.get(d);
     console.log(`⚠️  Soft dependency ${d} (${t.title}, ${who(t.owner)}) is not merged yet. You can start, but use mocks/placeholders and rebase later.`);
+  }
+  if (filesMissing(task)) {
+    console.error(`⛔ Cannot start ${id} (${task.title}) yet: waiting for files in ${task.requiresFiles}/ (added by the team).`);
+    process.exit(1);
   }
   if (missing.length) {
     console.error(`⛔ Cannot start ${id} (${task.title}) yet. Waiting for:`);
@@ -167,6 +182,18 @@ function next(person) {
   for (const t of list) console.log(`🟢 ${t.id}  ${t.title}  (${t.priority}, ${who(t.owner)})`);
 }
 
+function nextId(person) {
+  const done = loadDone();
+  const skip = new Set(skipped(person));
+  const only = opt("only", "") ? opt("only", "").split(",") : null;
+  const order = (t) => (typeof t.order === "number" ? t.order : 1000);
+  const ready = tasks
+    .filter((t) => (only ? only.includes(t.id) : t.owner === person) && !done.has(t.id) && !skip.has(t.id))
+    .filter((t) => t.deps.every((d) => done.has(d)) && !filesMissing(t))
+    .sort((a, b) => order(a) - order(b));
+  if (ready.length) console.log(ready[0].id);
+}
+
 function lint() {
   const errors = [];
   const seen = new Set();
@@ -215,6 +242,7 @@ if (cmd === "check") check(args[1]);
 else if (cmd === "lint") lint();
 else if (cmd === "add") add();
 else if (cmd === "board") board();
+else if (cmd === "next-id") nextId(args[1]);
 else if (cmd === "next") next(args[1] && !args[1].startsWith("--") ? args[1] : undefined);
 else if (cmd === "id-from") {
   const m = (args[1] ?? "").match(ID_RE);

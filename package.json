@@ -16,6 +16,7 @@
     "db:indexes": "node --env-file-if-exists=.env.local scripts/db-indexes.mts",
     "db:ping": "node --env-file-if-exists=.env.local scripts/db-ping.mts",
     "demo": "next build && HOUSE_DEMO_MODE=true DEMO_HOUSE_TOKEN=demo-token next start",
+    "autopilot": "node scripts/autopilot.mjs",
     "demo:check": "node --env-file-if-exists=.env.local scripts/demo-check.mts",
     "seed:demo": "node --conditions=react-server --env-file-if-exists=.env.local scripts/seed-demo.mts",
     "export:demo": "node --conditions=react-server --env-file-if-exists=.env.local scripts/export-demo.mts",

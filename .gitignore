@@ -31,3 +31,6 @@ test-results/
 
 # typescript
 *.tsbuildinfo
+
+# overnight runner logs and skip lists
+.autopilot/

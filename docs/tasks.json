@@ -634,6 +634,202 @@
       "deps": [],
       "soft": [],
       "note": ""
+    },
+    {
+      "id": "F7",
+      "title": "Contracts v2",
+      "owner": "timote",
+      "priority": "V2",
+      "release": "v2",
+      "order": 0,
+      "deps": [],
+      "soft": [],
+      "brief": "docs/FEATURES-V2.md#F7"
+    },
+    {
+      "id": "P7",
+      "title": "Movement type and length per photo",
+      "owner": "timote",
+      "priority": "V2",
+      "release": "v2",
+      "order": 1,
+      "deps": [
+        "F7"
+      ],
+      "soft": [],
+      "brief": "docs/FEATURES-V2.md#P7"
+    },
+    {
+      "id": "H9",
+      "title": "Hear sound in review + Play full memory",
+      "owner": "yasir",
+      "priority": "V2",
+      "release": "v2",
+      "order": 2,
+      "deps": [],
+      "soft": [],
+      "brief": "docs/FEATURES-V2.md#H9"
+    },
+    {
+      "id": "P8",
+      "title": "Better sound prompts",
+      "owner": "timote",
+      "priority": "V2",
+      "release": "v2",
+      "order": 3,
+      "deps": [
+        "F7"
+      ],
+      "soft": [
+        "P7"
+      ],
+      "brief": "docs/FEATURES-V2.md#P8"
+    },
+    {
+      "id": "P9",
+      "title": "Ambience bed library",
+      "owner": "timote",
+      "priority": "V2",
+      "release": "v2",
+      "order": 4,
+      "deps": [
+        "F7"
+      ],
+      "soft": [
+        "P8"
+      ],
+      "brief": "docs/FEATURES-V2.md#P9"
+    },
+    {
+      "id": "H10",
+      "title": "Loading feedback everywhere",
+      "owner": "yasir",
+      "priority": "V2",
+      "release": "v2",
+      "order": 5,
+      "deps": [],
+      "soft": [],
+      "brief": "docs/FEATURES-V2.md#H10"
+    },
+    {
+      "id": "S10",
+      "title": "Back navigation in new-Story steps",
+      "owner": "alexandre",
+      "priority": "V2",
+      "release": "v2",
+      "order": 6,
+      "deps": [],
+      "soft": [],
+      "brief": "docs/FEATURES-V2.md#S10"
+    },
+    {
+      "id": "S11",
+      "title": "Room management",
+      "owner": "alexandre",
+      "priority": "V2",
+      "release": "v2",
+      "order": 7,
+      "deps": [
+        "F7"
+      ],
+      "soft": [
+        "H10"
+      ],
+      "brief": "docs/FEATURES-V2.md#S11"
+    },
+    {
+      "id": "S12",
+      "title": "Place objects freely (editor)",
+      "owner": "alexandre",
+      "priority": "V2",
+      "release": "v2",
+      "order": 8,
+      "deps": [
+        "F7"
+      ],
+      "soft": [],
+      "brief": "docs/FEATURES-V2.md#S12"
+    },
+    {
+      "id": "H11",
+      "title": "House live refresh + gentle move",
+      "owner": "yasir",
+      "priority": "V2",
+      "release": "v2",
+      "order": 9,
+      "deps": [
+        "F7"
+      ],
+      "soft": [
+        "S12"
+      ],
+      "brief": "docs/FEATURES-V2.md#H11"
+    },
+    {
+      "id": "S14",
+      "title": "Default objects (3 GLBs)",
+      "owner": "raphael",
+      "priority": "V2",
+      "release": "v2",
+      "order": 10,
+      "deps": [],
+      "soft": [],
+      "brief": "docs/FEATURES-V2.md#S14",
+      "requiresFiles": "public/objects/glb"
+    },
+    {
+      "id": "S13",
+      "title": "Demo login and logout",
+      "owner": "alexandre",
+      "priority": "V2",
+      "release": "v2",
+      "order": 11,
+      "deps": [
+        "F7"
+      ],
+      "soft": [],
+      "brief": "docs/FEATURES-V2.md#S13"
+    },
+    {
+      "id": "Q5",
+      "title": "Prompting experiment",
+      "owner": "yasir",
+      "priority": "V2",
+      "release": "v2",
+      "order": 12,
+      "deps": [
+        "F7",
+        "P7"
+      ],
+      "soft": [
+        "P8"
+      ],
+      "brief": "docs/FEATURES-V2.md#Q5"
+    },
+    {
+      "id": "SH8",
+      "title": "UI redesign v2",
+      "owner": "raphael",
+      "priority": "V2",
+      "release": "v2",
+      "order": 13,
+      "deps": [],
+      "soft": [],
+      "brief": "docs/FEATURES-V2.md#SH8"
+    },
+    {
+      "id": "P10",
+      "title": "Sound and video in parallel",
+      "owner": "timote",
+      "priority": "V2",
+      "release": "v2",
+      "order": 14,
+      "deps": [
+        "F7",
+        "P8"
+      ],
+      "soft": [],
+      "brief": "docs/FEATURES-V2.md#P10"
     }
   ]
 }
