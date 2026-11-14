@@ -61,6 +61,12 @@ _(newest first: date — from → to — what)_
 
 ## Log
 
+### 2026-11-14 21:10 — Yasir (studio takeover, S6–S9, SH3, SH4)
+- Done: S9 Hear back `/studio?house=` (+ GET/PATCH/DELETE `/api/houses/:id`, GET `feedback`, `link`). SH3+SH4 `/studio/care` (Don't show list on House, whole-word warning on Memory sheet and Place; OK-alone default; privacy text; delete with confirmation). S8 `/studio/stories/[id]/place` (Slot map, up/down order, OK alone, publish + confirmation; `PATCH /api/stories/:id`, `POST /api/stories/:id/publish` refuses until every scene has a choice). S6+S7 `/studio/memories/[id]/review` (progress with slow zoom + live step name, then before/after, colour, motion, Use / Try again / Keep original; `POST /api/scenes/:id/choice`).
+- In progress: nothing. SH5 (voice recording) not started.
+- Blocked: nothing. P4 landed meanwhile (#25); S6/S7 call its routes as specified. `GET /api/memories/:id` doesn't fill `jobs`; S6 polls each scene's `jobId` instead.
+- Deviations (no contract change): S6 restore/motion options are Memory-wide (`answers.restore/motion`), as there is no per-photo field. Refused free-text requests aren't shown (no contract field). SH4's OK-alone default is stored in the browser (no House field); new Memories pick it up. → Timoté: add `House.okAloneDefault` / per-scene options / refusals if wanted.
+- Out-of-zone edits (Studio): app/api/houses/{[id]/**,_house-ops.ts,_mock-store.ts}, app/api/scenes/[id]/choice, app/api/stories/[id]/{route.ts,publish}, app/studio/{page.tsx,care,stories/[id]/place,memories/[id]/review}, components/studio/{HearBack,CarePrivacy,PlaceStory,ReviewMemory,DontShowWarning}.tsx, components/studio/{dont-show,studio-house}.ts, MemorySheetView.tsx, NewMemoryForm.tsx, lib/copy.ts (studio.hearBack/care/approve/place/progress).
 ### 2026-11-14 20:55 — Raphaël for Timoté (pipeline, P5)
 - Done: P5 object_3d job. Source photo via new `Job.assetId`; cutout (BiRefNet, `image_url`) → Rodin v2.5 fast with `image_urls: [url]` (verified on fal's API page; price $0.10 from Test 4) → compress in process with gltf-transform (WebP textures ≤ 1024 px; keeps the raw GLB if compress fails or is not lighter) → `settleJob` sets the Story's GLB; on failure the Story keeps its library object. Engine: `FalPlan.input.list` sends a one-URL array.
 - In progress: nothing.
