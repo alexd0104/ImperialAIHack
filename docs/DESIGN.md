@@ -156,12 +156,14 @@ _Fill in as you go (for the presentation):_ which frames were read through MCP, 
 
 | Date/time | Frame | Route | Figma image | Code image | MCP used? | Deviations |
 |---|---|---|---|---|---|---|
+| 2026-11-14 | Family · Create the House (22-546) | `/studio/house/new` | Pending MCP access | `docs/design-evidence/create-house-code.png`, `create-house-phone-code.png` | No direct frame read; Alexandre explicitly approved using repository specs/assets | Exact frame comparison pending; see §9. Existing exported logo/rooms and F5 components reused. |
 | 2026-11-14 | Story · Memory playing (20-624) | `MemoryPlayer` | `docs/design-evidence/20-624-memory-playing-figma.png` | _after H-tasks_ | yes (get_design_context) | — |
 | 2026-11-14 | Story · Send love (20-668) | `HeartScreen` | `docs/design-evidence/20-668-send-love-figma.png` | _after H-tasks_ | yes | subtitle opacity 0.65 → 0.7 |
 | 2026-11-14 | Create · 3b Approve every scene (23-580) | `/studio/memories/[id]/approve` | `docs/design-evidence/23-580-approve-scenes-figma.png` | _after S-tasks_ | yes | stepper todo label 0.45 → 0.7, subtitle 0.6 → 0.7 |
 | 2026-11-14 | SH7 · 8 new frames (57-624 … 61-1155) | see §2 row 4 | `docs/design-evidence/sh7-*-figma.png` | _when built_ | yes (`use_figma` built them from local components; captures via `get_screenshot`) | — |
 | 2026-11-14 | Button, Toggle, Polaroid, Family avatars, controls (20-624, 20-668, 23-580) | `/dev/ui` | `docs/design-evidence/20-624-*`, `20-668-*`, `23-580-*` | `docs/design-evidence/f5-dev-ui.png` | yes (`use_figma` read-only for exact sizes, radii, shadows) | see §4.3 |
 | 2026-11-14 | Button + every v5 Primary instance, e.g. 23-580 | `components/ui/button.tsx` | `docs/design-evidence/23-580-approve-scenes-figma-tokens.png` | `docs/design-evidence/f5-dev-ui.png` | yes (`use_figma` write: Variables + bindings) | none left on Button |
+| 2026-11-14 | — (no Figma frame: sign-in out of scope) | `/studio/login` (F6) | — | `docs/design-evidence/q4-studio-login-code.png`, `q4-studio-login-error-code.png` | no (code-only check) | tokens + `components/ui` only; axe WCAG 2.2 AA: 0 violations (empty and error states); targets 64 / 56 px. Gap: field not marked `aria-invalid` / linked to the error (`aria-describedby`) → request to Timoté |
 
 ## 8. Accessibility notes
 
@@ -184,3 +186,24 @@ Other choices:
 - **Motion:** all transitions use `--ease-memorai`; `prefers-reduced-motion` cuts animations and transitions to near zero.
 - **Names:** icon-only buttons require a `label` (from `lib/copy.ts`); avatars expose the full name; decorative icons are `aria-hidden`; the stepper announces "done" / "current step".
 - **Language:** "a person living with Alzheimer's"; no clinical claims (`AGENTS.md` §3).
+
+## 9. S1 mapping from repository specifications (2026-11-14)
+
+Figma MCP tools were unavailable in this Codex session. Alexandre explicitly approved proceeding from the existing repository specifications and exports. This inventory describes the implementation; it is **not** a claim to have read node 22-546 or captured its screenshot. Raphaël: please compare with the frame when MCP access returns.
+
+| Element | Token / component mapping |
+|---|---|
+| Canvas and layout | `bg-background`, centred `max-w-[1194px]`, `sm:px-page` (72 px), one column on phone |
+| Brand | Existing `/brand/memorai-logo.svg`, rendered with `next/image`; no redraw |
+| Heading / introduction | `font-display text-40` (phone `text-32`), body `font-body text-18 text-ink/70` |
+| First name | Shared `Label` and `Input size="lg"`; no prefilled example; name limit from `CreateHouseRequest` |
+| First Room | Shared `Card`, `rounded-card shadow-card bg-surface`; native radio inputs for keyboard operation, selected `border-primary-strong`; lucide `Check` |
+| Room illustrations | Existing `/rooms/garden.svg`, `/rooms/kitchen.svg`, `/rooms/living-room.svg` (`living` is the API enum) |
+| Consent | Shared `Checkbox`, unchecked initially, associated `Label`, required on client and API |
+| Privacy reminder | `text-ink/70`, lucide `LockKeyhole`; no fabricated avatars or family media |
+| Primary action | Shared `Button`, `primary-strong` fill / white text, lucide `ArrowRight`; disabled until consent |
+| Error / completion | `warning-surface` with an announced error; `Card`, `success-surface` / `success-strong` and confirmation; these states are implementation additions |
+
+Validation: axe WCAG 2.2 AA on tablet and 390 px phone, keyboard Room selection, readable copy, reduced motion inherited from F5. `primary-strong` is a filled-button token: small text in that colour on cream measures 4.45:1; S1 secondary text uses `ink/70` instead.
+
+Integration notes: F4 landed during S1 finalization; creation now uses `lib/db` MongoDB helpers by default, including when `AI_MODE=mock`. An explicit `STUDIO_MOCK_STORE=true` enables the offline test adapter under `app/api/houses/`, persisting only to gitignored `STORAGE_DIR/studio-mock/`; this option refuses non-mock modes. DB failures never silently switch stores. The completion screen stays on S1 until S2 exists, rather than linking to an unimplemented route. Garden Slots reuse the F2 fixture; Kitchen/Living Slot positions are provisional presets for Yasir to review before House integration. Neither their exact positions nor the overall layout has been compared directly to frame 22-546.

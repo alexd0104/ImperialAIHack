@@ -26,6 +26,6 @@ export default defineConfig({
     reuseExistingServer: !process.env.CI,
     timeout: 120_000,
     // E2E never spends live credits (AGENTS.md §7).
-    env: { AI_MODE: "mock", MOCK_FAIL_RATE: "0" },
+    env: { AI_MODE: "mock", MOCK_FAIL_RATE: "0", STUDIO_MOCK_STORE: "true" },
   },
 });

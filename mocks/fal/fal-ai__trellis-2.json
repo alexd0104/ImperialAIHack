@@ -1,0 +1,8 @@
+{
+  "model_mesh": {
+    "url": "mocks/media/object.glb",
+    "content_type": "model/gltf-binary",
+    "file_name": "object.glb",
+    "file_size": 860
+  }
+}

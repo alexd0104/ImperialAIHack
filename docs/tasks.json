@@ -562,6 +562,15 @@
       "deps": [],
       "soft": [],
       "note": "PR #12 review: verifySessionToken accepts a cookie signed with the synthetic secret short although login requires 32 characters. Apply SESSION_SECRET_MIN_LENGTH at verification and cover proxy rejection of short-secret cookies before merging F6. Review: https://github.com/alexd0104/ImperialAIHack/pull/12#pullrequestreview-5906434698"
+    },
+    {
+      "id": "B5",
+      "title": "Exclude .claude/worktrees from vitest, tsc and git",
+      "owner": "timote",
+      "priority": "FIX",
+      "deps": [],
+      "soft": [],
+      "note": "Parallel agent worktrees made pnpm test pick up their node_modules tests"
     }
   ]
 }
