@@ -16,7 +16,7 @@ Async coordination. **Append only; never edit someone else's lines.** Newest ent
 | 1 | GLB on room SVG | | | Yasir |
 | 2 | Memory chain fidelity (Kling vs Veo) | | | Timoté |
 | 3 | Room from real photo | | | Timoté |
-| 4 | Rodin vs Trellis | | | Raphaël |
+| 4 | Rodin vs Trellis | 3 photos (teapot, radio, watering can), same input, via fal API. Speed and weight equal: 18–74 s, 0.8–1.4 MB, ~19–20K triangles each. Rodin: 3/3 clean, faithful shapes, simplified/saturated texture (fits the illustrated rooms). Trellis 2: richer teapot glaze, but radio grille texture is noise and the watering can kept a disc of the decking (background bled). | Keep **Rodin v2.5 fast** as default, Trellis 2 as fallback. Cutout before model3d is mandatory (busy backgrounds). Check Trellis price on the fal dashboard. | Raphaël |
 | 5 | Time + cost per Memory | | | Timoté |
 
 ## Contract changes
@@ -38,6 +38,13 @@ _(newest first: date — from → to — what)_
 - ~~2026-11-14 — Raphaël → Timoté — The Tasks workflow rejected `(ID-wip)` PR titles although its error message recommends them (`.github/workflows/tasks.yml:47`). Fixed in `fix/shared-tasks-wip-title`; please review. Not registered as a B task because `tasks.mjs add` needs Node, which is not set up on my machine yet: please add it if you want it on the board.~~ Resolved by #9.
 
 ## Log
+
+### 2026-11-14 19:45 — Raphaël (design)
+- Done: Test 4 (Rodin vs Trellis), result in the test table. Timoté: P5 can keep `fal-ai/hyper3d/rodin/v2.5/fast` as in TECHNICAL.md §7; Trellis 2 with `texture_size 1024, decimation_target 20000` works as fallback. Background must be cut out first.
+- In progress: Q4 (as screens land).
+- Blocked: nothing.
+- Contract changes: none.
+- Next: pitch slide outline; Q4 rows for the first Studio/House screens.
 
 ### 2026-11-14 19:25 — Timoté (pipeline)
 - Done: F4. `lib/db` (`import { db, findHouseByToken, deleteHouseDocuments } from "@/lib/db"`): client singleton on `globalThis`, env read lazily; `db.houses|rooms|stories|memories|assets|scenes|jobs|events|generationCache` with `insert/findById/findOne/find/update/deleteById/deleteMany/raw`, all parsed with the contracts. `lib/storage`: `saveFile(houseId, name, bytes|stream) → {path, bytes, sha256}`, `statFile`, `openReadStream`, `sha256File`, `deleteHouseFolder`, `contentTypeFor`, traversal-safe. `GET/HEAD /api/files/<houseId>/...` with Range (206/416), access = Studio session or `?t=<House token>` of the House owning the folder. `pnpm db:ping`, `pnpm db:indexes`. Checked on real Atlas (`mh_timote`): ping, the 5 indexes, typed insert/read/update/delete OK.
