@@ -60,15 +60,15 @@ Defined in `app/globals.css` (see `TECHNICAL.md` §3.2). Figma currently has **n
 | Figma component | Code | Notes |
 |---|---|---|
 | Button (Style=Primary/Secondary) | `components/ui/button.tsx` | shadcn, tokens |
-| Toggle (State=On/Off) | `switch.tsx` | success `#7FA36F`, off `#DCD5CB` |
+| Toggle (State=On/Off) | `switch.tsx` | on `switch-on #3F8A55` (Figma On variant), off `#DCD5CB`, knob 26 |
 | Close Button / Rooms Button | `icon-button.tsx` (64) | round, `shadow-round-button` |
-| Polaroid (Video, Caption) | `polaroid.tsx` | Caveat caption, `shadow-polaroid`, radius 3/2 |
+| Polaroid (Video, Caption) | `polaroid.tsx` | Caveat caption, `shadow-polaroid`, radius 6/2, 200×250 or 150×188 |
 | Family avatars | `avatar-group.tsx` | rings `#FFF8EE` 3 px, overlap −10 |
 | Empty Spot | `components/house/empty-slot.tsx` | House only |
 | Objects (9) | `public/objects/*.svg` | library Objects |
 | memorAI logo | `public/brand/memorai-logo.svg` | |
 | Story progress, Stepper, chips, inputs, checkboxes, segmented, tabs, cards | `segmented-progress.tsx`, `stepper.tsx`, `badge.tsx`, `input.tsx`, `checkbox.tsx`, `toggle-group.tsx`, `tabs.tsx`, `card.tsx` | Built as plain frames in Figma; componentised in code |
-| House controls | `components/house/controls.tsx` | Back 92, Pause 124, Return 76, Heart 230 |
+| House controls | `components/house/controls.tsx` built from `icon-button.tsx` (76/92/124) and `heart-button.tsx` (230) | Back 92, Pause 124, Return 76, Heart 230 |
 
 ### 4.1 Component specs (read through the Figma MCP server, 2026-11-14)
 
@@ -115,6 +115,20 @@ Objects keep their soft ground shadow and their in-room tilt (radio, camera) bec
 
 **Icons (Figma custom → lucide-react):** home → Home · back → ChevronLeft · next → ChevronRight · pause → Pause · heart → Heart · close → X · rooms → LayoutGrid · camera → Camera · generate → Sparkles · gear → Settings · play → Play · warning → AlertCircle · check → Check.
 
+### 4.3 F5 implementation notes (2026-11-14)
+
+Every component is visible on the dev-only page `/dev/ui` (404 in production); full capture `docs/design-evidence/f5-dev-ui.png` (1194 px wide, tablet).
+
+Deviations from Figma, on purpose:
+- **Button Primary**: Figma component is dark `#2B2420` in DM Sans; code is `primary` `#D9734E` in Nunito Bold 18, as used on every v5 screen.
+- **Switch on**: `#3F8A55` (new token `switch-on`), the Figma Toggle On colour, not `success #7FA36F`: the white knob needs the contrast.
+- **Stepper**: done/todo labels `ink/0.7` (Figma 0.75 / 0.45); ✓ is a lucide vector.
+- **Avatar initials**: white on honey is below AA (Figma value kept); each avatar has the full name as accessible name and tooltip.
+- **Checkbox radius 8** is not on the radius scale; kept as an explicit value to match Figma.
+- **Added tokens** beyond `TECHNICAL.md` §3.2: `switch-on`, `avatar-ring #FFF8EE`, `shadow-house-control`, `shadow-knob`, `spacing-page 72px`.
+- Studio-only sizes: Switch (56×32), Checkbox (26), Button `sm` (48) are below the 64 px House minimum; House screens use Button `md`, IconButton 76+ and HeartButton only.
+- SVGs in `public/` now carry a `<title>` (Biome a11y lint).
+
 ## 5. Gaps (frames still to design — SH7)
 
 Designed on 2026-11-14 (row 4, see §2): free-text prompt · full set of guided questions · voice recording · ordering Memories · per-Memory OK-alone · publish confirmation · Story end / return to Room · loading, error and "clip can't play" states · room photo upload · Studio phone layout.
@@ -141,3 +155,4 @@ _Fill in as you go (for the presentation):_ which frames were read through MCP, 
 | 2026-11-14 | Story · Send love (20-668) | `HeartScreen` | `docs/design-evidence/20-668-send-love-figma.png` | _after H-tasks_ | yes | subtitle opacity 0.65 → 0.7 |
 | 2026-11-14 | Create · 3b Approve every scene (23-580) | `/studio/memories/[id]/approve` | `docs/design-evidence/23-580-approve-scenes-figma.png` | _after S-tasks_ | yes | stepper todo label 0.45 → 0.7, subtitle 0.6 → 0.7 |
 | 2026-11-14 | SH7 · 8 new frames (57-624 … 61-1155) | see §2 row 4 | `docs/design-evidence/sh7-*-figma.png` | _when built_ | yes (`use_figma` built them from local components; captures via `get_screenshot`) | — |
+| 2026-11-14 | Button, Toggle, Polaroid, Family avatars, controls (20-624, 20-668, 23-580) | `/dev/ui` | `docs/design-evidence/20-624-*`, `20-668-*`, `23-580-*` | `docs/design-evidence/f5-dev-ui.png` | yes (`use_figma` read-only for exact sizes, radii, shadows) | see §4.3 |
