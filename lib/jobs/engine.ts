@@ -182,7 +182,8 @@ async function submitFalStep(
   step.attempts++;
   const input = { ...plan.params };
   if (plan.input) {
-    input[plan.input.field] = plan.input.url ?? (await gateway.upload(await plan.input.read()));
+    const url = plan.input.url ?? (await gateway.upload(await plan.input.read()));
+    input[plan.input.field] = plan.input.list ? [url] : url;
   }
   step.falRequestId = await gateway.submit(plan.model, input);
   step.status = "running";

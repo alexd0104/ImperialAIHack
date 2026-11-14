@@ -5,10 +5,13 @@ import { getEntity, replaceEntity, updateEntity } from "@/app/api/stories/_store
 import { JobView } from "@/lib/contracts";
 import { copy } from "@/lib/copy";
 import { fail, ok } from "@/lib/http";
+import { advanceJob, defaultEngineDeps } from "@/lib/jobs";
 import { saveFile } from "@/lib/storage";
 
-// Temporary P5 adapter: real Job/Story contracts and persisted progress, synthetic
-// GLB fixture only. It never submits AI work or claims to reproduce the input photo.
+// P5: real object_3d jobs are advanced by lib/jobs (cutout → Rodin → compress; the
+// Story keeps its library object on failure). Jobs labelled "studio-mock" come from
+// the offline file store (STUDIO_MOCK_STORE), which has no engine: they keep S2's
+// synthetic progress with a sample GLB and never claim to reproduce the photo.
 export async function GET(_request: Request, context: { params: Promise<{ id: string }> }) {
   const words = copy.studio.createStory;
   try {
@@ -16,6 +19,10 @@ export async function GET(_request: Request, context: { params: Promise<{ id: st
     const job = story?.object.jobId ? await getEntity("jobs", story.object.jobId) : null;
     if (!story || !job || job.type !== "object_3d" || job.storyId !== story.id)
       return fail("not_found", words.error);
+    if (job.falKeyLabel !== "studio-mock") {
+      const advanced = await advanceJob(job.id, defaultEngineDeps());
+      return ok(JobView.parse(advanced.job ?? job));
+    }
     if (job.status === "done" || job.status === "fallback" || job.status === "failed")
       return ok(JobView.parse(job));
     if ((process.env.AI_MODE ?? "mock") !== "mock" || job.falKeyLabel !== "studio-mock")

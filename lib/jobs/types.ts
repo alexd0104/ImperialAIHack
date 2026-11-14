@@ -53,6 +53,8 @@ export interface FalPlan {
   /** The file sent to the model; uploaded to the fal CDN only on a cache miss. */
   input?: {
     field: string;
+    /** The model takes a list of URLs in `field` (Rodin `image_urls`). */
+    list?: boolean;
     sha256: string;
     /** A still-valid fal CDN URL for this file (from the upload step), to skip re-uploading. */
     url?: string;
