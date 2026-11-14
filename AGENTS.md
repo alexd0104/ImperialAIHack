@@ -166,6 +166,19 @@ node scripts/tasks.mjs lint
 - Commit subject ends with `(<ID>)` so the board marks it done; note files outside your zone and contract changes in `docs/STATUS.md`.
 - If you stop mid-task: push with a `(<ID>-wip)` commit subject (keep `main` runnable), and say in STATUS exactly where you stopped and what is next.
 
+### 11.6 Token hygiene (every agent, every session)
+
+Context is resent on every step, so big reads and noisy output make each task slow and expensive.
+
+- `/clear` (or a new Codex thread) between tasks; `/compact` when the context is past ~60 %.
+- Read docs **by section**: `grep -n '^## \|^### ' TECHNICAL.md`, then read only the line range you need. Same for `docs/DESIGN.md` (grep the frame name) and `FEATURES.md` (grep the task ID).
+- `docs/STATUS.md`: read the top sections and the 3 newest log entries only. Never read `docs/status-archive.md` unless asked.
+- Tasks: use `node scripts/tasks.mjs next|check|board`; do not open `docs/tasks.json` unless you edit it.
+- Keep command output short: `| tail -40`, `git diff --stat`, `git log --oneline -5`; quiet test reporters. Never open `pnpm-lock.yaml`, build artefacts, `node_modules/` listings or large media.
+- Next.js docs in `node_modules/next/dist/docs/` (§12): `grep -rl <topic>` to find **one** guide and read only that file.
+- Pipeline sessions do not need the Figma MCP server: disable it (`/mcp`) to save its tool definitions on every request.
+- Use a lighter model for routine work (`/model sonnet`); keep the strongest model for hard tasks. No subagents unless asked.
+
 ## 12. Next.js notes
 
 <!-- BEGIN:nextjs-agent-rules -->
