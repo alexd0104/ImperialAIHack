@@ -74,6 +74,9 @@ _(newest first: date — from → to — what)_
 
 ## Log
 
+### 2026-11-15 12:00 — Raphaël (design, B29)
+- Favicon: removed the default Next.js `app/favicon.ico`; added `app/icon.svg` (coral house + heart mark from `public/brand/memorai-logo.svg`) and `app/apple-icon.png` (180 px, mark on the cream surface). Next serves both automatically; checked `<link rel=icon>` returns 200 in dev.
+
 ### 2026-11-15 10:30 — Yasir (SUB)
 - Done: submission docs. `README.md` rewritten (problem, Studio/House, Mermaid flow, principles, APIs/models table from `lib/ai/models.ts`, libraries, run locally, team); `docs/submission/{DEVPOST,DEMO-SCRIPT,QA-PREP}.md` added. No code changed.
 - **README.md is a shared file:** keep edits small; if you change a model in `lib/ai/models.ts`, update its README row too.

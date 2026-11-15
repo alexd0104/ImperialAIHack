@@ -995,6 +995,15 @@
       "deps": [],
       "soft": [],
       "note": ""
+    },
+    {
+      "id": "B29",
+      "title": "Favicon and Apple touch icon from the memorAI house-heart mark",
+      "owner": "raphael",
+      "priority": "FIX",
+      "deps": [],
+      "soft": [],
+      "note": ""
     }
   ]
 }
