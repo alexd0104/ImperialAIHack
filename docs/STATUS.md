@@ -74,6 +74,8 @@ _(newest first: date — from → to — what)_
 
 ## Log
 
+- 2026-11-15 10:00 — Timoté — B22: Studio home Rooms are now a door carousel (`components/studio/RoomDoors.tsx`): each door opens `/studio/rooms/[id]` (background, name, move each Object via its place page, delete, New Story here); the "+" doorway opens `/studio/rooms/new` (AddRoom). **Alexandre:** `RoomManager.tsx` now only renders the carousel; `AddRoom` and `RoomRow` are exported and reused by `components/studio/RoomPages.tsx`. Keep editing them in place. e2e `room-picker.spec.ts` updated (link "Add room", door "Open: <name>").
+
 ### 2026-11-15 10:40 — Raphaël (design, B21)
 - Done, House: Objects "breathe" (±2 % over 4 s) and land from "open" with one soft spring bounce; a warm pool of light blooms under an Object a finger or mouse is on; polaroids "develop" like instant prints as they fly out; the sent Heart and four small ones rise and fade; time-of-day light over the Room (soft-light, 60 s transition); sparse particles per Room (pollen in a garden, steam in a kitchen, dust in a sunbeam elsewhere) in the new `components/house/room-ambience.tsx` (+ test).
 - Done, Studio: light sweep while a scene generates; the still dissolves into the clip once it loads; "Approved" stamps in; Memory bank photos drop onto a pile and straighten; chosen 3D Object turns in the library; a placed Object drops in with a dust puff; "sent" shows the card flying into a House whose window lights; Hear back counters tick up and Hearts float up.

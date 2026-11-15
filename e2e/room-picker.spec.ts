@@ -1,6 +1,6 @@
 import { expect, test } from "@playwright/test";
 
-// B18: the Studio home Room picker, with its "+ Add room" card (here: name + description,
+// B18 + room doors: the Studio home Room carousel, with its "+" doorway to /studio/rooms/new (here: name + description,
 // generated in mock mode by the B17 route).
 test("Add room from a name and a description shows a new Room card", async ({ page }) => {
   test.setTimeout(60_000);
@@ -14,7 +14,8 @@ test("Add room from a name and a description shows a new Room card", async ({ pa
   ).data;
 
   await page.goto(`/studio?house=${house.id}`);
-  await page.getByRole("button", { name: "Add room" }).click();
+  await page.getByRole("link", { name: "Add room" }).click();
+  await page.waitForURL(/\/studio\/rooms\/new/);
   // Nothing chosen yet: the form says what is missing instead of sending.
   await page.getByRole("button", { name: "Add the room" }).click();
   await expect(page.getByText("Give the room a name.")).toBeVisible();
@@ -22,7 +23,7 @@ test("Add room from a name and a description shows a new Room card", async ({ pa
   await page.getByLabel("Name", { exact: true }).fill("Mum’s kitchen");
   await page.getByLabel("Or describe the room").fill("A small kitchen with a green table");
   await page.getByRole("button", { name: "Add the room" }).click();
-  await expect(page.getByRole("link", { name: "New Story here: Mum’s kitchen" })).toBeVisible({
+  await expect(page.getByRole("link", { name: "Open: Mum’s kitchen" })).toBeVisible({
     timeout: 30_000,
   });
 });

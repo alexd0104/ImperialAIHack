@@ -1,8 +1,6 @@
 "use client";
 
 import { QueryClient, QueryClientProvider, useMutation, useQuery } from "@tanstack/react-query";
-import { Plus } from "lucide-react";
-import Link from "next/link";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardTitle } from "@/components/ui/card";
@@ -18,6 +16,7 @@ import {
 } from "@/lib/contracts";
 import { copy } from "@/lib/copy";
 import { requestStudio } from "./api";
+import { RoomDoors } from "./RoomDoors";
 import { roomStyles } from "./room-styles";
 import { useStudioHouseId } from "./studio-house";
 
@@ -34,8 +33,8 @@ export function RoomManager({ houseId }: { houseId?: string }) {
 }
 
 /**
- * Room picker on the Studio home: one card per Room (opens a new Story there), plus a clear
- * "+ Add room" card. Editing (rename, background, delete) stays behind each card's "Edit".
+ * Room carousel on the Studio home: one door per Room (opens /studio/rooms/:id to edit the Room
+ * and move its Objects) and a "+" doorway (/studio/rooms/new). AddRoom and RoomRow are reused there.
  */
 function Rooms({ initialHouseId }: { initialHouseId?: string }) {
   const { houseId } = useStudioHouseId(initialHouseId);
@@ -44,88 +43,16 @@ function Rooms({ initialHouseId }: { initialHouseId?: string }) {
     enabled: Boolean(houseId),
     queryFn: () => requestStudio(`/api/houses/${houseId}`, HouseDetail),
   });
-  const [editing, setEditing] = useState<string | null>(null);
-  const [adding, setAdding] = useState(false);
   if (!houseId) return null;
-  const refresh = () => house.refetch();
   const rooms = house.data?.rooms ?? [];
-  const edited = rooms.find((room) => room.id === editing);
   return (
     <section className="mt-8 space-y-4">
       <div>
         <CardTitle>{words.title}</CardTitle>
         <p className="text-16 text-ink/70">{words.pickerIntro}</p>
       </div>
-      <ul className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
-        {rooms.map((room) => (
-          <li key={room.id}>
-            <RoomCard
-              room={room}
-              editing={editing === room.id}
-              onEdit={() => setEditing(editing === room.id ? null : room.id)}
-            />
-          </li>
-        ))}
-        <li>
-          <button
-            type="button"
-            aria-expanded={adding}
-            onClick={() => setAdding(!adding)}
-            className="flex aspect-[4/3] min-h-16 w-full flex-col items-center justify-center gap-2 rounded-xl border-2 border-dashed border-ink/30 bg-surface text-18 font-bold hover:border-primary-strong"
-          >
-            <Plus aria-hidden className="size-8" />
-            {words.addCard}
-          </button>
-        </li>
-      </ul>
-      {adding && (
-        <AddRoom
-          houseId={houseId}
-          onCreated={() => {
-            setAdding(false);
-            refresh();
-          }}
-        />
-      )}
-      {edited && (
-        <RoomRow
-          key={edited.id}
-          room={edited}
-          onChanged={refresh}
-          onDeleted={() => {
-            setEditing(null);
-            refresh();
-          }}
-        />
-      )}
+      <RoomDoors rooms={rooms} houseId={houseId} />
     </section>
-  );
-}
-
-const backgroundUrl = (path: string) => (path.startsWith("/") ? path : `/api/files/${path}`);
-
-function RoomCard({ room, editing, onEdit }: { room: Room; editing: boolean; onEdit: () => void }) {
-  return (
-    <Card className="overflow-hidden p-0">
-      <Link
-        href={`/studio/stories/new?roomId=${encodeURIComponent(room.id)}`}
-        className="block"
-        aria-label={`${words.openRoom}: ${room.name}`}
-      >
-        {/* biome-ignore lint/performance/noImgElement: Room picture from /rooms or /api/files, not optimised by Next. */}
-        <img
-          src={backgroundUrl(room.backgroundPath)}
-          alt=""
-          className="aspect-[4/3] w-full object-cover"
-        />
-      </Link>
-      <div className="flex items-center justify-between gap-2 p-3">
-        <p className="truncate text-16 font-bold">{room.name}</p>
-        <Button size="sm" variant="secondary" aria-expanded={editing} onClick={onEdit}>
-          {editing ? words.done : words.manage}
-        </Button>
-      </div>
-    </Card>
   );
 }
 
@@ -167,7 +94,7 @@ function StylePicker({ onPick, disabled }: { onPick: (s: RoomStyle) => void; dis
   );
 }
 
-function RoomRow({
+export function RoomRow({
   room,
   onChanged,
   onDeleted,
@@ -316,7 +243,7 @@ type Background =
   | { kind: "style"; style: RoomStyle }
   | { kind: "description"; text: string };
 
-function AddRoom({ houseId, onCreated }: { houseId: string; onCreated: () => void }) {
+export function AddRoom({ houseId, onCreated }: { houseId: string; onCreated: () => void }) {
   const [name, setName] = useState("");
   // A photo or a familiar Room wins; otherwise a description long enough is used.
   const [picked, setBackground] = useState<Background | null>(null);

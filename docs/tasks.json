@@ -932,6 +932,15 @@
       "deps": [],
       "soft": [],
       "note": ""
+    },
+    {
+      "id": "B22",
+      "title": "Studio Room doors carousel, Add room and Edit room pages",
+      "owner": "timote",
+      "priority": "FIX",
+      "deps": [],
+      "soft": [],
+      "note": ""
     }
   ]
 }
