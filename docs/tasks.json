@@ -977,6 +977,15 @@
       "deps": [],
       "soft": [],
       "note": ""
+    },
+    {
+      "id": "B27",
+      "title": "Edit room: real Object picture (library thumbnail or source photo), objectUrl was never filled",
+      "owner": "timote",
+      "priority": "FIX",
+      "deps": [],
+      "soft": [],
+      "note": ""
     }
   ]
 }

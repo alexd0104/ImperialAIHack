@@ -135,17 +135,12 @@ function EditRoom({ fromUrl, roomId }: { fromUrl?: string; roomId: string }) {
   );
 }
 
-/**
- * Picture of an Object in the Room list: SVG/PNG as is, a library 3D Object by its thumbnail,
- * and a 3D Object made from a family photo (no thumbnail yet) by a cube icon, never a blank box.
- */
+/** The Object's own picture (from the API), or a cube icon if it has none, never a blank box. */
 function ObjectIcon({ url }: { url?: string }) {
-  const library = url?.match(/^\/objects\/glb\/([a-z0-9-]+)\.glb$/);
-  const src = library ? `/objects/thumbs/${library[1]}.png` : url?.endsWith(".glb") ? null : url;
-  if (src)
+  if (url)
     return (
       // biome-ignore lint/performance/noImgElement: Object picture from /objects or /api/files.
-      <img src={src} alt="" className="size-12 rounded-lg bg-surface-muted object-contain p-1" />
+      <img src={url} alt="" className="size-12 rounded-lg bg-surface-muted object-contain p-1" />
     );
   return (
     <span

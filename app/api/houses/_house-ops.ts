@@ -1,8 +1,14 @@
 import "server-only";
-import type { FeedbackResponse, House, HouseDetail, UpdateHouseRequest } from "@/lib/contracts";
+import type {
+  FeedbackResponse,
+  House,
+  HouseDetail,
+  Story,
+  UpdateHouseRequest,
+} from "@/lib/contracts";
 import { db, deleteHouseDocuments } from "@/lib/db";
 import { deleteHouseFolder } from "@/lib/storage";
-import { listEntities } from "../stories/_store";
+import { getEntity, listEntities } from "../stories/_store";
 import { deleteMockHouse, updateMockHouse } from "./_mock-store";
 
 export { findHouse } from "./_store";
@@ -32,15 +38,37 @@ export async function houseDetail(house: House): Promise<HouseDetail> {
   return {
     ...rest,
     rooms,
-    stories: stories.map((story) => ({
-      id: story.id,
-      roomId: story.roomId,
-      slotId: story.slotId,
-      title: story.title,
-      publishedAt: story.publishedAt,
-      memoryCount: memories.filter((memory) => memory.storyId === story.id).length,
-    })),
+    stories: await Promise.all(
+      stories.map(async (story) => ({
+        id: story.id,
+        roomId: story.roomId,
+        slotId: story.slotId,
+        title: story.title,
+        publishedAt: story.publishedAt,
+        memoryCount: memories.filter((memory) => memory.storyId === story.id).length,
+        objectUrl: await objectPicture(story),
+      })),
+    ),
   };
+}
+
+/**
+ * A flat picture of the Story's Object for Studio lists (a GLB can't be an <img>): the SVG,
+ * the thumbnail of a library 3D Object, or the family's own photo the 3D Object was made from.
+ */
+export async function objectPicture(story: Story): Promise<string | undefined> {
+  const { kind, path, jobId } = story.object;
+  if (kind === "svg") return `/objects/${path}.svg`;
+  const library = path.match(/^\/objects\/glb\/([a-z0-9-]+)\.glb$/);
+  if (library) return `/objects/thumbs/${library[1]}.png`;
+  try {
+    const job = jobId ? await getEntity("jobs", jobId) : null;
+    const asset = job?.assetId ? await getEntity("assets", job.assetId) : null;
+    return asset ? `/api/files/${asset.path}` : undefined;
+  } catch {
+    // No picture is fine: the Studio shows a cube icon instead.
+    return undefined;
+  }
 }
 
 export async function updateHouse(id: string, input: UpdateHouseRequest) {
