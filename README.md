@@ -2,9 +2,6 @@
 
 A family restores and gently animates its real old photos into short Memories, with the person's real song and the family's own voice, and shares them with a relative living with early-stage Alzheimer's through one link on a tablet.
 
-- Demo video: [VIDEO_URL]
-- Devpost: [DEVPOST_URL]
-
 Built at the Imperial AI Hackathon (14–15 Nov 2026), track Voice, Vision & Generative Media.
 
 ## The problem
@@ -101,7 +98,7 @@ Measured live (from `docs/STATUS.md`):
 
 Limits, honestly:
 - Kling can still change a face. Our only guard today is the family's approval of each scene; an automatic check is not built.
-- Not run live end to end: a Memory with several photos, song and voice together. Fallback models `fal-ai/ddcolor` and the room-photo edit `fal-ai/nano-banana-2/edit`: live use [TODO: confirm].
+- Not run live end to end: a Memory with several photos, song and voice together. The fallback colouriser `fal-ai/ddcolor` has never been run live. (`fal-ai/nano-banana-2/edit` has: it made the standard garden and kitchen Room backgrounds from stock photos, and Rodin made the 3 library 3D Objects.)
 - In mock mode the clip is always the same short placeholder.
 
 ### Figma: design source and two-way MCP workflow (Best-Designed AI Product)

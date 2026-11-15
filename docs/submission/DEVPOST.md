@@ -1,6 +1,6 @@
 # Devpost fields — memorAI
 
-Paste each section into the matching Devpost field. Word count (without Built with): 540 of 600.
+Paste each section into the matching Devpost field. Word count (without Built with): 538 of 600.
 
 Track: **Voice, Vision & Generative Media** (bounty: **Best use of fal**). Extra prize: **Figma Best-Designed AI Product**.
 
@@ -44,7 +44,7 @@ We did not use ElevenLabs or Anam on purpose: real voices only, no cloning, no a
 
 ## What's next
 
-- Test with families and carers. [TODO: confirm]
+- Test with families and carers.
 - An automatic check that flags a changed face before approval.
 - A voice conversation that fills the Memory sheet.
 - Public hosting with cloud storage.
