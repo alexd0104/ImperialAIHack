@@ -1,0 +1,8 @@
+{
+  "audio": {
+    "url": "mocks/media/ambience.wav",
+    "content_type": "audio/wav",
+    "file_name": "ambience.wav",
+    "file_size": 96078
+  }
+}

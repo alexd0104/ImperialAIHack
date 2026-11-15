@@ -1,0 +1,194 @@
+@import "tailwindcss";
+
+/*
+ * memorAI design tokens: the single source for colour, type, radius, shadow and motion.
+ * Values match TECHNICAL.md §3.2 (read from Figma v5). Components use these through
+ * Tailwind utilities (bg-primary, rounded-card, shadow-polaroid, font-display, ...);
+ * never hard-code hex values or pixel font sizes in components.
+ */
+@theme {
+  /* Reset Tailwind's default palette so only our tokens exist. */
+  --color-*: initial;
+  --color-white: #ffffff;
+  --color-transparent: transparent;
+  --color-current: currentColor;
+
+  --color-background: #fbf3e8;
+  --color-surface: #fffcf6;
+  --color-surface-muted: #f6eadb;
+  /* Figma's #2B2420 (old Button component) is merged into ink. */
+  --color-ink: #3b2a20;
+  --color-primary: #d9734e;
+  /* Filled controls that carry text: white on primary is only 3.2:1, below AA (PR #11 review).
+     primary stays for icons, accents and large shapes (≥ 3:1 is enough there). */
+  --color-primary-strong: #b4552f;
+  --color-primary-strong-hover: #a44b2c;
+  --color-success: #7fa36f;
+  --color-success-surface: #e3ecd9;
+  --color-success-text: #4f7a44;
+  /* success-text on success-surface is 4.1:1; badges need 4.5:1. */
+  --color-success-strong: #426b38;
+  --color-warning-surface: #fbe6d8;
+  --color-danger: #c2412d;
+  --color-switch-off: #dcd5cb;
+  /* Figma "Toggle" On variant. Darker than success so the white knob stays visible (3:1). */
+  --color-switch-on: #3f8a55;
+  --color-overlay: #1e140d;
+  --color-avatar-honey: #f2b45a;
+  --color-avatar-sage: #8fb08a;
+  --color-avatar-rose: #e79a86;
+  /* Ring around overlapping family avatars (Figma "Family avatars"). */
+  --color-avatar-ring: #fff8ee;
+  --color-heart-from: #ee9475;
+  --color-heart-to: #d2603d;
+  --color-room-garden: #efedda;
+  --color-room-kitchen: #fbead2;
+  --color-room-living: #f9e3d7;
+
+  --font-*: initial;
+  --font-display: var(--font-fraunces), serif;
+  --font-body: var(--font-nunito), system-ui, sans-serif;
+  --font-hand: var(--font-caveat), cursive;
+  --font-sans: var(--font-body);
+
+  /* Type scale (px values from Figma), line-height left to each component. */
+  --text-*: initial;
+  --text-12: 0.75rem;
+  --text-13: 0.8125rem;
+  --text-14: 0.875rem;
+  --text-15: 0.9375rem;
+  --text-16: 1rem;
+  --text-17: 1.0625rem;
+  --text-18: 1.125rem;
+  --text-20: 1.25rem;
+  --text-22: 1.375rem;
+  --text-28: 1.75rem;
+  --text-32: 2rem;
+  --text-40: 2.5rem;
+  --text-44: 2.75rem;
+
+  --radius-xs: 3px;
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 14px;
+  --radius-xl: 16px;
+  --radius-2xl: 20px;
+  --radius-card: 24px;
+  --radius-screen: 28px;
+  --radius-3xl: 32px;
+  --radius-full: 9999px;
+
+  --shadow-*: initial;
+  --shadow-card: 0 12px 32px -4px rgba(122, 74, 42, 0.07);
+  --shadow-polaroid: 0 18px 34px -6px rgba(122, 74, 42, 0.18);
+  --shadow-object: 0 18px 30px 0 rgba(90, 70, 50, 0.18);
+  --shadow-round-button: 0 8px 24px 0 rgba(58, 44, 30, 0.12);
+  --shadow-heart: 0 18px 50px 0 rgba(217, 115, 78, 0.45);
+  /* House round controls sit on photos, so they need a deeper shadow than Studio ones. */
+  --shadow-house-control: 0 12px 32px -4px rgba(58, 32, 16, 0.18);
+  --shadow-knob: 0 2px 4px 0 rgba(0, 0, 0, 0.15);
+
+  --ease-memorai: cubic-bezier(0.22, 1, 0.36, 1);
+
+  --spacing-page: 72px;
+}
+
+/*
+ * shadcn/ui variables, mapped onto our tokens so any component added later with the
+ * shadcn CLI picks up memorAI colours without edits.
+ */
+:root {
+  --radius: 24px;
+  --background: var(--color-background);
+  --foreground: var(--color-ink);
+  --card: var(--color-surface);
+  --card-foreground: var(--color-ink);
+  --popover: var(--color-surface);
+  --popover-foreground: var(--color-ink);
+  --primary: var(--color-primary-strong);
+  --primary-foreground: var(--color-white);
+  --secondary: var(--color-surface);
+  --secondary-foreground: var(--color-ink);
+  --muted: var(--color-surface-muted);
+  --muted-foreground: color-mix(in srgb, var(--color-ink) 70%, transparent);
+  --accent: var(--color-surface-muted);
+  --accent-foreground: var(--color-ink);
+  --destructive: var(--color-danger);
+  --border: color-mix(in srgb, var(--color-ink) 14%, transparent);
+  --input: color-mix(in srgb, var(--color-ink) 10%, transparent);
+  --ring: var(--color-primary);
+}
+
+/* Expose the shadcn variables as Tailwind colours (bg-muted, border-input, ...). */
+@theme inline {
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+}
+
+@layer base {
+  html {
+    background-color: var(--color-background);
+    color: var(--color-ink);
+    font-family: var(--font-body);
+  }
+
+  :focus-visible {
+    outline: 3px solid var(--color-primary);
+    outline-offset: 3px;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      /* biome-ignore lint/complexity/noImportantStyles: reduced motion must beat component transitions. */
+      animation-duration: 0.01ms !important;
+      /* biome-ignore lint/complexity/noImportantStyles: same as above. */
+      transition-duration: 0.01ms !important;
+    }
+  }
+}
+
+/* Fraunces in Figma uses the soft-off, wonky-on optical variant. */
+@utility font-display {
+  font-family: var(--font-display);
+  font-variation-settings:
+    "SOFT" 0,
+    "WONK" 1;
+}
+
+/* H10 loading feedback. Components hide the motion under reduced motion. */
+@keyframes shimmer-slide {
+  from {
+    transform: translateX(-100%);
+  }
+  to {
+    transform: translateX(250%);
+  }
+}
+
+@keyframes dot-float {
+  0%,
+  100% {
+    opacity: 0.35;
+    transform: translateY(0);
+  }
+  50% {
+    opacity: 1;
+    transform: translateY(-4px);
+  }
+}

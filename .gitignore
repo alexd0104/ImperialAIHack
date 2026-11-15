@@ -1,0 +1,36 @@
+# dependencies
+node_modules/
+.pnpm-store/
+
+# next
+.next/
+out/
+next-env.d.ts
+
+# env — never commit secrets
+.env*
+!.env.example
+
+# local data — never commit (public repo)
+/storage/
+/demo-assets/
+*.mongodump/
+dump/
+
+# testing
+coverage/
+playwright-report/
+test-results/
+
+# misc
+.DS_Store
+*.log
+.vercel
+.claude/settings.local.json
+.claude/worktrees/
+
+# typescript
+*.tsbuildinfo
+
+# overnight runner logs and skip lists
+.autopilot/

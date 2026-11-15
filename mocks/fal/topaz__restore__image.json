@@ -1,0 +1,10 @@
+{
+  "image": {
+    "url": "mocks/media/photo-restored.jpg",
+    "content_type": "image/jpeg",
+    "file_name": "photo-restored.jpg",
+    "file_size": 7250,
+    "width": 480,
+    "height": 360
+  }
+}

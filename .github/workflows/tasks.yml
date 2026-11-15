@@ -1,0 +1,86 @@
+name: Tasks
+
+# 1) On every PR: the task ID must be in the PR title as "(ID)" and its hard dependencies must be merged on main.
+# 2) On every push to main and PR change: refresh the "📋 memorAI task board" issue (who did what, what is ready).
+
+on:
+  pull_request:
+    types: [opened, edited, synchronize, reopened, closed]
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  issues: write
+  pull-requests: read
+
+concurrency:
+  group: tasks-${{ github.event_name }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  task-deps:
+    name: Task dependencies
+    if: github.event_name == 'pull_request' && github.event.action != 'closed'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+      - name: Validate docs/tasks.json
+        run: node scripts/tasks.mjs lint
+      - name: Check task ID and dependencies
+        env:
+          HEAD_REF: ${{ github.head_ref }}
+          PR_TITLE: ${{ github.event.pull_request.title }}
+        run: |
+          git fetch --quiet origin main
+          id=$(node scripts/tasks.mjs id-from "$HEAD_REF")
+          if [ -z "$id" ]; then
+            echo "No task ID in branch name ($HEAD_REF): docs/chore PR, skipping dependency check."
+            exit 0
+          fi
+          if ! echo "$PR_TITLE" | grep -Eq "\((([^)]*[ ,])?$id(-wip)?([ ,][^)]*)?)\)"; then
+            echo "::error::PR title must contain the task ID in parentheses so it is marked done when merged, e.g. 'feat(zone): what you did ($id)'. Use '($id-wip)' for partial work."
+            exit 1
+          fi
+          node scripts/tasks.mjs check "$id" --base origin/main --no-fetch | tee -a "$GITHUB_STEP_SUMMARY"
+          exit ${PIPESTATUS[0]}
+
+  board:
+    name: Update task board
+    if: github.event_name == 'push' || github.event_name == 'workflow_dispatch' || github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+      - name: Build board
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          if [ ! -f scripts/tasks.mjs ]; then echo "Task script not on main yet."; touch /tmp/skip; exit 0; fi
+          gh pr list --repo "$GITHUB_REPOSITORY" --state open --limit 100 --json number,title,headRefName,author > /tmp/prs.json
+          gh pr list --repo "$GITHUB_REPOSITORY" --state merged --limit 200 --json number,title,author,mergedAt > /tmp/merged.json
+          node scripts/tasks.mjs board --base origin/main --no-fetch --prs /tmp/prs.json --merged /tmp/merged.json --out /tmp/board.md
+          cat /tmp/board.md >> "$GITHUB_STEP_SUMMARY"
+      - name: Create or update the board issue
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          if [ -f /tmp/skip ]; then exit 0; fi
+          title="📋 memorAI task board"
+          num=$(gh issue list --repo "$GITHUB_REPOSITORY" --state open --search "\"$title\" in:title" --json number,title --jq ".[] | select(.title == \"$title\") | .number" | head -n1)
+          if [ -z "$num" ]; then
+            gh issue create --repo "$GITHUB_REPOSITORY" --title "$title" --body-file /tmp/board.md
+          else
+            gh issue edit "$num" --repo "$GITHUB_REPOSITORY" --body-file /tmp/board.md
+          fi
