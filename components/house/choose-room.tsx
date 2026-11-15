@@ -13,7 +13,7 @@ const OPEN_MS = 800;
 
 // Figma v5 "Choose a room" (20-67): greeting with the first name, family avatars, one
 // arch per Room. B30: like the Studio, each Room is a door left ajar over its picture; one
-// tap swings it wide open, then the Room appears. The picture is the label (no reading).
+// tap swings it wide open, then the Room appears; hovering (mouse) opens it a little more. The picture is the label (no reading).
 export function ChooseRoom({
   bundle,
   onChoose,
@@ -73,15 +73,15 @@ export function ChooseRoom({
                       src={room.background}
                       alt=""
                       draggable={false}
-                      className={`size-full object-cover transition-transform duration-[800ms] ease-memorai ${isOpening ? "scale-110" : ""}`}
+                      className={`size-full object-cover transition-transform duration-[800ms] ease-memorai motion-reduce:transition-none ${isOpening ? "scale-110" : "group-hover:scale-105"}`}
                     />
                   </span>
                   <span
                     aria-hidden
-                    className={`absolute inset-0 origin-left bg-primary shadow-xl transition-transform duration-[800ms] ease-memorai ${ARCH} ${
+                    className={`absolute inset-0 origin-left bg-primary shadow-xl transition-transform duration-[800ms] ease-memorai motion-reduce:transition-none ${ARCH} ${
                       isOpening
                         ? "[transform:rotateY(-100deg)]"
-                        : "[transform:rotateY(-42deg)] group-active:[transform:rotateY(-56deg)]"
+                        : "[transform:rotateY(-42deg)] group-hover:[transform:rotateY(-68deg)] group-focus-visible:[transform:rotateY(-68deg)] group-active:[transform:rotateY(-74deg)]"
                     }`}
                   >
                     <span className="absolute top-1/2 right-5 size-5 rounded-full bg-surface" />
