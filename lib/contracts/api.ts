@@ -158,6 +158,7 @@ export const UpdateMemoryRequest = z.object({
   freeText: z.string().max(500).optional(),
   okAlone: z.boolean().optional(),
   title: z.string().trim().min(1).max(80).optional(),
+  sceneMotion: SceneMotion.optional(),
 });
 export type UpdateMemoryRequest = z.infer<typeof UpdateMemoryRequest>;
 

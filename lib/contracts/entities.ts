@@ -114,6 +114,15 @@ export const MemoryStatus = z.enum([
 ]);
 export type MemoryStatus = z.infer<typeof MemoryStatus>;
 
+/** How the photo moves (v2, F7). Custom text still goes through the prompt compiler. */
+export const SceneMotion = z.object({
+  preset: z.enum(["gentle", "custom"]),
+  text: z.string().trim().max(200).optional(),
+  durationSec: z.union([z.literal(5), z.literal(10)]),
+});
+export type SceneMotion = z.infer<typeof SceneMotion>;
+export const DEFAULT_SCENE_MOTION: SceneMotion = { preset: "gentle", durationSec: 5 };
+
 export const Memory = z.object({
   id: Id,
   houseId: Id,
@@ -124,6 +133,8 @@ export const Memory = z.object({
   /** Rebuilt by the server on every PATCH; absent until the first answers. */
   sheet: MemorySheet.optional(),
   okAlone: z.boolean().default(false),
+  /** Movement chosen before generation; copied onto every scene (each can still change at review). */
+  sceneMotion: SceneMotion.optional(),
   status: MemoryStatus,
   createdAt: IsoDate,
   updatedAt: IsoDate.optional(),
@@ -178,15 +189,6 @@ export const SceneChoice = z.object({
   chosenAt: IsoDate.optional(),
 });
 export type SceneChoice = z.infer<typeof SceneChoice>;
-
-/** How the photo moves (v2, F7). Custom text still goes through the prompt compiler. */
-export const SceneMotion = z.object({
-  preset: z.enum(["gentle", "custom"]),
-  text: z.string().trim().max(200).optional(),
-  durationSec: z.union([z.literal(5), z.literal(10)]),
-});
-export type SceneMotion = z.infer<typeof SceneMotion>;
-export const DEFAULT_SCENE_MOTION: SceneMotion = { preset: "gentle", durationSec: 5 };
 
 /**
  * Where a scene's ambience comes from: the clip's own audio, or generated from text.

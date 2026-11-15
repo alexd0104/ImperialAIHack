@@ -356,6 +356,8 @@ export const copy = {
       hint: "Applies the next time you try again. A longer clip costs about twice as much.",
       save: "Save movement",
       saved: "Saved. Use “Try again” to see it.",
+      hintBefore: "Applies to every photo of this Memory. A longer clip costs about twice as much.",
+      savedBefore: "Saved.",
       refused: "We only bring to life what is in the photo",
       error: "We couldn’t save this yet. Please try again.",
     },

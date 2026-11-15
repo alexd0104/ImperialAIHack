@@ -113,6 +113,13 @@ describe("startGeneration", () => {
     expect(store.memories.get(memory.id)?.status).toBe("generating");
   });
 
+  it("gives new scenes the movement chosen on the sheet", async () => {
+    const sceneMotion = { preset: "custom", text: "waves rolling in", durationSec: 10 } as const;
+    const { store, memory } = setup({ sceneMotion });
+    await startGeneration(store, memory.id, OPTS);
+    for (const scene of await store.scenesOf(memory.id)) expect(scene.motion).toEqual(sceneMotion);
+  });
+
   it("is idempotent and only adds jobs for new photos", async () => {
     const { store, memory } = setup();
     const first = await startGeneration(store, memory.id, OPTS);

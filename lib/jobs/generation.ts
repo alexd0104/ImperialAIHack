@@ -131,6 +131,8 @@ export async function startGeneration(
       assetId: photo.id,
       order: order++,
       outputs: {},
+      // The movement chosen on the sheet, before anything is made.
+      ...(memory.sceneMotion ? { motion: memory.sceneMotion } : {}),
       status: "pending",
       createdAt: opts.now,
     });

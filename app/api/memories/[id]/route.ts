@@ -40,7 +40,7 @@ export async function PATCH(request: Request, context: { params: Promise<{ id: s
   try {
     const memory = await getEntity("memories", (await context.params).id);
     if (!memory) return fail("not_found", words.missing);
-    const { answers, freeText, okAlone, title } = input.data;
+    const { answers, freeText, okAlone, title, sceneMotion } = input.data;
     // Merge field by field so saving one answer never erases the others.
     const next = {
       ...memory,
@@ -48,10 +48,16 @@ export async function PATCH(request: Request, context: { params: Promise<{ id: s
       answers: { ...memory.answers, ...answers },
       freeText: freeText === undefined ? memory.freeText : freeText.trim() || undefined,
       okAlone: okAlone ?? memory.okAlone,
+      sceneMotion: sceneMotion ?? memory.sceneMotion,
       updatedAt: new Date().toISOString(),
     };
     const saved = { ...next, sheet: buildSheet(next) };
     await replaceEntity("memories", saved);
+    // The sheet's movement applies to every photo; "Make it again" then retries with it.
+    if (sceneMotion) {
+      const scenes = await listEntities("scenes", (scene) => scene.memoryId === memory.id);
+      for (const scene of scenes) await replaceEntity("scenes", { ...scene, motion: sceneMotion });
+    }
     return ok(saved);
   } catch {
     return fail("internal", words.error);

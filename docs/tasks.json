@@ -869,6 +869,15 @@
       "deps": [],
       "soft": [],
       "note": ""
+    },
+    {
+      "id": "B15",
+      "title": "Choose movement type and clip length before generating",
+      "owner": "timote",
+      "priority": "FIX",
+      "deps": [],
+      "soft": [],
+      "note": ""
     }
   ]
 }

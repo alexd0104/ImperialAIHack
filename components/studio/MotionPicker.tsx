@@ -11,7 +11,7 @@ import { requestStudio } from "./api";
 
 const words = copy.studio.motion;
 
-/** Per-photo movement: "Gentle" (default) or the family's own words, and 5 s / 10 s. */
+/** Per-photo movement at review: saved on the scene, seen after "Try again". */
 export function MotionPicker({
   scene,
   onSaved,
@@ -19,7 +19,38 @@ export function MotionPicker({
   scene: Pick<Scene, "id" | "motion">;
   onSaved?: () => void;
 }) {
-  const current = resolveSceneMotion(scene);
+  return (
+    <MotionFields
+      initial={resolveSceneMotion(scene)}
+      hint={words.hint}
+      savedText={words.saved}
+      onSaved={onSaved}
+      save={(motion) =>
+        requestStudio(`/api/scenes/${scene.id}`, Scene, {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ motion }),
+        })
+      }
+    />
+  );
+}
+
+/** "Gentle" (default) or the family's own words, and 5 s / 10 s; where it is saved is the caller's. */
+export function MotionFields({
+  initial,
+  save: persist,
+  hint,
+  savedText,
+  onSaved,
+}: {
+  initial: SceneMotion;
+  save: (motion: SceneMotion) => Promise<unknown>;
+  hint: string;
+  savedText: string;
+  onSaved?: () => void;
+}) {
+  const current = initial;
   const [preset, setPreset] = useState<SceneMotion["preset"]>(current.preset);
   const [text, setText] = useState(current.text ?? "");
   const [durationSec, setDuration] = useState<SceneMotion["durationSec"]>(current.durationSec);
@@ -30,11 +61,7 @@ export function MotionPicker({
         preset === "custom" && text.trim()
           ? { preset, text: text.trim(), durationSec }
           : { preset: "gentle", durationSec };
-      return requestStudio(`/api/scenes/${scene.id}`, Scene, {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ motion }),
-      });
+      return persist(motion);
     },
     onSuccess: onSaved,
   });
@@ -69,7 +96,7 @@ export function MotionPicker({
         <ToggleGroupItem value="5">{words.seconds5}</ToggleGroupItem>
         <ToggleGroupItem value="10">{words.seconds10}</ToggleGroupItem>
       </ToggleGroup>
-      <p className="text-14 text-ink/70">{words.hint}</p>
+      <p className="text-14 text-ink/70">{hint}</p>
       <Button
         type="button"
         variant="secondary"
@@ -78,7 +105,7 @@ export function MotionPicker({
       >
         {words.save}
       </Button>
-      {save.isSuccess && <p className="text-14 text-success-strong">{words.saved}</p>}
+      {save.isSuccess && <p className="text-14 text-success-strong">{savedText}</p>}
       {save.isError && (
         <p role="alert" className="text-14">
           {words.error}

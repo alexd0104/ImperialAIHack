@@ -7,11 +7,17 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Label } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
-import { HouseDetail, RetryResponse } from "@/lib/contracts";
+import {
+  DEFAULT_SCENE_MOTION,
+  HouseDetail,
+  RetryResponse,
+  type SceneMotion,
+} from "@/lib/contracts";
 import { copy } from "@/lib/copy";
 import { postStudio, requestStudio, StudioApiError } from "./api";
 import { DontShowWarning } from "./DontShowWarning";
 import { dontShowMatches } from "./dont-show";
+import { MotionFields } from "./MotionPicker";
 import { hasVisual } from "./memory-bank";
 import { fetchMemory, generateMemory, memoryKey, patchMemory } from "./memory-client";
 import { sheetRows } from "./memory-sheet-rows";
@@ -93,6 +99,7 @@ function Sheet({ memoryId }: { memoryId: string }) {
         memoryId={memoryId}
         restore={memory.data.answers.restore ?? true}
         motion={memory.data.answers.motion ?? "gentle"}
+        sceneMotion={memory.data.sceneMotion ?? DEFAULT_SCENE_MOTION}
       />
       {mentions.length > 0 && <DontShowWarning mentions={mentions} />}
       {generate.isError && (
@@ -125,7 +132,12 @@ function Sheet({ memoryId }: { memoryId: string }) {
 }
 
 /** S6 options, chosen before anything is made. Memory-wide: the contract has no per-photo field yet. */
-function LookOptions(props: { memoryId: string; restore: boolean; motion: "gentle" | "still" }) {
+function LookOptions(props: {
+  memoryId: string;
+  restore: boolean;
+  motion: "gentle" | "still";
+  sceneMotion: SceneMotion;
+}) {
   const client = useQueryClient();
   const save = useMutation({
     mutationFn: (answers: { restore?: boolean; motion?: "gentle" | "still" }) =>
@@ -155,6 +167,16 @@ function LookOptions(props: { memoryId: string; restore: boolean; motion: "gentl
           onCheckedChange={(on) => save.mutate({ motion: on ? "gentle" : "still" })}
         />
       </div>
+      {/* Type of movement and length are chosen here, before anything is made (not only at review). */}
+      {props.motion === "gentle" && (
+        <MotionFields
+          initial={props.sceneMotion}
+          hint={copy.studio.motion.hintBefore}
+          savedText={copy.studio.motion.savedBefore}
+          save={(sceneMotion) => patchMemory(props.memoryId, { sceneMotion })}
+          onSaved={() => client.invalidateQueries({ queryKey: memoryKey(props.memoryId) })}
+        />
+      )}
     </Card>
   );
 }

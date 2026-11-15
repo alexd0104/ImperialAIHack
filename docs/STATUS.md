@@ -23,6 +23,7 @@ Async coordination. **Append only; never edit someone else's lines.** Newest ent
 
 _(newest first: date — what changed — who)_
 
+- 2026-11-15 — `Memory.sceneMotion` + `UpdateMemoryRequest.sceneMotion` (optional `SceneMotion`): movement chosen before generation, copied onto every scene — Timoté (B15).
 - 2026-11-15 — **Contracts v2 published (F7)** — Timoté. All additive and optional; every v1 fixture still parses.
   1. `Scene`: `motion?` (`SceneMotion`, read with `resolveSceneMotion` → gentle 5 s), `soundMode?` (`"clip"|"text"`, absent → env `SOUND_MODE_DEFAULT`, default `"text"`), `bedId?`, `soundEvents?`. **Deviation:** `bedId`/`soundEvents` live on `Scene`, not in `outputs`, which stays files only (the Studio turns every output into a URL).
   2. `Story.position?` (`StoryPosition`, scale 0.05–1); `Room.background?` (`RoomBackground`, read with `resolveRoomBackground`, which falls back to v1 `source`/`style`) + `pendingBackground?` (same + `jobId`).
@@ -70,6 +71,12 @@ _(newest first: date — from → to — what)_
 - ~~2026-11-14 — Raphaël → Timoté — The Tasks workflow rejected `(ID-wip)` PR titles although its error message recommends them (`.github/workflows/tasks.yml:47`). Fixed in `fix/shared-tasks-wip-title`; please review. Not registered as a B task because `tasks.mjs add` needs Node, which is not set up on my machine yet: please add it if you want it on the board.~~ Resolved by #9.
 
 ## Log
+
+### 2026-11-15 09:30 — Timoté (pipeline, B15)
+- Done: movement type (Gentle / Describe) and length (5/10 s) now chosen on the Memory sheet, before "Bring to life"; PATCH memory copies it onto existing scenes, new scenes inherit it. Per-photo override at review unchanged.
+- Outside my zone: `components/studio/{MemorySheetView,MotionPicker}.tsx`, `lib/copy.ts` (Alexandre) — `MotionPicker` now wraps a reusable `MotionFields`.
+- Note: in `AI_MODE=mock` the clip is always the 3 s colour-bar fixture; real length only shows in live.
+- `pnpm verify` green (434 tests).
 
 ### 2026-11-15 — Alexandre (main integration, B14)
 - Done: rebased the local pregen commit onto origin/main; no conflicts occurred, all three assets preserved.
