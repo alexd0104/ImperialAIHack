@@ -10,13 +10,13 @@ import { copy } from "@/lib/copy";
 import { cn } from "@/lib/utils";
 import { requestStudio } from "./api";
 import { fetchMemory } from "./memory-client";
+import { StepNav } from "./StepNav";
 import { useStudioHouseId } from "./studio-house";
 import {
   activeSection,
-  bankMemoryId,
+  flowMemoryId,
   flowStep,
   type StudioSection,
-  stepLabel,
   studioParent,
   withHouse,
 } from "./studio-nav";
@@ -104,7 +104,7 @@ export function StudioNav() {
   const fromUrl = useSearchParams().get("house") ?? undefined;
   const { houseId } = useStudioHouseId(fromUrl);
   const createHref = useCreateHref(houseId);
-  const storyId = useBankStoryId(bankMemoryId(pathname));
+  const storyId = useBankStoryId(flowMemoryId(pathname));
   const back = studioParent(pathname, { houseId, storyId });
   const step = flowStep(pathname);
   // Kept compact: the screens below were laid out to fit the 1194×834 tablet without the row.
@@ -124,7 +124,7 @@ export function StudioNav() {
           ) : (
             <span />
           )}
-          {step && <p className="text-14 font-bold text-ink/70">{stepLabel(step)}</p>}
+          {step && <StepNav current={step} memoryId={flowMemoryId(pathname)} storyId={storyId} />}
         </div>
       )}
     </div>

@@ -3,12 +3,27 @@ import {
   activeSection,
   bankMemoryId,
   flowStep,
+  stepHref,
   stepLabel,
   studioParent,
   withHouse,
 } from "./studio-nav";
 
 const m = "/studio/memories/abc";
+
+describe("stepHref", () => {
+  it("links earlier steps only", () => {
+    const ids = { memoryId: "abc", storyId: "s1" };
+    expect(stepHref(1, 4, ids)).toBe(m);
+    expect(stepHref(2, 4, ids)).toBe(`${m}/questions`);
+    expect(stepHref(3, 4, ids)).toBe(`${m}/sheet`);
+    expect(stepHref(4, 4, ids)).toBeNull();
+    expect(stepHref(5, 4, ids)).toBeNull();
+  });
+  it("needs ids to link", () => {
+    expect(stepHref(1, 3, {})).toBeNull();
+  });
+});
 
 describe("studioParent", () => {
   it("walks the create flow back step by step", () => {

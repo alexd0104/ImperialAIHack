@@ -159,6 +159,8 @@ export const copy = {
       signOut: "Sign out",
       signingOut: "Signing out…",
       step: "Step {n} of {total}",
+      steps: ["Photos", "Questions", "Sheet", "Review", "Place"],
+      stepsLabel: "Steps",
       backTo: {
         home: "Back to Hear back",
         bank: "Back to photos",

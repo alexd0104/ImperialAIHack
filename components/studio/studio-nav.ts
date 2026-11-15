@@ -70,6 +70,29 @@ export function flowStep(pathname: string): number | null {
   return { questions: 2, sheet: 3, review: 4 }[memory[2] ?? ""] ?? 1;
 }
 
+/** The memory id of any step 1-4 page (the stepper links between them). */
+export function flowMemoryId(pathname: string): string | null {
+  return memoryRoute.exec(clean(pathname))?.[1] ?? null;
+}
+
+/**
+ * Where a stepper dot goes. Only earlier steps link (going forward keeps the page's own
+ * button, so nothing is skipped); null when the target needs an id we don't know yet.
+ */
+export function stepHref(
+  step: number,
+  current: number,
+  ids: { memoryId?: string | null; storyId?: string | null },
+): string | null {
+  if (step >= current) return null;
+  if (step <= 4) {
+    if (!ids.memoryId) return null;
+    const base = `/studio/memories/${ids.memoryId}`;
+    return [base, base, `${base}/questions`, `${base}/sheet`, `${base}/review`][step] ?? null;
+  }
+  return ids.storyId ? `/studio/stories/${ids.storyId}/place` : null;
+}
+
 /** The memory id when on a Memory bank page (its parent needs the Story id). */
 export function bankMemoryId(pathname: string): string | null {
   const memory = memoryRoute.exec(clean(pathname));
