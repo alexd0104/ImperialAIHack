@@ -74,6 +74,12 @@ _(newest first: date — from → to — what)_
 
 ## Log
 
+### 2026-11-15 13:00 — Raphaël (design, B31)
+- Demo House (Rose) now holds everything in `pregen/`, on top of Garden / Kitchen / Living room: **Bedroom** (`Room1.jpg`) with compass → "Road trips" (Car clip) and flower → "Dancing" (Dance clip); **Guest room** (`Room2.jpg`) with cake → "The family" (Family clip). Each clip's first frame is its still (polaroid and fallback).
+- Seed manifest: a Room may now take `photo` (its own background, saved as a photo Room) and a Story may take `position` (free placement). `scripts/demo/plan.ts` + test. Local only (gitignored): `demo-assets/demo.json`, `demo-assets/pregen/`, re-seeded into `mh_demo` and exported to `bundle.json`.
+- To redo it: `MONGODB_DB=mh_demo pnpm seed:demo && MONGODB_DB=mh_demo pnpm export:demo`, then `pnpm demo`. `pnpm demo:check` green; all 3 clips checked playing.
+- Note for the demo: with 5 rooms, Bedroom and Guest room are one swipe right on Choose a room. `pregen/Dance.mp4` seems to carry a faint stock-site watermark: check its licence before recording.
+
 ### 2026-11-15 10:45 — Timoté (B26–B28, B30)
 - Done: landing button to the Studio (B26); Edit room shows each Object's real picture, `StorySummary.objectUrl` is now filled (B27); New Story has a Room picker, full Rooms disabled (B28); House "Choose a room" uses Room doors like the Studio, a tap swings the door open then the Room appears (B30, deviation noted in DESIGN.md §2). Checked with Playwright screenshots at 1194×834 on a live House.
 - Not run: `pnpm demo:check` — fails before reaching the House because `demo-assets/bundle.json` does not exist yet (P6).

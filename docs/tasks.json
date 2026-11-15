@@ -1013,6 +1013,15 @@
       "deps": [],
       "soft": [],
       "note": ""
+    },
+    {
+      "id": "B31",
+      "title": "Demo House holds all pregen content: Bedroom and Guest room photo Rooms, compass/flower/cake Objects, Car/Dance/Family clips",
+      "owner": "raphael",
+      "priority": "FIX",
+      "deps": [],
+      "soft": [],
+      "note": ""
     }
   ]
 }

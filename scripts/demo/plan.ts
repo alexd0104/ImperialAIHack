@@ -83,12 +83,22 @@ const ManifestStory = z.object({
   title: z.string().min(1).max(80),
   /** A library Object name, or a GLB file in demo-assets. */
   object: z.union([z.enum(LIBRARY_OBJECTS), z.object({ glb: MediaPath })]),
+  /** Free placement on the 1194×834 canvas; overrides the slot (needed on photo Rooms). */
+  position: z
+    .object({
+      x: z.number().min(0).max(1),
+      y: z.number().min(0).max(1),
+      scale: z.number().min(0.05).max(1),
+    })
+    .optional(),
   memories: z.array(ManifestMemory).min(1),
 });
 
 const ManifestRoom = z.object({
   style: z.enum(["garden", "kitchen", "living"]),
   name: z.string().min(1).max(60).optional(),
+  /** A family photo of the room as its background; `style` then only gives the slots. */
+  photo: MediaPath.optional(),
   stories: z.array(ManifestStory).default([]),
 });
 
@@ -209,11 +219,16 @@ export function planSeed(
     extraFiles: [],
   };
   let fileIndex = 0;
-  const addAsset = (kind: AssetKind, source: string, memoryId: string, durationMs?: number) => {
+  const addAsset = (
+    kind: AssetKind,
+    source: string,
+    memoryId: string | undefined,
+    durationMs?: number,
+  ) => {
     const asset: PlannedAsset = {
       id: newId(),
       houseId: house.id,
-      memoryId,
+      ...(memoryId ? { memoryId } : {}),
       kind,
       mime: mimeFor(source),
       source,
@@ -311,17 +326,28 @@ export function planSeed(
         title: manifestStory.title,
         object,
         memoryOrder,
+        ...(manifestStory.position ? { position: manifestStory.position } : {}),
         publishedAt: now,
         createdAt: now,
       });
     }
+    const photo = manifestRoom.photo ? addAsset("photo", manifestRoom.photo, undefined) : undefined;
+    const photoPath = photo ? `${house.id}/${photo.storageName}` : undefined;
     plan.rooms.push({
       id: roomId,
       houseId: house.id,
       name: manifestRoom.name ?? ROOM_NAMES[manifestRoom.style],
-      source: "style",
-      style: manifestRoom.style,
-      backgroundPath: PRESET_BACKGROUNDS[manifestRoom.style],
+      ...(photo && photoPath
+        ? {
+            source: "photo" as const,
+            backgroundPath: photoPath,
+            background: { kind: "photo" as const, assetId: photo.id, path: photoPath },
+          }
+        : {
+            source: "style" as const,
+            style: manifestRoom.style,
+            backgroundPath: PRESET_BACKGROUNDS[manifestRoom.style],
+          }),
       slots,
       createdAt: now,
     });

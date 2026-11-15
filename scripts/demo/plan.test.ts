@@ -148,6 +148,42 @@ describe("demo seed plan", () => {
     expect(DemoManifest.safeParse(outside).success).toBe(false);
   });
 
+  it("makes a photo Room with its own background and free-placed Objects", () => {
+    const manifest = DemoManifest.parse({
+      house: { firstName: "Rose" },
+      rooms: [
+        {
+          style: "living",
+          name: "Bedroom",
+          photo: "pregen/Room1.jpg",
+          stories: [
+            {
+              slot: "shelf",
+              title: "Road trips",
+              object: { glb: "pregen/compass.glb" },
+              position: { x: 0.34, y: 0.6, scale: 0.1 },
+              memories: [
+                { title: "The drive", photos: ["pregen/car.jpg"], clips: ["pregen/car.mp4"] },
+              ],
+            },
+          ],
+        },
+      ],
+    });
+    const plan = planSeed(manifest, { token: "demo-token", now: NOW, newId: ids() });
+    const room = Room.parse(plan.rooms[0]);
+    const photo = plan.assets.find((a) => a.source === "pregen/Room1.jpg");
+    expect(photo?.memoryId).toBeUndefined();
+    expect(room.source).toBe("photo");
+    expect(room.backgroundPath).toBe(`${plan.house.id}/${photo?.storageName}`);
+    expect(room.background).toEqual({
+      kind: "photo",
+      assetId: photo?.id,
+      path: room.backgroundPath,
+    });
+    expect(Story.parse(plan.stories[0]).position).toEqual({ x: 0.34, y: 0.6, scale: 0.1 });
+  });
+
   it("accepts the example manifest", () => {
     expect(DemoManifest.safeParse(example).success).toBe(true);
   });
