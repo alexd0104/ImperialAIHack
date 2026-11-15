@@ -1,6 +1,6 @@
 "use client";
 
-import { ChevronLeft, Home, Pause, Play } from "lucide-react";
+import { ChevronLeft, Home, Pause, Play, X } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { IconButton } from "@/components/ui/icon-button";
 import { SegmentedProgress } from "@/components/ui/segmented-progress";
@@ -111,6 +111,7 @@ export function MemoryPlayer({
   onEnded,
   onBack,
   onReturn,
+  preview = false,
 }: {
   memory: BundleMemory;
   index: number;
@@ -120,6 +121,8 @@ export function MemoryPlayer({
   onEnded: () => void;
   onBack: () => void;
   onReturn: () => void;
+  /** Studio preview: same mix as the House, but a close button instead of "home". */
+  preview?: boolean;
 }) {
   const [elapsed, setElapsed] = useState(0);
   const [paused, setPaused] = useState(false);
@@ -182,14 +185,14 @@ export function MemoryPlayer({
 
       <header className="absolute inset-x-0 top-0 flex items-center gap-6 p-8">
         <IconButton
-          label={copy.house.returnToRoom}
+          label={preview ? copy.house.closePreview : copy.house.returnToRoom}
           size={76}
           tone="glass"
           elevation="house"
           onClick={onReturn}
           data-testid="return-button"
         >
-          <Home aria-hidden />
+          {preview ? <X aria-hidden /> : <Home aria-hidden />}
         </IconButton>
         {count > 1 && <SegmentedProgress count={count} current={index} tone="media" />}
       </header>

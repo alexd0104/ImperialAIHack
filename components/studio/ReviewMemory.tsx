@@ -18,6 +18,7 @@ import { copy } from "@/lib/copy";
 import { estimateMinutes } from "@/lib/job-estimates";
 import { cn } from "@/lib/utils";
 import { postStudio, requestStudio, StudioApiError } from "./api";
+import { MemoryPreview } from "./MemoryPreview";
 import { MotionPicker } from "./MotionPicker";
 import { fetchMemory, memoryKey } from "./memory-client";
 import { StudioQuery } from "./StudioQuery";
@@ -87,6 +88,7 @@ function Review({ memoryId }: { memoryId: string }) {
         ) : (
           <Button disabled>{words.next}</Button>
         )}
+        <MemoryPreview memory={memory.data} />
         <p role="status" className="text-16 text-ink/70">
           {allChosen
             ? words.allApproved
@@ -205,11 +207,12 @@ function SceneApproval({
           <p className="rounded-lg bg-warning-surface p-4 text-16">{words.fallbackNote}</p>
         </>
       ) : use === "animated" && scene.urls.clip ? (
+        // The clip carries its muxed ambience: started by the family's click, with volume controls.
+        // biome-ignore lint/a11y/useMediaCaption: ambience clip, no speech to caption.
         <video
           src={scene.urls.clip}
-          autoPlay
+          controls
           loop
-          muted
           playsInline
           className="max-h-96 w-full rounded-xl object-contain"
         />
@@ -241,6 +244,12 @@ function SceneApproval({
             className="absolute inset-x-4 bottom-4 accent-primary-strong"
           />
         </div>
+      )}
+
+      {/* A still has its ambience as a separate file: let the family hear it. */}
+      {!(use === "animated" && scene.urls.clip) && scene.urls.ambience && (
+        // biome-ignore lint/a11y/useMediaCaption: ambience has no speech to caption.
+        <audio src={scene.urls.ambience} controls loop className="w-full" />
       )}
 
       {!fallback && (

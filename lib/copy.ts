@@ -382,6 +382,7 @@ export const copy = {
       fallbackNote:
         "We couldn’t bring this photo to life. You can try again, or keep the original photo.",
       rateLimited: "Please wait a little before trying again.",
+      playFull: "Play full memory",
       progress: "scenes approved",
       allApproved: "Every scene is approved.",
       waiting: "Choose how each scene appears to continue.",
@@ -469,6 +470,7 @@ export const copy = {
     pause: "Pause",
     play: "Play",
     returnToRoom: "Back to the room",
+    closePreview: "Close preview",
     nextMemory: "Next memory",
   },
 } as const;

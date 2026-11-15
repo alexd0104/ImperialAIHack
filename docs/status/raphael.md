@@ -2,6 +2,11 @@
 
 Newest on top. Written by the agent after each task (what was done, Human TODO, Requests). Read this in the morning.
 
+- **H9 done:** review clip plays with sound (`controls`, no `muted`/autoplay), stills show an `<audio controls>` for their separate ambience; "Play full memory" (`components/studio/MemoryPreview.tsx`) opens the House `MemoryPlayer` with a new `preview` prop (X close instead of Home) on a bundle built client-side by `lib/studio/preview-memory.ts` (+test).
+- Outside zone: `components/house/memory-player.tsx` (preview prop, few lines), `lib/copy.ts` (`closePreview`, `playFull`).
+- Human TODO: listen in the browser to an animated scene and a still in review; open "Play full memory", check song+voice+ambience mix and close; run `pnpm demo:check` (not run here).
+- Request: none.
+
 - **P9-wip:** `lib/ai/beds.ts` (6 beds, `pickBed` from sound events, `bedUrl`), `lib/house/bundle.ts` sets `bedUrl` on bundle scenes (stored `bedId` wins, else pick; preloaded), `scripts/make-beds.mts` + `pnpm beds:make`; tests added. mp3 files NOT created (need live fal).
 - Outside zone: `lib/house/bundle.ts`, `lib/house/bundle.test.ts`, package.json script.
 - Human TODO: `AI_MODE=live pnpm beds:make` (≈ $0.05, needs ffmpeg), listen to the 6 loops in `public/beds/`, check ≤ 300 KB, commit them.
