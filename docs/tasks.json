@@ -986,6 +986,15 @@
       "deps": [],
       "soft": [],
       "note": ""
+    },
+    {
+      "id": "B28",
+      "title": "New Story: choose the Room (picker with pictures, full Rooms disabled)",
+      "owner": "timote",
+      "priority": "FIX",
+      "deps": [],
+      "soft": [],
+      "note": ""
     }
   ]
 }

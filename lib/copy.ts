@@ -32,6 +32,8 @@ export const copy = {
       invalid: "Choose an Object and enter a Story name of up to 80 characters.",
       missingRoom: "We couldn’t find this Room. Please return to your House.",
       noSlot: "This Room is full. Please choose another Room.",
+      roomLabel: "Which Room is it in?",
+      roomFull: "Full",
       fileSize: "Please choose a photo smaller than 15 MB.",
       fileType: "Please choose a JPEG or PNG photo that can be opened on this device.",
       missingPhoto: "Please choose and save a photo first.",

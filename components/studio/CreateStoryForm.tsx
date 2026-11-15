@@ -9,13 +9,14 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Input, Label } from "@/components/ui/input";
 import { StepProgress } from "@/components/ui/step-progress";
-import { AssetView, CreateStoryRequest, JobView, Room, Story } from "@/lib/contracts";
+import { AssetView, CreateStoryRequest, HouseDetail, JobView, Room, Story } from "@/lib/contracts";
 import { copy } from "@/lib/copy";
 import { cn } from "@/lib/utils";
 import { postStudio, requestStudio, StudioApiError } from "./api";
 import { ChosenPhoto, PickPhotoButton } from "./FilePicker";
 import { type LibraryName, libraryImage, objectLabel, objectLibrary } from "./object-library";
 import { resizeObjectPhoto } from "./photo";
+import { roomBackgroundUrl } from "./RoomDoors";
 
 const words = copy.studio.createStory;
 
@@ -44,12 +45,27 @@ export function CreateStoryForm() {
     );
   return (
     <QueryClientProvider client={client}>
-      <StoryForm roomId={roomId} />
+      <StoryForm
+        roomId={roomId}
+        onRoomChange={(next) => {
+          // Keep the URL in step so a reload or the login redirect opens the same Room.
+          const url = new URL(window.location.href);
+          url.searchParams.set("roomId", next);
+          window.history.replaceState(null, "", url);
+          setRoomId(next);
+        }}
+      />
     </QueryClientProvider>
   );
 }
 
-function StoryForm({ roomId }: { roomId: string }) {
+function StoryForm({
+  roomId,
+  onRoomChange,
+}: {
+  roomId: string;
+  onRoomChange: (roomId: string) => void;
+}) {
   const draftKey = `memorai:create-story:${roomId}`;
   const [title, setTitle] = useState("");
   const [mode, setMode] = useState<"library" | "photo">("library");
@@ -69,6 +85,11 @@ function StoryForm({ roomId }: { roomId: string }) {
     queryFn: () => requestStudio(`/api/rooms/${encodeURIComponent(roomId)}`, Room),
     retry: false,
   });
+  // Kept while the next Room loads, so the Room picker doesn't flicker away on a switch.
+  const [houseId, setHouseId] = useState<string | null>(null);
+  useEffect(() => {
+    if (room.data) setHouseId(room.data.houseId);
+  }, [room.data]);
 
   useEffect(() => {
     creationKey.current = crypto.randomUUID();
@@ -346,6 +367,18 @@ function StoryForm({ roomId }: { roomId: string }) {
             disabled={!ready || locked || upload.isPending || create.isPending || !room.data}
             className="space-y-5"
           >
+            {houseId && (
+              <RoomChooser
+                houseId={houseId}
+                roomId={roomId}
+                onChange={(next) => {
+                  // A Slot belongs to one Room: the new Room gets its own free Slot on submit.
+                  setProvisionalSlot(null);
+                  setMessage("");
+                  onRoomChange(next);
+                }}
+              />
+            )}
             <div className="flex flex-wrap gap-3">
               {(["library", "photo"] as const).map((value) => (
                 <label
@@ -493,5 +526,61 @@ function StoryForm({ roomId }: { roomId: string }) {
       )}
       <p className="mt-4 text-13 text-ink/70">{canSave ? words.draft : words.unsaved}</p>
     </>
+  );
+}
+
+/**
+ * Which Room the new Story goes in (B28): every Room of the House with its picture. A Room
+ * with no free Slot can't take a new Story, so it is shown but can't be chosen.
+ */
+function RoomChooser(props: {
+  houseId: string;
+  roomId: string;
+  onChange: (roomId: string) => void;
+}) {
+  const house = useQuery({
+    queryKey: ["house", props.houseId],
+    queryFn: () => requestStudio(`/api/houses/${props.houseId}`, HouseDetail),
+  });
+  const rooms = house.data?.rooms ?? [];
+  if (rooms.length === 0) return null;
+  return (
+    <fieldset className="space-y-2">
+      <legend className="mb-2 text-16 font-bold">{words.roomLabel}</legend>
+      <div className="flex flex-wrap gap-3">
+        {rooms.map((room) => {
+          const full = room.slots.every((slot) => slot.storyId);
+          const chosen = room.id === props.roomId;
+          return (
+            <label
+              key={room.id}
+              className={cn(
+                "flex min-h-16 cursor-pointer items-center gap-3 rounded-xl border-2 bg-surface p-2 pr-4 text-16 font-bold has-[:focus-visible]:outline-3 has-[:focus-visible]:outline-primary",
+                chosen ? "border-primary-strong" : "border-ink/15",
+                full && !chosen && "cursor-not-allowed opacity-50",
+              )}
+            >
+              <input
+                type="radio"
+                name="story-room"
+                className="sr-only"
+                value={room.id}
+                checked={chosen}
+                disabled={full && !chosen}
+                onChange={() => props.onChange(room.id)}
+              />
+              {/* biome-ignore lint/performance/noImgElement: Room picture from /rooms or /api/files. */}
+              <img
+                src={roomBackgroundUrl(room)}
+                alt=""
+                className="aspect-[1194/834] w-20 rounded-lg object-cover"
+              />
+              <span>{room.name}</span>
+              {full && <span className="text-14 font-normal text-ink/70">{words.roomFull}</span>}
+            </label>
+          );
+        })}
+      </div>
+    </fieldset>
   );
 }
