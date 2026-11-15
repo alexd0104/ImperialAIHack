@@ -17,6 +17,10 @@ Newest on top. Written by the agent after each task (what was done, Human TODO, 
 - Human TODO: listen in the browser to an animated scene and a still in review; open "Play full memory", check song+voice+ambience mix and close; run `pnpm demo:check` (not run here).
 - Request: none.
 
+- **P9 re-checked (still wip):** `pnpm verify` green (431 tests). Code unchanged; nothing left that code alone can finish.
+  Human TODO: `pnpm beds:make` (live, ≈ $0.05), listen, commit `public/beds/*.mp3` (≤ 300 KB each).
+  Request (Yasir): the House player must mix `scene.bedUrl` at ≈ 25 % under ambience/song, ducked by the voice, and ignore it silently if the file fails to load.
+
 - **P9-wip:** `lib/ai/beds.ts` (6 beds, `pickBed` from sound events, `bedUrl`), `lib/house/bundle.ts` sets `bedUrl` on bundle scenes (stored `bedId` wins, else pick; preloaded), `scripts/make-beds.mts` + `pnpm beds:make`; tests added. mp3 files NOT created (need live fal).
 - Outside zone: `lib/house/bundle.ts`, `lib/house/bundle.test.ts`, package.json script.
 - Human TODO: `AI_MODE=live pnpm beds:make` (≈ $0.05, needs ffmpeg), listen to the 6 loops in `public/beds/`, check ≤ 300 KB, commit them.
