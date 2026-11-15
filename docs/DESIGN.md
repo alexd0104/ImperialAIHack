@@ -18,7 +18,7 @@ Owner: Raphaël. This file is both the **Figma → code map** for developers and
 
 | Frame | Node | Route / component | Owner | Notes |
 |---|---|---|---|---|
-| Choose a room | 20-67 | `/house/[token]` → `ChooseRoom` | Yasir | Entry screen of the House (kept as in Figma) |
+| Choose a room | 20-67 | `/house/[token]` → `ChooseRoom` | Yasir | Entry screen of the House. **Deviation (B30):** each Room is a door left ajar over its picture, like the Studio Room doors; one tap swings it open (0.8 s, `ease-memorai`, none under reduced motion), then the Room appears |
 | Room · Garden | 20-176 | `RoomScene` | Yasir | 3 Objects, empty slot, together pill |
 | Room · Garden — Flower opened | 20-219 | `ObjectOpen` (polaroids) | Yasir | Tap a polaroid, or first Memory auto-starts after 3 s |
 | Story · Memory playing | 20-624 | `MemoryPlayer` | Yasir | Chips: song / ambience / voice; caption Fraunces Italic 32 |

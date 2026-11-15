@@ -74,6 +74,11 @@ _(newest first: date — from → to — what)_
 
 ## Log
 
+### 2026-11-15 10:45 — Timoté (B26–B28, B30)
+- Done: landing button to the Studio (B26); Edit room shows each Object's real picture, `StorySummary.objectUrl` is now filled (B27); New Story has a Room picker, full Rooms disabled (B28); House "Choose a room" uses Room doors like the Studio, a tap swings the door open then the Room appears (B30, deviation noted in DESIGN.md §2). Checked with Playwright screenshots at 1194×834 on a live House.
+- Not run: `pnpm demo:check` — fails before reaching the House because `demo-assets/bundle.json` does not exist yet (P6).
+- Outside my zone: `components/house/choose-room.tsx` (**Yasir**: `data-testid="room-card"` kept; `onChoose` now fires after the 0.8 s door swing, immediately under reduced motion), `app/api/houses/_house-ops.ts`, `components/studio/{RoomPages,CreateStoryForm}.tsx` (Alexandre), `docs/DESIGN.md` (Raphaël).
+
 ### 2026-11-15 12:00 — Raphaël (design, B29)
 - Favicon: removed the default Next.js `app/favicon.ico`; added `app/icon.svg` (coral house + heart mark from `public/brand/memorai-logo.svg`) and `app/apple-icon.png` (180 px, mark on the cream surface). Next serves both automatically; checked `<link rel=icon>` returns 200 in dev.
 

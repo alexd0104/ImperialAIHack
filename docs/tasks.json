@@ -1004,6 +1004,15 @@
       "deps": [],
       "soft": [],
       "note": ""
+    },
+    {
+      "id": "B30",
+      "title": "House Choose a room: Room doors like the Studio, tap swings the door open",
+      "owner": "timote",
+      "priority": "FIX",
+      "deps": [],
+      "soft": [],
+      "note": ""
     }
   ]
 }
