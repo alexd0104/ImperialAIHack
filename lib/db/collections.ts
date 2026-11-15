@@ -7,6 +7,7 @@ import {
   GenerationCacheEntry,
   House,
   Job,
+  LabRun,
   Memory,
   Room,
   Scene,
@@ -99,6 +100,8 @@ export const db = {
   jobs: typedCollection("jobs", Job),
   events: typedCollection("events", Event),
   generationCache: typedCollection("generation_cache", GenerationCacheEntry),
+  /** Creation-method lab (v2, F7); not tied to a House. */
+  labRuns: typedCollection("lab_runs", LabRun),
 };
 
 /** A House by its private link token, unless revoked. */

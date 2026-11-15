@@ -8,6 +8,8 @@ export const BundleScene = z.object({
   durationMs: z.number(),
   /** The scene's chosen still; the House shows it if the clip can't play (B10). */
   stillUrl: z.string().optional(),
+  /** Quiet library ambience loop under the scene sound (P9). */
+  bedUrl: z.string().optional(),
 });
 export type BundleScene = z.infer<typeof BundleScene>;
 
@@ -30,6 +32,8 @@ export const BundleStory = z.object({
   object: z.object({ kind: z.enum(["glb", "svg"]), url: z.string() }),
   /** false in alone mode if no OK-alone Memory. */
   available: z.boolean(),
+  /** Resolved placement: Story.position, else its Slot (v2, F7; set by the bundle builder). */
+  position: z.object({ x: z.number(), y: z.number(), scale: z.number() }).optional(),
   memories: z.array(BundleMemory),
 });
 export type BundleStory = z.infer<typeof BundleStory>;
@@ -62,6 +66,8 @@ export const HouseBundle = z.object({
     avatars: z.array(z.object({ initial: z.string(), color: z.string() })),
   }),
   mode: HouseMode,
+  /** Changes whenever the House content changes, so an open House can refresh (v2, F7). */
+  version: z.string().optional(),
   rooms: z.array(BundleRoom),
   /** Every URL to preload. */
   files: z.array(z.string()),

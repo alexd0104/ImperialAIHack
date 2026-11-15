@@ -10,6 +10,7 @@ import memorySheet from "./__fixtures__/memory-sheet.json";
 import room from "./__fixtures__/room.json";
 import scenes from "./__fixtures__/scenes.json";
 import story from "./__fixtures__/story.json";
+import v2 from "./__fixtures__/v2.json";
 import {
   ApiErrorResponse,
   Asset,
@@ -19,6 +20,7 @@ import {
   CreateHouseRequest,
   CreateRoomRequest,
   CreateStoryRequest,
+  DEFAULT_SCENE_MOTION,
   ERROR_STATUS,
   ErrorCode,
   Event,
@@ -26,14 +28,23 @@ import {
   HouseBundle,
   HouseEventRequest,
   Job,
+  JobType,
   JobView,
+  LabRun,
   Memory,
   MemorySheet,
   Room,
+  resolveRoomBackground,
+  resolveSceneMotion,
   Scene,
   SceneChoiceRequest,
+  SceneMotion,
   Story,
+  StoryPosition,
   UpdateMemoryRequest,
+  UpdateRoomRequest,
+  UpdateSceneRequest,
+  UpdateStoryRequest,
 } from "./index";
 
 const clone = <T>(v: T): T => structuredClone(v);
@@ -251,5 +262,81 @@ describe("envelopes", () => {
     for (const code of ErrorCode.options) {
       expect(ERROR_STATUS[code]).toBeGreaterThanOrEqual(400);
     }
+  });
+});
+
+describe("contracts v2 (F7)", () => {
+  it("v2 fixtures parse", () => {
+    expect(Room.safeParse(v2.room).success).toBe(true);
+    expect(Story.safeParse(v2.story).success).toBe(true);
+    expect(Scene.safeParse(v2.scene).success).toBe(true);
+    expect(LabRun.safeParse(v2.labRun).success).toBe(true);
+  });
+
+  it("v1 documents still parse and get the gentle 5 s motion", () => {
+    const scene = Scene.parse(scenes[0]);
+    expect(resolveSceneMotion(scene)).toEqual(DEFAULT_SCENE_MOTION);
+    expect(resolveSceneMotion(Scene.parse(v2.scene)).durationSec).toBe(10);
+    expect(scene.soundMode).toBeUndefined();
+    expect(Story.parse(story).position).toBeUndefined();
+    expect(Room.parse(room).background).toBeUndefined();
+  });
+
+  it("motion accepts only 5 or 10 s and ≤ 200 chars", () => {
+    expect(SceneMotion.safeParse({ preset: "gentle", durationSec: 7 }).success).toBe(false);
+    expect(
+      SceneMotion.safeParse({ preset: "custom", text: "x".repeat(201), durationSec: 5 }).success,
+    ).toBe(false);
+  });
+
+  it("story position stays on the canvas", () => {
+    expect(StoryPosition.safeParse({ x: 1.2, y: 0.5, scale: 0.2 }).success).toBe(false);
+    expect(StoryPosition.safeParse({ x: 0.5, y: 0.5, scale: 0.01 }).success).toBe(false);
+  });
+
+  it("pending background needs a job id", () => {
+    const { jobId: _jobId, ...noJob } = v2.room.pendingBackground;
+    expect(Room.safeParse({ ...v2.room, pendingBackground: noJob }).success).toBe(false);
+  });
+
+  it("resolveRoomBackground falls back to v1 fields", () => {
+    expect(resolveRoomBackground(Room.parse(room))).toEqual({ kind: "style", style: "garden" });
+    expect(resolveRoomBackground(Room.parse(v2.room))?.kind).toBe("photo");
+  });
+
+  it("lab scores are 1–5", () => {
+    const bad = { ...v2.labRun, scores: { ...v2.labRun.scores, liked: 6 } };
+    expect(LabRun.safeParse(bad).success).toBe(false);
+  });
+
+  it("bundle accepts version, bedUrl and story position", () => {
+    const bundle = clone(houseBundle);
+    const b = bundle as unknown as {
+      version: string;
+      rooms: {
+        slots: { story: { position?: unknown; memories: { scenes: object[] }[] } | null }[];
+      }[];
+    };
+    b.version = "abc123";
+    const s = b.rooms[0].slots[0].story;
+    if (s) {
+      s.position = { x: 0.22, y: 0.68, scale: 0.18 };
+      s.memories[0].scenes[0] = { ...s.memories[0].scenes[0], bedUrl: "/beds/beach.mp3" };
+    }
+    expect(HouseBundle.safeParse(bundle).success).toBe(true);
+    expect(JobType.safeParse("scene_sound").success).toBe(true);
+  });
+
+  it("v2 route bodies", () => {
+    expect(UpdateSceneRequest.safeParse({ soundMode: "clip" }).success).toBe(true);
+    expect(UpdateSceneRequest.safeParse({ soundMode: "music" }).success).toBe(false);
+    expect(
+      UpdateRoomRequest.safeParse({ background: { kind: "photo", assetId: "a1" } }).success,
+    ).toBe(true);
+    expect(UpdateRoomRequest.safeParse({ background: { kind: "style" } }).success).toBe(false);
+    expect(UpdateStoryRequest.safeParse({ position: null }).success).toBe(true);
+    expect(UpdateStoryRequest.safeParse({ position: { x: 0.1, y: 0.2, scale: 0.3 } }).success).toBe(
+      true,
+    );
   });
 });

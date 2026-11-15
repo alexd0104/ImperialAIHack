@@ -10,8 +10,11 @@ import {
   Room,
   RoomStyle,
   Scene,
+  SceneMotion,
   SceneOutputs,
+  SoundMode,
   Story,
+  StoryPosition,
 } from "./entities";
 import { HouseMode } from "./house-bundle";
 import { JobView } from "./jobs";
@@ -85,6 +88,22 @@ export const CreateRoomRequest = z.discriminatedUnion("source", [
 ]);
 export type CreateRoomRequest = z.infer<typeof CreateRoomRequest>;
 
+/** Background a family picks in the Studio; a photo starts a `room_edit` job (v2, F7). */
+export const RoomBackgroundInput = z.discriminatedUnion("kind", [
+  z.object({ kind: z.literal("style"), style: RoomStyle }),
+  z.object({ kind: z.literal("photo"), assetId: Id }),
+]);
+export type RoomBackgroundInput = z.infer<typeof RoomBackgroundInput>;
+
+// PATCH /api/rooms/:id → Room (photo background → pendingBackground + job)
+export const UpdateRoomRequest = z.object({
+  name: z.string().trim().min(1).max(60).optional(),
+  background: RoomBackgroundInput.optional(),
+});
+export type UpdateRoomRequest = z.infer<typeof UpdateRoomRequest>;
+
+// DELETE /api/rooms/:id → DeletedResponse (cascades its Stories, Memories, Scenes, Assets)
+
 // ── Stories ──────────────────────────────────────────────────────────
 // POST /api/rooms/:id/stories → Story (object.jobId set when kind=photo)
 export const CreateStoryRequest = z.object({
@@ -102,6 +121,8 @@ export const UpdateStoryRequest = z.object({
   title: z.string().trim().min(1).max(80).optional(),
   memoryOrder: z.array(Id).optional(),
   slotId: Id.optional(),
+  /** Free placement (v2, F7); `null` puts the Story back on its Slot. */
+  position: StoryPosition.nullable().optional(),
 });
 export type UpdateStoryRequest = z.infer<typeof UpdateStoryRequest>;
 
@@ -180,6 +201,13 @@ export const SceneChoiceRequest = z.object({
   restored: z.boolean(),
 });
 export type SceneChoiceRequest = z.infer<typeof SceneChoiceRequest>;
+
+// PATCH /api/scenes/:id → Scene (before generation; v2, F7)
+export const UpdateSceneRequest = z.object({
+  motion: SceneMotion.optional(),
+  soundMode: SoundMode.optional(),
+});
+export type UpdateSceneRequest = z.infer<typeof UpdateSceneRequest>;
 
 // POST /api/scenes/:id/retry → RetryResponse (bypasses the cache)
 export const RetryRequest = z.object({});

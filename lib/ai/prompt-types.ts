@@ -12,6 +12,13 @@ export const CompiledPrompts = z.object({
   ambiencePrompt: z.string(),
   colourStyle: z.string(),
   refusedRequests: z.array(z.string()),
+  // Contracts v2 (F7), filled by P7/P8. Optional so v1 compiler output still parses.
+  /** Explicit sounds heard in the scene ("waves breaking", "people laughing"). */
+  soundEvents: z.array(z.string()).optional(),
+  /** MMAudio negative prompt ("static, hiss, hum, music, speech"). */
+  ambienceNegativePrompt: z.string().optional(),
+  /** Gentle reason when the family's motion text asked for something not in the photo. */
+  motionRefused: z.string().optional(),
 });
 export type CompiledPrompts = z.infer<typeof CompiledPrompts>;
 

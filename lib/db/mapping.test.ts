@@ -1,9 +1,10 @@
 import { ObjectId } from "mongodb";
 import { describe, expect, it } from "vitest";
-import { House, Job, Scene } from "@/lib/contracts";
+import { House, Job, LabRun, Room, Scene } from "@/lib/contracts";
 import house from "@/lib/contracts/__fixtures__/house.json";
 import job from "@/lib/contracts/__fixtures__/job.json";
 import scenes from "@/lib/contracts/__fixtures__/scenes.json";
+import v2 from "@/lib/contracts/__fixtures__/v2.json";
 import { fieldsToDoc, fromDoc, toDoc, toObjectId } from "./mapping";
 
 const ID = "65f1a2b3c4d5e6f708192a3b";
@@ -52,5 +53,14 @@ describe("db mapping", () => {
     expect(toObjectId("zzzzzzzzzzzzzzzzzzzzzzzz")).toBeNull();
     expect(toObjectId(ID)?.toHexString()).toBe(ID);
     expect(() => toDoc({ id: "abc" })).toThrow();
+  });
+
+  it("round-trips v2 rooms and lab runs (F7)", () => {
+    const room = Room.parse(v2.room);
+    expect(Room.parse(fromDoc(toDoc(room)))).toEqual(room);
+    const run = LabRun.parse(v2.labRun);
+    const doc = toDoc(run);
+    expect(doc.createdAt).toBeInstanceOf(Date);
+    expect(LabRun.parse(fromDoc(doc))).toEqual(run);
   });
 });

@@ -1,7 +1,7 @@
 import { z } from "zod";
 import { Id, IsoDate } from "./entities";
 
-export const JobType = z.enum(["scene", "room_background", "object_3d"]);
+export const JobType = z.enum(["scene", "room_background", "object_3d", "scene_sound"]);
 export type JobType = z.infer<typeof JobType>;
 
 export const StepName = z.enum([

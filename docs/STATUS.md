@@ -23,6 +23,12 @@ Async coordination. **Append only; never edit someone else's lines.** Newest ent
 
 _(newest first: date — what changed — who)_
 
+- 2026-11-15 — **Contracts v2 published (F7)** — Timoté. All additive and optional; every v1 fixture still parses.
+  1. `Scene`: `motion?` (`SceneMotion`, read with `resolveSceneMotion` → gentle 5 s), `soundMode?` (`"clip"|"text"`, absent → env `SOUND_MODE_DEFAULT`, default `"text"`), `bedId?`, `soundEvents?`. **Deviation:** `bedId`/`soundEvents` live on `Scene`, not in `outputs`, which stays files only (the Studio turns every output into a URL).
+  2. `Story.position?` (`StoryPosition`, scale 0.05–1); `Room.background?` (`RoomBackground`, read with `resolveRoomBackground`, which falls back to v1 `source`/`style`) + `pendingBackground?` (same + `jobId`).
+  3. `HouseBundle.version?`, `BundleScene.bedUrl?`, `BundleStory.position?` (optional so the current bundle builder keeps compiling; the H task fills it). `JobType` adds `scene_sound`. `CompiledPrompts` (lib/ai) adds optional `soundEvents`, `ambienceNegativePrompt`, `motionRefused`.
+  4. New `LabRun` (`lib/contracts/lab.ts`) + `db.labRuns` (`lab_runs`). Request bodies: `UpdateSceneRequest`, `UpdateRoomRequest` (+ `RoomBackgroundInput`), `UpdateStoryRequest.position` (`null` = back to its Slot). No route handlers: each feature task owns its own.
+  5. Env `SOUND_MODE_DEFAULT` (clip|text), `ENABLE_LAB` (true|false) in `pnpm env:check` (optional). Fixtures: `lib/contracts/__fixtures__/v2.json`.
 - 2026-11-14 — **`BundleScene.stillUrl` added (B10)** — Yasir, approved by Timoté. `lib/contracts/house-bundle.ts`: optional `stillUrl` (the scene's chosen still: colourised, restored or original photo), set on clip scenes by `lib/house/bundle.ts`. A failed clip shows it, then the Memory's `polaroidUrl` only if missing. Additive only.
 - 2026-11-14 — **`Job.assetId` added (P5)** — Raphaël for Timoté. `lib/contracts/jobs.ts`: optional `assetId` = the Object photo Asset of an `object_3d` job (the job had no way to find its source photo). Additive only; `JobView` carries it too (an id, no path).
 
@@ -64,6 +70,12 @@ _(newest first: date — from → to — what)_
 - ~~2026-11-14 — Raphaël → Timoté — The Tasks workflow rejected `(ID-wip)` PR titles although its error message recommends them (`.github/workflows/tasks.yml:47`). Fixed in `fix/shared-tasks-wip-title`; please review. Not registered as a B task because `tasks.mjs add` needs Node, which is not set up on my machine yet: please add it if you want it on the board.~~ Resolved by #9.
 
 ## Log
+
+### 2026-11-15 00:55 — Timoté (pipeline, F7)
+- Done: Contracts v2 (see Contract changes). `pnpm verify` green (387 tests).
+- Outside my zone: `scripts/check-env.mjs` (two optional rules, listed in F7's files).
+- Not done: `.env.example` lines (agents can't edit `.env*`): Timoté adds `SOUND_MODE_DEFAULT=text` and `ENABLE_LAB=false` by hand.
+- Next: autopilot P7 → P8 → P10.
 
 - 2026-11-14 23:40 — Timoté — v2 round set up: 15 tasks in `docs/FEATURES-V2.md` (F7 contracts v2 first), overnight runner `pnpm autopilot <you>` (`docs/AUTOPILOT.md`). Autopilot handoffs and Human TODOs land in `docs/status/<you>.md`. Read your file every morning.
 

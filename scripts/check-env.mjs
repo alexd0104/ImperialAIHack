@@ -33,6 +33,17 @@ const RULES = {
     check: (v) => ["pipeline", "studio", "house", "design"].includes(v),
     hint: "pipeline | studio | house | design",
   },
+  // F7 (contracts v2): optional, code falls back to "text" and lab off.
+  SOUND_MODE_DEFAULT: {
+    required: false,
+    check: (v) => ["clip", "text"].includes(v),
+    hint: "text (ambience from the sound prompt) or clip (keep the clip's own audio)",
+  },
+  ENABLE_LAB: {
+    required: false,
+    check: (v) => ["true", "false"].includes(v),
+    hint: "true to show the creation-method lab in the Studio",
+  },
 };
 
 function load(path) {
