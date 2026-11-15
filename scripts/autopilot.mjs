@@ -6,6 +6,10 @@
 //   pnpm autopilot <person> [--engine claude|codex|dry] [--model sonnet] [--only P7,P8]
 //                           [--max-tasks 8] [--task-usd 4] [--total-usd 25] [--wait-hours 8] [--minutes 50]
 //
+// Relay: every runner pushes a heartbeat (side branch autopilot/heartbeat-<you>, never main). When your
+// own queue has nothing ready, it takes the next task of a teammate whose heartbeat is > 2 h old, after
+// claiming it with an empty "(ID-wip)" commit so nobody else takes it too. --no-relay turns this off.
+//
 // Why the runner (not the agent) pushes: main must stay green while 4 laptops push all night, and
 // Codex's sandbox may have no network. The agent only edits and commits; the runner verifies.
 import { spawn, spawnSync } from "node:child_process";
@@ -90,6 +94,70 @@ function skip(id, why) {
   log(`↷ ${id} skipped for this run: ${why}`);
   summary.push(`- ${id}: ${why}`);
 }
+
+// Dry runs never push anything (no heartbeat, no relay claims).
+const relay = !argv.includes("--no-relay") && engine !== "dry";
+const startedAt = Date.now();
+const STALE_MS = 2 * 3600e3;
+const hbBranch = (p) => `autopilot/heartbeat-${p}`;
+function heartbeat() {
+  if (engine === "dry") return;
+  // A commit on a side branch whose date says "this runner is alive"; main is never touched.
+  const tree = git("rev-parse", "HEAD^{tree}").out.trim();
+  const c = sh("git", [
+    "commit-tree",
+    tree,
+    "-m",
+    `heartbeat ${person} ${new Date().toISOString()}`,
+  ]).out.trim();
+  if (/^[0-9a-f]{40}$/.test(c))
+    git("push", "-q", "--force", "origin", `${c}:refs/heads/${hbBranch(person)}`);
+}
+function lastBeat(p) {
+  git("fetch", "-q", "origin", `+refs/heads/${hbBranch(p)}:refs/remotes/origin/${hbBranch(p)}`);
+  const ts = git("log", "-1", "--format=%ct", `origin/${hbBranch(p)}`).out.trim();
+  return /^\d+$/.test(ts) ? Number(ts) * 1000 : 0;
+}
+function claimedBy(id) {
+  const s = git(
+    "log",
+    "origin/main",
+    "--since=4 hours ago",
+    "--fixed-strings",
+    `--grep=relay ${id} by `,
+    "--format=%s",
+  ).out;
+  const m = s.match(new RegExp(`relay ${id} by (\\w+)`));
+  return m && m[1] !== person ? m[1] : "";
+}
+function relayCandidate() {
+  if (!relay || Date.now() - startedAt < 3600e3) return null;
+  for (const p of Object.keys(registry.people)) {
+    if (p === person || Date.now() - lastBeat(p) < STALE_MS) continue;
+    const id = sh("node", ["scripts/tasks.mjs", "next-id", p]).out.trim().split("\n").pop();
+    const task = registry.tasks.find((x) => x.id === id);
+    if (!task || task.relay === false || claimedBy(id) || skippedHere(id)) continue;
+    return { id, owner: p };
+  }
+  return null;
+}
+function claim(id, owner) {
+  git(
+    "commit",
+    "--allow-empty",
+    "--no-verify",
+    "-m",
+    `chore: relay ${id} by ${person} for ${owner} (${id}-wip)`,
+  );
+  if (git("push", "origin", "HEAD:main").ok) return true;
+  git("reset", "--hard", "origin/main");
+  return false;
+}
+const skippedHere = (id) =>
+  existsSync(join(dir, `skip-${person}`)) &&
+  readFileSync(join(dir, `skip-${person}`), "utf8")
+    .split(/\s+/)
+    .includes(id);
 
 const ALLOWED = [
   "Read",
@@ -213,7 +281,7 @@ function taskPrompt(t) {
   const brief = t.brief
     ? `node scripts/doc.mjs docs/FEATURES-V2.md ${t.id}`
     : `grep -n "| ${t.id} |" FEATURES.md`;
-  return `memorAI task ${t.id} — ${t.title} (owner: ${person}).
+  return `memorAI task ${t.id} — ${t.title} (owner: ${t.owner}${t.owner === person ? "" : `, taken over by ${person} because ${t.owner}'s runner is down`}).
 ${RULES}
 1. Read your brief only: \`${brief}\` (and the "Rules for every v2 task" section if it is a v2 task). Read other docs by section with scripts/doc.mjs. Stay inside the files the brief lists. If commits for this task already exist (\`git log --oneline --grep=${t.id}\`), continue from them and from your handoff in docs/status/${person}.md.
 2. Implement in small steps; add Vitest tests for new lib/ logic; run \`pnpm verify\` until green (3 fix attempts max).
@@ -363,6 +431,8 @@ async function main() {
     `autopilot ${person} · ${engine}${model ? ` ${model}` : ""} · ≤${maxTasks} tasks · ≤$${totalUsd} · log ${logFile}`,
   );
 
+  heartbeat();
+  const beat = setInterval(heartbeat, 10 * 60e3);
   const spent = { usd: 0 };
   let done = 0;
   const giveUpAt = Date.now() + waitHours * 3600e3;
@@ -371,7 +441,18 @@ async function main() {
     const before = head();
     git("rebase", "-q", "origin/main");
     syncDeps(before);
-    const id = nextId();
+    let id = nextId();
+    if (id && claimedBy(id)) {
+      skip(id, `taken over by ${claimedBy(id)}'s runner`);
+      continue;
+    }
+    if (!id) {
+      const r = relayCandidate();
+      if (r && claim(r.id, r.owner)) {
+        log(`⇄ relay: taking ${r.id} from ${r.owner} (no heartbeat for 2 h)`);
+        id = r.id;
+      }
+    }
     if (!id) {
       if (Date.now() > giveUpAt) break;
       log("· nothing ready (waiting on teammates' tasks or files); checking again in 10 min");
@@ -387,6 +468,7 @@ async function main() {
     }
   }
   const report = `# Autopilot ${person} — ${new Date().toISOString().slice(0, 16)}\nDone: ${done} · spent ≈ $${spent.usd.toFixed(2)}\n${summary.join("\n")}\nLog: ${logFile}\n`;
+  clearInterval(beat);
   writeFileSync(join(dir, `summary-${person}.md`), report);
   log(`\n${report}`);
 }

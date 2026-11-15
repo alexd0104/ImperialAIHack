@@ -814,7 +814,8 @@
       "deps": [],
       "soft": [],
       "brief": "docs/FEATURES-V2.md#SH8",
-      "note": "Tomorrow morning, interactive (not autopilot)."
+      "note": "Tomorrow morning, interactive (not autopilot).",
+      "relay": false
     },
     {
       "id": "P10",
@@ -850,6 +851,15 @@
       "soft": [],
       "brief": "docs/FEATURES-V2.md#S15",
       "requiresFiles": "public/rooms/src"
+    },
+    {
+      "id": "B13",
+      "title": "Autopilot heartbeat and relay",
+      "owner": "timote",
+      "priority": "FIX",
+      "deps": [],
+      "soft": [],
+      "note": ""
     }
   ]
 }
