@@ -3,7 +3,7 @@ import { MemorySheet } from "@/lib/contracts";
 import sheetFixture from "@/lib/contracts/__fixtures__/memory-sheet.json";
 import type { ClaudePromptClient } from "./claude";
 import { compilePrompts } from "./prompt-compiler";
-import { DEFAULT_NEGATIVE_PROMPT, MOTION_TEMPLATE } from "./prompt-templates";
+import { DEFAULT_NEGATIVE_PROMPT, extractSoundEvents, MOTION_TEMPLATE } from "./prompt-templates";
 
 const sheet = MemorySheet.parse(sheetFixture);
 
@@ -36,7 +36,10 @@ describe("compilePrompts", () => {
     const result = await compilePrompts({ sheet }, { claude });
     expect(result.source).toBe("template");
     expect(result.negativePrompt).toBe(DEFAULT_NEGATIVE_PROMPT);
-    expect(result.ambiencePrompt).toBe("waves on pebbles, seagulls, children laughing, no music");
+    // Explicit sound events extracted from the answers (P8).
+    expect(result.ambiencePrompt).toBe(
+      "people laughing, waves breaking, seagulls calling, children playing in the distance, no music",
+    );
     expect(result.colourStyle).toBe("none");
   });
 
@@ -133,6 +136,33 @@ describe("compilePrompts", () => {
       sheet: { ...sheet, freeText: "Dad loved this beach. Please add the sound of the waves." },
     });
     expect(result.refusedRequests).toEqual([]);
+  });
+});
+
+describe("sound events (P8)", () => {
+  const beach = { ...sheet, place: "Brighton beach", soundOfPlace: "everyone laughing" };
+
+  it("extracts laughter and waves from beach + laughing answers", () => {
+    const events = extractSoundEvents({ sheet: beach });
+    expect(events).toContain("people laughing");
+    expect(events).toContain("waves breaking");
+    expect(events.join(" ")).not.toMatch(/music|speech/);
+  });
+
+  it("templates fill events and the ambience negative prompt", async () => {
+    silenceWarnings();
+    const client: ClaudePromptClient = {
+      mode: "live",
+      compilePrompts: async () => {
+        throw new Error("down");
+      },
+    };
+    const result = await compilePrompts({ sheet: beach }, { claude: client });
+    expect(result.soundEvents).toEqual(
+      expect.arrayContaining(["people laughing", "waves breaking"]),
+    );
+    expect(result.ambienceNegativePrompt).toMatch(/music/);
+    expect(result.ambiencePrompt).toMatch(/no music$/);
   });
 });
 

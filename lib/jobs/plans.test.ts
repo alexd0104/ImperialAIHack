@@ -1,7 +1,14 @@
 import { describe, expect, it } from "vitest";
 import { Job } from "@/lib/contracts";
 import { cacheKey, stableStringify } from "./cache";
-import { animateParams, newJob, object3dPlan, roomBackgroundPlan, scenePlan } from "./plans";
+import {
+  ambienceParams,
+  animateParams,
+  newJob,
+  object3dPlan,
+  roomBackgroundPlan,
+  scenePlan,
+} from "./plans";
 import { briaColour, extensionOf, sceneOutputsOf } from "./steps";
 import { makeJob } from "./test-fakes";
 
@@ -106,6 +113,14 @@ describe("animateParams (P7)", () => {
   });
   it('defaults to "5"', () => {
     expect(animateParams(prompts, { preset: "gentle", durationSec: 5 }).params.duration).toBe("5");
+  });
+});
+
+describe("ambienceParams (P8)", () => {
+  it("sends events, negative prompt and the clip length", () => {
+    const p = ambienceParams({ ambiencePrompt: "waves breaking, no music" }, 10);
+    expect(p).toMatchObject({ prompt: "waves breaking, no music", duration: 10 });
+    expect(String(p.negative_prompt)).toMatch(/music/);
   });
 });
 

@@ -1,4 +1,5 @@
 import "server-only";
+import { AMBIENCE_NEGATIVE_PROMPT } from "@/lib/ai/prompt-templates";
 import type { Job, JobStep, JobType, MemorySheet, SceneMotion, StepName } from "@/lib/contracts";
 import type { NewEntity } from "@/lib/db/collections";
 
@@ -91,5 +92,20 @@ export function animateParams(
       duration: String(motion.durationSec),
     },
     seconds: motion.durationSec,
+  };
+}
+
+/** MMAudio params (P8): sound events as prompt, negative prompt, duration = clip length. */
+export function ambienceParams(
+  prompts: { ambiencePrompt: string; ambienceNegativePrompt?: string },
+  seconds: number,
+): Record<string, unknown> {
+  return {
+    prompt: prompts.ambiencePrompt,
+    negative_prompt: prompts.ambienceNegativePrompt ?? AMBIENCE_NEGATIVE_PROMPT,
+    duration: seconds,
+    num_steps: 25,
+    // Slightly above the 4.5 default: follow the events more closely, less generic hiss.
+    cfg_strength: 5.5,
   };
 }

@@ -1,7 +1,9 @@
 import "server-only";
 import { type ClaudePromptClient, getClaude } from "./claude";
 import {
+  AMBIENCE_NEGATIVE_PROMPT,
   DEFAULT_NEGATIVE_PROMPT,
+  extractSoundEvents,
   MOTION_REFUSED,
   MOTION_TEMPLATE,
   NO_MUSIC,
@@ -62,9 +64,10 @@ const MAX_NEGATIVE_PROMPT_CHARS = 500;
 /** Guarantees that hold whatever the model (or the mock fixture) wrote. */
 function enforce(
   prompts: CompiledPrompts,
-  { sheet, motion }: PromptCompilerInput,
+  input: PromptCompilerInput,
   source: PromptSource,
 ): CompiledPromptsResult {
+  const { sheet, motion } = input;
   const extraNegative = prompts.negativePrompt.trim().slice(0, MAX_NEGATIVE_PROMPT_CHARS);
   const negativePrompt =
     extraNegative.length === 0 || extraNegative === DEFAULT_NEGATIVE_PROMPT
@@ -72,7 +75,11 @@ function enforce(
       : extraNegative.startsWith(DEFAULT_NEGATIVE_PROMPT)
         ? extraNegative
         : `${DEFAULT_NEGATIVE_PROMPT}, ${extraNegative}`;
-  const ambience = prompts.ambiencePrompt.trim();
+  // Explicit events from the answers always join the model's own, whatever it wrote.
+  const soundEvents = [
+    ...new Set([...(prompts.soundEvents ?? []), ...extractSoundEvents(input)].map((e) => e.trim())),
+  ].filter(Boolean);
+  const ambience = prompts.ambiencePrompt.trim() || soundEvents.join(", ");
   const ambiencePrompt = /\bno music\b/i.test(ambience)
     ? ambience
     : [ambience, NO_MUSIC].filter(Boolean).join(", ");
@@ -84,6 +91,8 @@ function enforce(
     motionRefused: custom.motionRefused ?? prompts.motionRefused,
     negativePrompt,
     ambiencePrompt,
+    soundEvents,
+    ambienceNegativePrompt: prompts.ambienceNegativePrompt?.trim() || AMBIENCE_NEGATIVE_PROMPT,
     // The family's choice decides colourisation, never the model.
     colourStyle:
       sheet.colour === "colourise" ? prompts.colourStyle.trim() || "contemporary color" : "none",

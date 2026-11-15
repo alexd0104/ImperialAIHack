@@ -18,7 +18,7 @@ import { db } from "@/lib/db/collections";
 import { openReadStream, saveFile, sha256File } from "@/lib/storage";
 import { compressGlb, GLB_TARGET_BYTES } from "./compress-glb";
 import { mongoGenerationStore, refreshMemoryStatusById } from "./generation";
-import { animateParams } from "./plans";
+import { ambienceParams, animateParams } from "./plans";
 import type { FalPlan, StepContext, StepHandlers } from "./types";
 
 // Default step handlers (TECHNICAL.md §5.1). P2 refines model params once each
@@ -197,12 +197,15 @@ export const defaultHandlers: StepHandlers = {
   ambience: {
     kind: "fal",
     async plan(ctx): Promise<FalPlan> {
-      const { ambiencePrompt } = await loadPrompts(ctx);
+      const prompts = await loadPrompts(ctx);
+      const scene = ctx.job.sceneId ? await db.scenes.findById(ctx.job.sceneId) : null;
+      const seconds = (scene ? resolveSceneMotion(scene) : DEFAULT_SCENE_MOTION).durationSec;
+      const params = ambienceParams(prompts, seconds);
       const clip = ctx.outputs.animate;
-      if (!clip) return { model: "ambienceStill", params: { prompt: ambiencePrompt } };
+      if (!clip) return { model: "ambienceStill", params };
       return {
         model: "ambienceClip",
-        params: { prompt: ambiencePrompt },
+        params,
         input: { field: "video_url", sha256: await sha256File(clip), read: () => blobOf(clip, "") },
       };
     },
