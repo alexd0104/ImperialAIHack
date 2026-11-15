@@ -1,0 +1,99 @@
+{
+  "room": {
+    "id": "6650a1f0c0ffee0000000042",
+    "houseId": "6650a1f0c0ffee0000000001",
+    "name": "Frank's kitchen",
+    "source": "photo",
+    "backgroundPath": "6650a1f0c0ffee0000000001/6650a1f0c0ffee0000000051/room_edit.png",
+    "background": {
+      "kind": "photo",
+      "assetId": "6650a1f0c0ffee0000000013",
+      "path": "6650a1f0c0ffee0000000001/6650a1f0c0ffee0000000051/room_edit.png"
+    },
+    "pendingBackground": {
+      "kind": "photo",
+      "assetId": "6650a1f0c0ffee0000000014",
+      "jobId": "6650a1f0c0ffee0000000052"
+    },
+    "slots": [
+      {
+        "id": "table",
+        "x": 0.5,
+        "y": 0.78,
+        "scale": 0.15
+      }
+    ],
+    "createdAt": "2026-11-15T00:10:00.000Z"
+  },
+  "story": {
+    "id": "6650a1f0c0ffee0000000043",
+    "houseId": "6650a1f0c0ffee0000000001",
+    "roomId": "6650a1f0c0ffee0000000042",
+    "slotId": "table",
+    "title": "Sunday lunches",
+    "object": {
+      "kind": "svg",
+      "path": "teapot"
+    },
+    "memoryOrder": [],
+    "position": {
+      "x": 0.31,
+      "y": 0.62,
+      "scale": 0.2
+    },
+    "createdAt": "2026-11-15T00:12:00.000Z"
+  },
+  "scene": {
+    "id": "6650a1f0c0ffee0000000044",
+    "houseId": "6650a1f0c0ffee0000000001",
+    "memoryId": "6650a1f0c0ffee0000000004",
+    "assetId": "6650a1f0c0ffee0000000011",
+    "order": 0,
+    "outputs": {
+      "clip": "6650a1f0c0ffee0000000001/6650a1f0c0ffee0000000053/animate.mp4",
+      "ambience": "6650a1f0c0ffee0000000001/6650a1f0c0ffee0000000053/ambience.mp3"
+    },
+    "motion": {
+      "preset": "custom",
+      "text": "running on the beach",
+      "durationSec": 10
+    },
+    "soundMode": "text",
+    "status": "done",
+    "jobId": "6650a1f0c0ffee0000000053",
+    "createdAt": "2026-11-15T00:15:00.000Z",
+    "bedId": "beach-calm",
+    "soundEvents": ["waves breaking", "people laughing"]
+  },
+  "labRun": {
+    "id": "6650a1f0c0ffee0000000045",
+    "approach": "free_text",
+    "photoAssetId": "6650a1f0c0ffee0000000011",
+    "inputs": {
+      "freeText": "Frank and Sue at Brighton beach, summer 1968, kids laughing"
+    },
+    "sheet": {
+      "title": "Brighton beach, 1968",
+      "people": ["Frank", "Sue"],
+      "place": "Brighton beach",
+      "when": "summer 1968",
+      "soundOfPlace": "waves, children laughing",
+      "source": "text_agent",
+      "colour": "keep_bw"
+    },
+    "prompts": {
+      "motionPrompt": "gentle waves, people move slightly",
+      "soundEvents": ["waves breaking"]
+    },
+    "outputs": {
+      "animate": "lab/6650a1f0c0ffee0000000045/animate.mp4"
+    },
+    "scores": {
+      "fidelity": 5,
+      "motion": 4,
+      "sound": 3,
+      "liked": 4
+    },
+    "createdAt": "2026-11-15T00:20:00.000Z"
+  }
+}

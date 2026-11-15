@@ -1,0 +1,10 @@
+{
+  "image": {
+    "url": "mocks/media/cutout.png",
+    "content_type": "image/png",
+    "file_name": "cutout.png",
+    "file_size": 910,
+    "width": 256,
+    "height": 256
+  }
+}

@@ -1,0 +1,48 @@
+<svg width="269" height="295" viewBox="0 0 269 295" fill="none" xmlns="http://www.w3.org/2000/svg">
+<title>Record</title>
+<g id="Room &#194;&#183; Living room">
+<g id="Record">
+<g id="Shadow" filter="url(#filter0_f_20_66)">
+<ellipse cx="110.586" cy="262.349" rx="60.5" ry="9" transform="rotate(10 110.586 262.349)" fill="#5A4632" fill-opacity="0.22"/>
+</g>
+<g id="Art" filter="url(#filter1_d_20_66)">
+<g clip-path="url(#clip0_20_66)">
+<path id="Vector" d="M116.317 229.85C172.882 239.824 226.822 202.055 236.796 145.49C246.77 88.9246 209.001 34.9841 152.436 25.0101C95.8707 15.0362 41.9302 52.8057 31.9563 109.371C21.9824 165.936 59.7519 219.876 116.317 229.85Z" fill="url(#paint0_radial_20_66)"/>
+<path id="Vector_2" d="M119.095 214.093C166.958 222.533 212.6 190.574 221.039 142.711C229.479 94.8485 197.52 49.2066 149.657 40.7671C101.795 32.3276 56.1527 64.2864 47.7132 112.149C39.2737 160.012 71.2325 205.654 119.095 214.093Z" stroke="white" stroke-opacity="0.07" stroke-width="2"/>
+<path id="Vector_3" d="M121.526 200.306C161.774 207.403 200.155 180.528 207.252 140.28C214.349 100.032 187.474 61.6512 147.226 54.5544C106.978 47.4575 68.5971 74.332 61.5002 114.58C54.4034 154.828 81.2779 193.209 121.526 200.306Z" stroke="white" stroke-opacity="0.07" stroke-width="2"/>
+<path id="Vector_4" d="M123.957 186.519C156.591 192.273 187.71 170.483 193.465 137.849C199.219 105.215 177.429 74.0959 144.795 68.3417C112.161 62.5875 81.0419 84.3776 75.2877 117.011C69.5335 149.645 91.3237 180.764 123.957 186.519Z" stroke="white" stroke-opacity="0.07" stroke-width="2"/>
+<path id="Vector_5" d="M74.1219 66.0344C85.1176 55.0838 98.758 47.1624 113.719 43.0394C128.679 38.9164 144.452 38.7318 159.505 42.5035" stroke="white" stroke-opacity="0.22" stroke-width="10" stroke-linecap="round"/>
+<path id="Vector_6" d="M128.472 160.914C146.964 164.174 164.599 151.827 167.859 133.334C171.12 114.842 158.772 97.2074 140.28 93.9467C121.788 90.686 104.153 103.034 100.892 121.526C97.6317 140.019 109.979 157.653 128.472 160.914Z" fill="url(#paint1_radial_20_66)"/>
+<path id="Vector_7" d="M133.508 132.354C136.227 132.834 138.821 131.018 139.3 128.298C139.78 125.579 137.964 122.986 135.244 122.506C132.525 122.027 129.932 123.842 129.452 126.562C128.973 129.281 130.788 131.875 133.508 132.354Z" fill="#F6F3EE"/>
+</g>
+</g>
+</g>
+</g>
+<defs>
+<filter id="filter0_f_20_66" x="40.985" y="238.603" width="139.203" height="47.4908" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+<feFlood flood-opacity="0" result="BackgroundImageFix"/>
+<feBlend mode="normal" in="SourceGraphic" in2="BackgroundImageFix" result="shape"/>
+<feGaussianBlur stdDeviation="5" result="effect1_foregroundBlur_20_66"/>
+</filter>
+<filter id="filter1_d_20_66" x="-23.0541" y="-12" width="314.86" height="314.86" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+<feFlood flood-opacity="0" result="BackgroundImageFix"/>
+<feColorMatrix in="SourceAlpha" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" result="hardAlpha"/>
+<feOffset dy="18"/>
+<feGaussianBlur stdDeviation="15"/>
+<feColorMatrix type="matrix" values="0 0 0 0 0.352941 0 0 0 0 0.27451 0 0 0 0 0.196078 0 0 0 0.18 0"/>
+<feBlend mode="normal" in2="BackgroundImageFix" result="effect1_dropShadow_20_66"/>
+<feBlend mode="normal" in="SourceGraphic" in2="effect1_dropShadow_20_66" result="shape"/>
+</filter>
+<radialGradient id="paint0_radial_20_66" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(119.31 93.0923) rotate(10) scale(156)">
+<stop stop-color="#4A4A4A"/>
+<stop offset="1" stop-color="#0E0E0E"/>
+</radialGradient>
+<radialGradient id="paint1_radial_20_66" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(129.45 116.204) rotate(10) scale(54.4)">
+<stop stop-color="#FFB49B"/>
+<stop offset="1" stop-color="#E0573A"/>
+</radialGradient>
+<clipPath id="clip0_20_66">
+<rect width="220" height="220" fill="white" transform="translate(45.1485) rotate(10)"/>
+</clipPath>
+</defs>
+</svg>

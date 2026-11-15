@@ -1,0 +1,35 @@
+{
+  "id": "6650a1f0c0ffee0000000031",
+  "type": "scene",
+  "houseId": "6650a1f0c0ffee0000000001",
+  "memoryId": "6650a1f0c0ffee0000000004",
+  "sceneId": "6650a1f0c0ffee0000000021",
+  "steps": [
+    { "name": "compile", "status": "done", "attempts": 1 },
+    { "name": "upload", "status": "done", "attempts": 1 },
+    {
+      "name": "restore",
+      "status": "done",
+      "model": "mock/restore",
+      "output": "6650a1f0c0ffee0000000001/6650a1f0c0ffee0000000031/restore.png",
+      "costUsd": 0.04,
+      "attempts": 1
+    },
+    { "name": "colourise", "status": "skipped", "attempts": 0 },
+    {
+      "name": "animate",
+      "status": "running",
+      "model": "mock/animate",
+      "falRequestId": "req_7f3a",
+      "attempts": 1
+    },
+    { "name": "ambience", "status": "pending", "attempts": 0 },
+    { "name": "finalize", "status": "pending", "attempts": 0 }
+  ],
+  "current": 4,
+  "status": "running",
+  "lockedUntil": null,
+  "falKeyLabel": "timote",
+  "createdAt": "2026-11-14T15:10:00.000Z",
+  "updatedAt": "2026-11-14T15:12:30.000Z"
+}
