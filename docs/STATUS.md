@@ -72,6 +72,13 @@ _(newest first: date — from → to — what)_
 
 ## Log
 
+### 2026-11-15 09:40 — Raphaël (design, B16)
+- Done: the Object library offers only the 3 committed 3D defaults (armchair, record player, teapot); old SVG Stories still render. The demo garden Story is now the 3D armchair (seed + export + `demo:check` green).
+- Done: the Studio placement editor draws the real Object in 3D with the House's own `room-canvas`, plus the Room's other Objects, faded, at their saved spots.
+- Checked: `pnpm verify` green (434 tests); placement page checked in the browser (3D chair shows and drags). Not seen yet: a Room holding several Stories.
+- Outside zone: `components/studio/{object-library.ts,object-library.test.ts,CreateStoryForm.tsx,PlaceStory.tsx,PlacementEditor.tsx,placement.ts,placement.test.ts}`, `app/api/stories/stories.test.ts` (Studio); `lib/copy.ts`. It imports `components/house/room-canvas` but does not change it.
+- Note: the 3D model is fitted to the box's width, so a tall Object (the armchair) pokes above the square drag box.
+
 ### 2026-11-15 09:30 — Timoté (pipeline, B15)
 - Done: movement type (Gentle / Describe) and length (5/10 s) now chosen on the Memory sheet, before "Bring to life"; PATCH memory copies it onto existing scenes, new scenes inherit it. Per-photo override at review unchanged.
 - Outside my zone: `components/studio/{MemorySheetView,MotionPicker}.tsx`, `lib/copy.ts` (Alexandre) — `MotionPicker` now wraps a reusable `MotionFields`.

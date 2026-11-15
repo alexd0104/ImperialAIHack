@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { fitPosition, normalizePoint, resizeScale } from "./placement";
+import { fitPosition, normalizePoint, resizeScale, studioObjectUrl } from "./placement";
 
 const box = { width: 1194, height: 834 };
 
@@ -20,5 +20,17 @@ describe("placement", () => {
   });
   it("refits after a resize", () => {
     expect(fitPosition({ x: 0.95, y: 0.5, scale: 0.3 }).x).toBe(0.85);
+  });
+});
+
+describe("studioObjectUrl", () => {
+  it("serves library GLBs and SVGs from /objects, generated GLBs from /api/files", () => {
+    expect(studioObjectUrl({ kind: "glb", path: "/objects/glb/teapot.glb" })).toBe(
+      "/objects/glb/teapot.glb",
+    );
+    expect(studioObjectUrl({ kind: "svg", path: "camera" })).toBe("/objects/camera.svg");
+    expect(studioObjectUrl({ kind: "glb", path: "h1/objects/a.glb" })).toBe(
+      "/api/files/h1/objects/a.glb",
+    );
   });
 });

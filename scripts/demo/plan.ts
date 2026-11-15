@@ -48,17 +48,8 @@ export const PRESET_BACKGROUNDS: Record<RoomStyle, string> = {
   living: "/rooms/living-room.jpg",
 };
 
-const LIBRARY_OBJECTS = [
-  "watering-can",
-  "flower",
-  "sun-hat",
-  "teapot",
-  "mug",
-  "apple",
-  "record",
-  "radio",
-  "camera",
-] as const;
+/** Same names as the Studio library (components/studio/object-library.ts, B15): 3D only. */
+const LIBRARY_OBJECTS = ["3d-armchair", "3d-record-player", "3d-teapot"] as const;
 
 /** A path relative to DEMO_ASSETS_DIR, never absolute and never climbing out of it. */
 const MediaPath = z
@@ -248,7 +239,7 @@ export function planSeed(
       if (slot) slot.storyId = storyId;
       const object =
         typeof manifestStory.object === "string"
-          ? { kind: "svg" as const, path: manifestStory.object }
+          ? { kind: "glb" as const, path: `/objects/glb/${manifestStory.object.slice(3)}.glb` }
           : { kind: "glb" as const, path: addExtra("objects", manifestStory.object.glb) };
 
       const memoryOrder: string[] = [];

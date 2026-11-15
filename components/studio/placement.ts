@@ -1,4 +1,4 @@
-import type { StoryPosition } from "@/lib/contracts";
+import type { StoryObject, StoryPosition } from "@/lib/contracts";
 
 export const CANVAS_WIDTH = 1194;
 export const CANVAS_HEIGHT = 834;
@@ -34,4 +34,10 @@ export function resizeScale(start: number, dxPx: number, boxWidth: number): numb
 /** Re-clamp a position after a resize so it stays on the canvas. */
 export function fitPosition(position: StoryPosition): StoryPosition {
   return normalizePoint(position.x, position.y, { width: 1, height: 1 }, position.scale);
+}
+
+/** Browser URL of a Story's Object in the Studio (the session cookie covers /api/files). */
+export function studioObjectUrl(object: Pick<StoryObject, "kind" | "path">): string {
+  if (object.kind === "svg") return `/objects/${object.path}.svg`;
+  return object.path.startsWith("/") ? object.path : `/api/files/${object.path}`;
 }

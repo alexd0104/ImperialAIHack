@@ -61,7 +61,11 @@ function request(body: unknown, key = randomUUID()) {
     body: typeof body === "string" ? body : JSON.stringify(body),
   });
 }
-const library = { title: "Summers", slotId: "bench", object: { kind: "library", name: "flower" } };
+const library = {
+  title: "Summers",
+  slotId: "bench",
+  object: { kind: "library", name: "3d-teapot" },
+};
 async function photo(targetHouse = houseId) {
   const data = new FormData();
   data.append(
@@ -80,7 +84,7 @@ describe("S2 creation and mock progression", () => {
     const response = await create(request(library), context(roomId));
     expect(response.status).toBe(201);
     const story = apiSuccess(Story).parse(await response.json()).data;
-    expect(story.object).toEqual({ kind: "svg", path: "flower" });
+    expect(story.object).toEqual({ kind: "glb", path: "/objects/glb/teapot.glb" });
     expect(story.slotId).toBe("bench");
     expect(story.publishedAt).toBeUndefined();
     expect((await getEntity("rooms", roomId))?.slots[0].storyId).toBeUndefined();

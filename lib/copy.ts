@@ -57,16 +57,7 @@ export const copy = {
       objects: {
         "3d-armchair": "Armchair",
         "3d-record-player": "Record player",
-        "3d-teapot": "Teapot (3D)",
-        "watering-can": "Watering can",
-        flower: "Flower",
-        "sun-hat": "Sun hat",
-        teapot: "Teapot",
-        mug: "Mug",
-        apple: "Apple",
-        record: "Record",
-        radio: "Radio",
-        camera: "Camera",
+        "3d-teapot": "Teapot",
       },
     },
     createHouse: {

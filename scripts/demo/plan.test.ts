@@ -20,7 +20,7 @@ const sample = {
         {
           slot: "bench",
           title: "Summer at the lake",
-          object: "watering-can",
+          object: "3d-armchair",
           memories: [
             {
               title: "The picnic",
@@ -104,7 +104,7 @@ describe("demo seed plan", () => {
     expect(garden.slots.filter((s) => s.storyId)).toHaveLength(1);
     expect(kitchen.slots.find((s) => s.id === "table")?.storyId).toBe(lunch.id);
     expect(lake.roomId).toBe(garden.id);
-    expect(lake.object).toEqual({ kind: "svg", path: "watering-can" });
+    expect(lake.object).toEqual({ kind: "glb", path: "/objects/glb/armchair.glb" });
     expect(lunch.object.kind).toBe("glb");
     expect(lunch.object.path).toMatch(new RegExp(`^${plan.house.id}/demo/objects/`));
 

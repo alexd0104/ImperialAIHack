@@ -1,23 +1,58 @@
 "use client";
 
-import { type PointerEvent, useRef, useState } from "react";
-import type { Slot, StoryObject, StoryPosition } from "@/lib/contracts";
+import dynamic from "next/dynamic";
+import { type PointerEvent, useEffect, useRef, useState } from "react";
+import type { ObjectLook } from "@/components/house/room-canvas";
+import type { BundleSlot, Slot, StoryObject, StoryPosition } from "@/lib/contracts";
 import { copy } from "@/lib/copy";
-import { CANVAS_HEIGHT, CANVAS_WIDTH, fitPosition, normalizePoint, resizeScale } from "./placement";
+import {
+  CANVAS_HEIGHT,
+  CANVAS_WIDTH,
+  fitPosition,
+  normalizePoint,
+  resizeScale,
+  studioObjectUrl,
+} from "./placement";
+
+// The House's own R3F layer, so the family sees each Object exactly as the House will show
+// it (3D, same size). three.js touches `window`: client-only (TECHNICAL.md §10).
+const RoomCanvas = dynamic(() => import("@/components/house/room-canvas"), { ssr: false });
+
+/** Other Objects already in the Room: visible for context, clearly not the one being placed. */
+const OTHER_LOOK: ObjectLook = { opacity: 0.55, scale: 1 };
+const CURRENT_ID = "placing";
+
+export type PlacedObject = { id: string; object: StoryObject; position: StoryPosition };
+
+function toBundleSlot(id: string, object: StoryObject, at: StoryPosition): BundleSlot {
+  return {
+    id,
+    ...at,
+    story: {
+      id,
+      title: "",
+      object: { kind: object.kind, url: studioObjectUrl(object) },
+      available: true,
+      memories: [],
+    },
+  };
+}
 
 const words = copy.studio.place;
 
 type Drag = { mode: "move" | "resize"; startX: number; startScale: number };
 
 /**
- * 2D editor on the Room picture (1194×834, letterboxed by aspect ratio): drag the Object to
- * move it, drag the corner handle to resize. Pointer events, so touch works too. Old Slots
- * are shown faintly as suggested spots; tapping one snaps the Object there.
+ * Editor on the Room picture (1194×834, letterboxed by aspect ratio): drag the Object to
+ * move it, drag the corner handle to resize. Pointer events, so touch works too. The Object
+ * and the Room's other Objects are drawn by the House's 3D layer under the DOM handles.
+ * Old Slots are shown faintly as suggested spots; tapping one snaps the Object there.
  */
 export function PlacementEditor({
   background,
   slots,
   object,
+  others = [],
   value,
   disabled,
   onChange,
@@ -25,6 +60,7 @@ export function PlacementEditor({
   background: string;
   slots: Slot[];
   object: StoryObject;
+  others?: PlacedObject[];
   value: StoryPosition;
   disabled?: boolean;
   onChange: (next: StoryPosition) => void;
@@ -32,13 +68,23 @@ export function PlacementEditor({
   const box = useRef<HTMLDivElement>(null);
   const drag = useRef<Drag | null>(null);
   const [live, setLive] = useState<StoryPosition | null>(null);
+  const [boxWidth, setBoxWidth] = useState(0);
   const shown = live ?? value;
-  const src =
-    object.kind === "svg"
-      ? `/objects/${object.path}.svg`
-      : object.path.startsWith("/objects/glb/")
-        ? object.path.replace("/objects/glb/", "/objects/thumbs/").replace(/\.glb$/, ".png")
-        : `/api/files/${object.path}`; // glb has no 2D picture; falls back to the label below
+
+  // The 3D layer is laid out at 1194×834 and scaled with CSS to the editor's width, like the
+  // House stage, so 1 three.js unit stays 1 stage pixel.
+  useEffect(() => {
+    const el = box.current;
+    if (!el) return;
+    const observer = new ResizeObserver(([entry]) => setBoxWidth(entry?.contentRect.width ?? 0));
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, []);
+  const canvasSlots = [
+    ...others.map((o) => toBundleSlot(o.id, o.object, o.position)),
+    toBundleSlot(CURRENT_ID, object, shown),
+  ];
+  const looks = Object.fromEntries(others.map((o) => [o.id, OTHER_LOOK]));
 
   const rect = () => box.current?.getBoundingClientRect();
 
@@ -80,6 +126,19 @@ export function PlacementEditor({
         draggable={false}
         className="absolute inset-0 size-full object-cover"
       />
+      {boxWidth > 0 && (
+        <div
+          aria-hidden
+          className="pointer-events-none absolute top-0 left-0 origin-top-left"
+          style={{
+            width: CANVAS_WIDTH,
+            height: CANVAS_HEIGHT,
+            transform: `scale(${boxWidth / CANVAS_WIDTH})`,
+          }}
+        >
+          <RoomCanvas slots={canvasSlots} looks={looks} reducedMotion={false} />
+        </div>
+      )}
       {slots.map((slot) => (
         <button
           key={slot.id}
@@ -108,12 +167,6 @@ export function PlacementEditor({
         }}
         className="absolute -translate-x-1/2 -translate-y-1/2 cursor-grab rounded-lg ring-2 ring-primary-strong active:cursor-grabbing"
       >
-        {object.kind === "svg" ? (
-          // biome-ignore lint/performance/noImgElement: small library SVG from /objects.
-          <img src={src} alt="" draggable={false} className="size-full object-contain" />
-        ) : (
-          <div className="size-full rounded-lg bg-surface/80" />
-        )}
         <span
           onPointerDown={(event) => begin(event, "resize")}
           onPointerMove={move}

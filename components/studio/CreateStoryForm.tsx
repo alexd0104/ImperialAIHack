@@ -52,7 +52,7 @@ function StoryForm({ roomId }: { roomId: string }) {
   const draftKey = `memorai:create-story:${roomId}`;
   const [title, setTitle] = useState("");
   const [mode, setMode] = useState<"library" | "photo">("library");
-  const [name, setName] = useState<LibraryName>("watering-can");
+  const [name, setName] = useState<LibraryName>("3d-armchair");
   const [asset, setAsset] = useState<AssetView | null>(null);
   const [story, setStory] = useState<Story | null>(null);
   const [ready, setReady] = useState(false);

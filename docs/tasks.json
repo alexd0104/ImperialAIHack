@@ -878,6 +878,15 @@
       "deps": [],
       "soft": [],
       "note": ""
+    },
+    {
+      "id": "B16",
+      "title": "3D-only Object library, 3D placement preview with the Room's other Objects",
+      "owner": "raphael",
+      "priority": "FIX",
+      "deps": [],
+      "soft": [],
+      "note": ""
     }
   ]
 }

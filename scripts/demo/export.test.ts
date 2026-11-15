@@ -55,7 +55,7 @@ describe("demo export", () => {
     expect(picnic.caption).toBe("Lake Annecy, 1972");
     expect(picnic.songUrl).toMatch(/\?t=demo-token$/);
     expect(picnic.voiceDurationMs).toBe(12000);
-    expect(stories[0].object.url).toBe("/objects/watering-can.svg");
+    expect(stories[0].object.url).toBe("/objects/glb/armchair.glb");
     expect(stories[1].object.kind).toBe("glb");
     expect(together.files.length).toBeGreaterThan(5);
   });

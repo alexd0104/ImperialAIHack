@@ -12,7 +12,7 @@ import { postStudio, requestStudio, StudioApiError } from "./api";
 import { DontShowWarning } from "./DontShowWarning";
 import { dontShowMatches } from "./dont-show";
 import { fetchMemory, memoryKey, patchMemory } from "./memory-client";
-import { PlacementEditor } from "./PlacementEditor";
+import { type PlacedObject, PlacementEditor } from "./PlacementEditor";
 import { StudioQuery } from "./StudioQuery";
 
 const words = copy.studio.place;
@@ -43,6 +43,16 @@ function Place({ storyId }: { storyId: string }) {
     queryKey: ["house", houseId],
     enabled: Boolean(houseId),
     queryFn: () => requestStudio(`/api/houses/${houseId}`, HouseDetail),
+  });
+  // The Room's other Stories, so the editor can show their Objects where they already are.
+  const otherIds = (house.data?.stories ?? [])
+    .filter((s) => s.roomId === roomId && s.id !== storyId)
+    .map((s) => s.id);
+  const others = useQueries({
+    queries: otherIds.map((id) => ({
+      queryKey: ["story", id],
+      queryFn: () => requestStudio(`/api/stories/${id}`, Story),
+    })),
   });
   const memories = useQueries({
     queries: (story.data?.memoryOrder ?? []).map((id) => ({
@@ -124,6 +134,13 @@ function Place({ storyId }: { storyId: string }) {
       ? { x: ownSlot.x, y: ownSlot.y, scale: ownSlot.scale }
       : { x: 0.5, y: 0.6, scale: 0.18 });
 
+  const placed: PlacedObject[] = others.flatMap(({ data }) => {
+    if (!data) return [];
+    const slot = room.data?.slots.find((s) => s.id === data.slotId);
+    const position = data.position ?? (slot ? { x: slot.x, y: slot.y, scale: slot.scale } : null);
+    return position ? [{ id: data.id, object: data.object, position }] : [];
+  });
+
   return (
     <div className="space-y-6">
       <div>
@@ -143,6 +160,7 @@ function Place({ storyId }: { storyId: string }) {
           }
           slots={room.data.slots.filter((slot) => !slot.storyId || slot.storyId === storyId)}
           object={story.data.object}
+          others={placed}
           value={current}
           disabled={patchStory.isPending}
           onChange={(position) => patchStory.mutate({ position })}
