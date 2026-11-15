@@ -204,7 +204,6 @@ function SceneApproval({
           <p className="rounded-lg bg-warning-surface p-4 text-16">{words.fallbackNote}</p>
         </>
       ) : use === "animated" && scene.urls.clip ? (
-        // biome-ignore lint/a11y/useMediaCaption: the clip carries ambience only, no speech.
         <video
           src={scene.urls.clip}
           autoPlay

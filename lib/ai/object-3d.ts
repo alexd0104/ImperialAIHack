@@ -4,8 +4,8 @@ import path from "node:path";
 import sharp from "sharp";
 import { compressGlb } from "@/lib/jobs/compress-glb";
 import { extractOutput, getFal, MOCK_MEDIA_DIR } from "./fal";
-import type { FalModelKey } from "./models";
 import { aiMode } from "./mode";
+import type { FalModelKey } from "./models";
 import { defaultObjectName } from "./object-names";
 
 export { defaultObjectName };
