@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useReducer, useRef, useState } from "react";
+import { MovingDots } from "@/components/ui/moving-dots";
 import type { HouseBundle, HouseMode } from "@/lib/contracts";
 import { unlockAudio } from "@/lib/house/audio";
 import { fetchHouseBundle, sendHouseEvent } from "@/lib/house/fetch-bundle";
@@ -92,8 +93,13 @@ export function HouseApp({ token, mode }: { token: string; mode: HouseMode }) {
 
   return (
     <HouseStage>
-      {bundle && (
+      {bundle ? (
         <HouseFlow bundle={bundle} token={token} failedFiles={failedFiles} onCalm={setCalm} />
+      ) : (
+        // Preload wait: dots only, no text (the House needs no reading).
+        <div className="absolute inset-0 flex items-center justify-center">
+          <MovingDots />
+        </div>
       )}
     </HouseStage>
   );

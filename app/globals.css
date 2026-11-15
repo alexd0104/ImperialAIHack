@@ -170,3 +170,25 @@
     "SOFT" 0,
     "WONK" 1;
 }
+
+/* H10 loading feedback. Components hide the motion under reduced motion. */
+@keyframes shimmer-slide {
+  from {
+    transform: translateX(-100%);
+  }
+  to {
+    transform: translateX(250%);
+  }
+}
+
+@keyframes dot-float {
+  0%,
+  100% {
+    opacity: 0.35;
+    transform: translateY(0);
+  }
+  50% {
+    opacity: 1;
+    transform: translateY(-4px);
+  }
+}

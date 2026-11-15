@@ -385,6 +385,7 @@ export const copy = {
       intro:
         "Each photo is restored gently. Only what is in the photo moves. This takes a few minutes.",
       waiting: "Waiting to start…",
+      aboutMinutes: (n: number) => (n === 1 ? "About 1 minute left" : `About ${n} minutes left`),
       steps: {
         compile: "Reading your answers",
         upload: "Getting the photo ready",

@@ -8,6 +8,7 @@ import { useEffect, useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Input, Label } from "@/components/ui/input";
+import { StepProgress } from "@/components/ui/step-progress";
 import { AssetView, CreateStoryRequest, JobView, Room, Story } from "@/lib/contracts";
 import { copy } from "@/lib/copy";
 import { cn } from "@/lib/utils";
@@ -298,19 +299,18 @@ function StoryForm({ roomId }: { roomId: string }) {
           )}
           <h2 className="font-display text-28">{story.title}</h2>
           {story.object.jobId && !done && (
-            <div role="status" className="space-y-3">
-              <p>
-                {job.data?.current === 3
-                  ? words.compress
-                  : job.data?.current === 2
-                    ? words.model3d
-                    : words.cutout}
-              </p>
-              <progress
+            <div className="space-y-3">
+              <StepProgress
+                stepLabel={
+                  job.data?.current === 3
+                    ? words.compress
+                    : job.data?.current === 2
+                      ? words.model3d
+                      : words.cutout
+                }
+                done={job.data?.current ?? 0}
+                total={4}
                 aria-label={words.preparing}
-                max={4}
-                value={job.data?.current ?? 0}
-                className="w-full accent-primary-strong"
               />
               {job.error && (
                 <Button type="button" onClick={() => job.refetch()}>

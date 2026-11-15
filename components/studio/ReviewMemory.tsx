@@ -6,6 +6,7 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import { StepProgress } from "@/components/ui/step-progress";
 import {
   JobView,
   RetryResponse,
@@ -14,6 +15,7 @@ import {
   type SceneView,
 } from "@/lib/contracts";
 import { copy } from "@/lib/copy";
+import { estimateMinutes } from "@/lib/job-estimates";
 import { cn } from "@/lib/utils";
 import { postStudio, requestStudio, StudioApiError } from "./api";
 import { fetchMemory, memoryKey } from "./memory-client";
@@ -107,6 +109,7 @@ function SceneProgress({ scene, index }: { scene: SceneView; index: number }) {
   const step = job.data?.steps[job.data.current];
   const done = job.data?.steps.filter((item) => item.status === "done").length ?? 0;
   const total = job.data?.steps.length ?? 1;
+  const minutes = job.data ? estimateMinutes(job.data.steps) : null;
   return (
     <Card className="grid gap-4 p-5 sm:grid-cols-2">
       <div className="relative aspect-[4/3] overflow-hidden rounded-xl bg-ink/5">
@@ -122,10 +125,14 @@ function SceneProgress({ scene, index }: { scene: SceneView; index: number }) {
           />
         )}
       </div>
-      <div role="status" className="flex flex-col justify-center gap-3">
+      <div className="flex flex-col justify-center gap-3">
         <p className="text-14 font-bold text-ink/70">{`${words.scene} ${index + 1}`}</p>
-        <p className="text-20">{step ? progress.steps[step.name] : progress.waiting}</p>
-        <progress className="w-full accent-primary-strong" value={done} max={total} />
+        <StepProgress
+          stepLabel={step ? progress.steps[step.name] : progress.waiting}
+          done={done}
+          total={total}
+          estimate={minutes ? progress.aboutMinutes(minutes) : undefined}
+        />
       </div>
     </Card>
   );
