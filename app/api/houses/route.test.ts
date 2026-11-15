@@ -93,7 +93,7 @@ describe("S1 House and style Room routes", () => {
   });
 
   it.each([
-    { name: "Photo", source: "photo", assetId: "asset-1" },
+    { name: "Photo", source: "photo" },
     { ...roomInput, style: "bedroom" },
     { ...roomInput, name: " " },
     "invalid json",
