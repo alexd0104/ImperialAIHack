@@ -13,6 +13,14 @@ import { slotToScene } from "@/lib/house/layout";
 
 /** About ±17°: enough to read as 3D, never a spin. */
 const SWAY_RADIANS = 0.3;
+/** B18: each Object "breathes" ±2 % over 4 s, out of phase, so the Room feels alive. */
+const BREATH_AMPLITUDE = 0.02;
+const BREATH_RADIANS_PER_S = (2 * Math.PI) / 4;
+
+function breath(elapsed: number, slot: BundleSlot, reducedMotion: boolean): number {
+  if (reducedMotion) return 1;
+  return 1 + BREATH_AMPLITUDE * Math.sin(elapsed * BREATH_RADIANS_PER_S + slot.x * 7 + slot.y * 3);
+}
 
 export type ObjectLook = { opacity: number; scale: number };
 
@@ -50,13 +58,18 @@ function useSvgTexture(url: string): { texture: THREE.Texture; aspect: number } 
 
 function useEased(target: ObjectLook, reducedMotion: boolean) {
   // Starts transparent so every Object fades in, including one just published (C3).
-  const current = useRef({ ...target, opacity: 0 });
+  const current = useRef({ ...target, opacity: 0, velocity: 0 });
   useFrame((_, delta) => {
-    // Critically damped ease ≈ 0.9 s to settle; reduced motion keeps the fade, drops the scale.
-    const k = 1 - Math.exp(-delta * 6);
+    const dt = Math.min(delta, 0.05);
+    // Opacity: critically damped ease ≈ 0.9 s to settle.
+    const k = 1 - Math.exp(-dt * 6);
     current.current.opacity += (target.opacity - current.current.opacity) * k;
+    // Scale: a slightly underdamped spring (B18), so an Object returning from "open" lands
+    // with one soft bounce (~1 %). Reduced motion keeps the fade, drops the scale.
     const scaleTarget = reducedMotion ? 1 : target.scale;
-    current.current.scale += (scaleTarget - current.current.scale) * k;
+    const c = current.current;
+    c.velocity += ((scaleTarget - c.scale) * 60 - c.velocity * 9) * dt;
+    c.scale += c.velocity * dt;
   });
   return current;
 }
@@ -74,8 +87,10 @@ function SvgObject({
   const group = useRef<THREE.Group>(null);
   const material = useRef<THREE.MeshBasicMaterial>(null);
   const eased = useEased(look, reducedMotion);
-  useFrame(() => {
-    group.current?.scale.setScalar(eased.current.scale);
+  useFrame(({ clock }) => {
+    group.current?.scale.setScalar(
+      eased.current.scale * breath(clock.elapsedTime, slot, reducedMotion),
+    );
     if (material.current) material.current.opacity = eased.current.opacity;
   });
   if (!loaded) return null;
@@ -113,7 +128,9 @@ function GlbObject({
   const group = useRef<THREE.Group>(null);
   const eased = useEased(look, reducedMotion);
   useFrame(({ clock }) => {
-    group.current?.scale.setScalar(eased.current.scale);
+    group.current?.scale.setScalar(
+      eased.current.scale * breath(clock.elapsedTime, slot, reducedMotion),
+    );
     // A slow turn from side to side shows the Object is 3D; each Slot is out of phase.
     if (group.current && !reducedMotion) {
       group.current.rotation.y = Math.sin(clock.elapsedTime * 0.7 + slot.x * 10) * SWAY_RADIANS;

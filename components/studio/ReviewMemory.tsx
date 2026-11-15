@@ -174,6 +174,11 @@ function SceneProgress({ scene, index }: { scene: SceneView; index: number }) {
             )}
           />
         )}
+        {/* B18: a slow light sweep while the photo is being brought to life. */}
+        <div
+          aria-hidden
+          className="pointer-events-none absolute inset-y-0 left-0 w-1/2 -skew-x-12 bg-linear-to-r from-transparent via-surface/35 to-transparent animate-shimmer-sweep motion-reduce:hidden"
+        />
       </div>
       <div className="flex flex-col justify-center gap-3">
         <p className="text-14 font-bold text-ink/70">{`${words.scene} ${index + 1}`}</p>
@@ -235,7 +240,7 @@ function SceneApproval({
       <div className="flex items-center justify-between gap-3">
         <p className="text-14 font-bold text-ink/70">{`${words.scene} ${index + 1}`}</p>
         {scene.choice && (
-          <span className="flex items-center gap-2 text-16 font-bold text-success-strong">
+          <span className="flex items-center gap-2 rounded-full border-2 border-success-strong/40 px-3 py-0.5 text-16 font-bold text-success-strong animate-stamp">
             <Check aria-hidden className="size-5" />
             {kept ? words.keptOriginal : words.approved}
           </span>
@@ -255,15 +260,7 @@ function SceneApproval({
           <p className="rounded-lg bg-warning-surface p-4 text-16">{words.fallbackNote}</p>
         </>
       ) : use === "animated" && scene.urls.clip ? (
-        // The clip carries its muxed ambience: started by the family's click, with volume controls.
-        // biome-ignore lint/a11y/useMediaCaption: ambience clip, no speech to caption.
-        <video
-          src={scene.urls.clip}
-          controls
-          loop
-          playsInline
-          className="max-h-96 w-full rounded-xl object-contain"
-        />
+        <ClipReveal clip={scene.urls.clip} still={scene.urls.restored ?? scene.originalUrl} />
       ) : (
         <div className="relative aspect-[4/3] overflow-hidden rounded-xl bg-ink/5">
           {/* Before/after: the original sits under the result, revealed up to the slider. */}
@@ -406,5 +403,37 @@ function Choice<T extends string>(props: {
         ))}
       </div>
     </fieldset>
+  );
+}
+
+/**
+ * B18: the still the family knows sits over the new clip, then dissolves into it once the
+ * first frame is ready, so the photo seems to come alive rather than being swapped.
+ */
+function ClipReveal({ clip, still }: { clip: string; still?: string }) {
+  const [ready, setReady] = useState(false);
+  return (
+    <div className="relative">
+      {/* The clip carries its muxed ambience: started by the family's click, with volume controls. */}
+      {/* biome-ignore lint/a11y/useMediaCaption: ambience clip, no speech to caption. */}
+      <video
+        src={clip}
+        controls
+        loop
+        playsInline
+        onLoadedData={() => setReady(true)}
+        className="max-h-96 w-full rounded-xl object-contain"
+      />
+      {still && (
+        // biome-ignore lint/performance/noImgElement: generated outputs are served from /api/files.
+        <img
+          src={still}
+          alt=""
+          aria-hidden
+          className="pointer-events-none absolute inset-0 h-full w-full rounded-xl object-contain transition-opacity duration-[1600ms] ease-memorai"
+          style={{ opacity: ready ? 0 : 1 }}
+        />
+      )}
+    </div>
   );
 }

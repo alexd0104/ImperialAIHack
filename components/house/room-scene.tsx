@@ -11,6 +11,7 @@ import { slotBox } from "@/lib/house/layout";
 import { diffObjects, MOVE_FADE_MS } from "@/lib/house/refresh";
 import { EmptySlot } from "./empty-slot";
 import { ObjectOpen } from "./object-open";
+import { RoomAmbience } from "./room-ambience";
 import type { ObjectLook } from "./room-canvas";
 import { useReducedMotion } from "./use-reduced-motion";
 
@@ -122,6 +123,9 @@ export function RoomScene({
   }
 
   const openSlot = room.slots.find((s) => s.id === openSlotId);
+  // B18: a warm halo blooms under the Object a finger is on (or a mouse is over), so it
+  // answers "can I touch this?" without any words.
+  const [near, setNear] = useState<string | null>(null);
   const alone = bundle.mode === "alone";
   const people = bundle.house.avatars.map((a) => ({ name: a.initial }));
 
@@ -132,6 +136,29 @@ export function RoomScene({
       style={{ opacity: shown ? 1 : 0 }}
     >
       <RoomBackground src={room.background} />
+      <RoomAmbience room={room} />
+
+      {shownSlots.map((slot) => {
+        if (!slot.story?.available) return null;
+        const box = slotBox(slot, 1);
+        const lit = near === slot.id && !openSlotId;
+        return (
+          <div
+            key={`glow-${slot.id}`}
+            aria-hidden
+            className="pointer-events-none absolute rounded-full bg-[radial-gradient(closest-side,color-mix(in_srgb,var(--color-glow)_85%,transparent),color-mix(in_srgb,var(--color-glow)_35%,transparent)_55%,transparent)] blur-md transition-[opacity,scale] duration-500 ease-memorai"
+            style={{
+              // A pool of light on the ground around the Object's base.
+              left: box.left - box.width * 0.5,
+              top: box.top + box.height * 0.35,
+              width: box.width * 2,
+              height: box.height * 1.1,
+              opacity: lit ? 1 : 0,
+              scale: lit ? "1" : "0.8",
+            }}
+          />
+        );
+      })}
 
       {shownSlots.map((slot) => (slot.story ? null : <EmptySlot key={slot.id} slot={slot} />))}
 
@@ -154,6 +181,9 @@ export function RoomScene({
               aria-label={`${copy.house.openStory}: ${story.title}`}
               aria-disabled={!story.available}
               onClick={() => story.available && onTapObject(slot.id)}
+              onPointerEnter={() => setNear(slot.id)}
+              onPointerDown={() => setNear(slot.id)}
+              onPointerLeave={() => setNear((id) => (id === slot.id ? null : id))}
               className="absolute cursor-pointer rounded-card aria-disabled:cursor-default"
               style={{
                 left: box.left,

@@ -372,7 +372,7 @@ function StoryForm({ roomId }: { roomId: string }) {
                 <legend className="sr-only">{words.library}</legend>
                 <div className="grid grid-cols-3 gap-3 sm:grid-cols-5">
                   {objectLibrary.map((value) => (
-                    <label key={value} className="relative cursor-pointer">
+                    <label key={value} className="group relative cursor-pointer">
                       <input
                         className="peer absolute inset-0 z-10 h-full w-full cursor-pointer opacity-0"
                         type="radio"
@@ -386,7 +386,13 @@ function StoryForm({ roomId }: { roomId: string }) {
                           name === value ? "border-primary-strong" : "border-transparent",
                         )}
                       >
-                        <div className="relative h-18 w-full">
+                        {/* B18: the 3D Object turns on hover and keeps turning once chosen. */}
+                        <div
+                          className={cn(
+                            "relative h-18 w-full transition-transform duration-500 ease-memorai group-hover:[transform:perspective(400px)_rotateY(30deg)]",
+                            name === value && "animate-turntable",
+                          )}
+                        >
                           <Image
                             src={libraryImage(value)}
                             alt=""

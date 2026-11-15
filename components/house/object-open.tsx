@@ -67,12 +67,15 @@ export function ObjectOpen({
               translate: out ? "0 0" : `${dx}px ${dy}px`,
               scale: out ? "1" : "0.2",
               transitionDelay: `${i * 60}ms`,
+              // B18: each photo "develops" like an instant print while it flies out.
+              ["--develop-delay" as string]: `${250 + i * 60}ms`,
             }}
           >
             <Polaroid
               src={memory.polaroidUrl}
               caption={memory.caption}
               tilt={place.tilt}
+              className="[&_img]:animate-develop [&_img]:[animation-delay:var(--develop-delay)]"
               video={memory.scenes.some((s) => s.kind !== "photo")}
             />
           </button>

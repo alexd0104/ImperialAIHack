@@ -1,7 +1,7 @@
 "use client";
 
 import { useMutation, useQueries, useQuery, useQueryClient } from "@tanstack/react-query";
-import { ArrowDown, ArrowUp, Check, Plus } from "lucide-react";
+import { ArrowDown, ArrowUp, Check, House, Plus } from "lucide-react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -118,7 +118,7 @@ function Place({ storyId }: { storyId: string }) {
   if (publish.isSuccess)
     return (
       <Card className="mx-auto flex max-w-lg flex-col items-center gap-4 p-6 text-center">
-        <Check aria-hidden className="size-10 text-success-strong" />
+        <SentToHouse />
         <h1 className="font-display text-32">{words.sentTitle}</h1>
         <p className="text-18">{words.sentBody.replace("{name}", name)}</p>
         <div className="flex flex-wrap justify-center gap-3">
@@ -258,6 +258,18 @@ function Place({ storyId }: { storyId: string }) {
         </Button>
         {pending && <p className="text-16 text-ink/70">{words.blocked}</p>}
       </div>
+    </div>
+  );
+}
+
+/** B18: the Story card flies into a little House, whose window then lights up. */
+function SentToHouse() {
+  return (
+    <div aria-hidden className="relative flex size-24 items-center justify-center">
+      <House className="size-20 text-primary-strong" strokeWidth={1.5} />
+      <span className="absolute top-[52%] left-1/2 size-3.5 -translate-x-1/2 rounded-[2px] bg-glow animate-window-glow" />
+      <span className="absolute top-1/2 left-1/2 -mt-5 -ml-4 h-10 w-8 rounded-[3px] border-4 border-surface bg-primary/70 shadow-polaroid animate-card-fly motion-reduce:hidden" />
+      <Check className="absolute -right-1 -bottom-1 size-8 rounded-full bg-success-surface p-1 text-success-strong animate-stamp [animation-delay:1.2s]" />
     </div>
   );
 }

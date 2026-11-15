@@ -94,10 +94,15 @@ function Bank({ memoryId }: { memoryId: string }) {
         <h2 className="font-display text-22">{words.photosHeading}</h2>
         <p className="text-16 text-ink/70">{words.photosHint}</p>
         <ul className="grid grid-cols-2 gap-3 sm:grid-cols-4">
-          {visuals.map((asset) => (
+          {visuals.map((asset, i) => (
             <li
               key={asset.id}
-              className="relative aspect-square overflow-hidden rounded-xl bg-ink/5"
+              // B18: each photo drops onto a messy pile, then straightens into the grid.
+              className="relative aspect-square overflow-hidden rounded-xl bg-ink/5 shadow-polaroid animate-pile-in"
+              style={{
+                ["--pile-r" as string]: `${[7, -5, 4, -8, 6, -3][i % 6]}deg`,
+                animationDelay: `${Math.min(i, 8) * 70}ms`,
+              }}
             >
               {asset.kind === "photo" ? (
                 // biome-ignore lint/performance/noImgElement: family uploads are served from /api/files, not optimised.

@@ -3,7 +3,7 @@
 import { QueryClient, QueryClientProvider, useQuery } from "@tanstack/react-query";
 import { Check, Copy, ExternalLink, Heart, Plus } from "lucide-react";
 import Link from "next/link";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardTitle } from "@/components/ui/card";
 import { FeedbackResponse, HouseDetail, LinkResponse } from "@/lib/contracts";
@@ -78,7 +78,7 @@ function HearBackContent({ initialHouseId }: { initialHouseId?: string }) {
       </div>
       <div className="grid gap-4 sm:grid-cols-2">
         <Stat label={words.views} value={feedback.data.views} />
-        <Stat label={words.hearts} value={feedback.data.hearts} />
+        <Stat label={words.hearts} value={feedback.data.hearts} hearts />
       </div>
       <Card className="flex items-center gap-4">
         <Heart aria-hidden className="size-8 shrink-0 text-primary" />
@@ -163,11 +163,57 @@ function HearBackContent({ initialHouseId }: { initialHouseId?: string }) {
   );
 }
 
-function Stat({ label, value }: { label: string; value: number }) {
+/** B18: the number ticks up from where it was, like an odometer (instant under reduced motion). */
+function useCountUp(value: number, ms = 900): number {
+  const [shown, setShown] = useState(0);
+  const from = useRef(0);
+  useEffect(() => {
+    const start = from.current;
+    if (start === value || window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      from.current = value;
+      setShown(value);
+      return;
+    }
+    const t0 = performance.now();
+    let frame = 0;
+    const step = (now: number) => {
+      const p = Math.min((now - t0) / ms, 1);
+      const eased = 1 - (1 - p) ** 3;
+      setShown(Math.round(start + (value - start) * eased));
+      if (p < 1) frame = requestAnimationFrame(step);
+      else from.current = value;
+    };
+    frame = requestAnimationFrame(step);
+    return () => cancelAnimationFrame(frame);
+  }, [value, ms]);
+  return shown;
+}
+
+function Stat({ label, value, hearts }: { label: string; value: number; hearts?: boolean }) {
+  const shown = useCountUp(value);
   return (
-    <Card>
-      <p className="font-display text-32 text-ink">{value}</p>
+    <Card className="relative overflow-hidden">
+      <p className="font-display text-32 text-ink tabular-nums">{shown}</p>
       <p className="text-16 text-ink/70">{label}</p>
+      {hearts && value > 0 && (
+        // A few Hearts float up from the bottom, as if just arriving from the House.
+        <div
+          aria-hidden
+          className="pointer-events-none absolute inset-y-0 right-6 w-24 motion-reduce:hidden"
+        >
+          {[0, 1, 2, 3].slice(0, Math.min(value, 4)).map((i) => (
+            <Heart
+              key={i}
+              className="absolute bottom-2 size-6 fill-primary text-primary animate-float-up"
+              style={{
+                left: `${[10, 55, 30, 70][i]}%`,
+                ["--dx" as string]: `${[-8, 10, -4, 6][i]}px`,
+                ["--drift-delay" as string]: `${i * 0.35}s`,
+              }}
+            />
+          ))}
+        </div>
+      )}
     </Card>
   );
 }

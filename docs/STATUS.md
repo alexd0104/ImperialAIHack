@@ -74,6 +74,13 @@ _(newest first: date — from → to — what)_
 
 ## Log
 
+### 2026-11-15 10:40 — Raphaël (design, B21)
+- Done, House: Objects "breathe" (±2 % over 4 s) and land from "open" with one soft spring bounce; a warm pool of light blooms under an Object a finger or mouse is on; polaroids "develop" like instant prints as they fly out; the sent Heart and four small ones rise and fade; time-of-day light over the Room (soft-light, 60 s transition); sparse particles per Room (pollen in a garden, steam in a kitchen, dust in a sunbeam elsewhere) in the new `components/house/room-ambience.tsx` (+ test).
+- Done, Studio: light sweep while a scene generates; the still dissolves into the clip once it loads; "Approved" stamps in; Memory bank photos drop onto a pile and straighten; chosen 3D Object turns in the library; a placed Object drops in with a dust puff; "sent" shows the card flying into a House whose window lights; Hear back counters tick up and Hearts float up.
+- Motion tokens live in `app/globals.css` (`--animate-*`, `--color-light-*`, `--color-glow`); all on `--ease-memorai`; loops hide under reduced motion.
+- Checked: `pnpm verify` green, `pnpm demo:check` green, House and Studio checked in the browser (glow, Hearts, counters, turntable, drop).
+- Outside zone: `components/house/{room-canvas,room-scene,object-open,heart-screen}.tsx` (House); `components/studio/{ReviewMemory,MemoryBank,HearBack,CreateStoryForm,PlacementEditor,PlaceStory,RoomManager}.tsx` (Studio).
+
 ### 2026-11-15 09:40 — Alexandre (Studio, B18 B19 B20)
 - Done: B18 Studio home Room picker: Room cards (tap → new Story there, Edit → rename/background/delete) + "+ Add room" card (name + photo or familiar Room). B19 review: one main "Keep and continue" saves every scene's choice then opens Place; "Keep the original photo" / "Use the new version" and "Try again" are secondary. B20: "Add a Memory to this Story" on Place (before and after sending); Vitest + Q2 e2e cover it. Movement on review (preset/custom, text, 5/10 s) was already in `MotionPicker`, unchanged.
 - In progress: nothing.

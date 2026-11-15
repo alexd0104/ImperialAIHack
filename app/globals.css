@@ -192,3 +192,179 @@
     transform: translateY(-4px);
   }
 }
+
+/*
+ * B18 playful motion. House loops stay under ~2 % and slow (rule 5: gentle motion);
+ * Studio moments can bounce a little. Every one sits on --ease-memorai, and the base
+ * reduced-motion rule collapses them; endless loops also hide with motion-reduce:hidden.
+ */
+@theme {
+  /* Time-of-day light over a Room photo (soft-light blend, so only a hint of colour). */
+  --color-light-morning: #ffc878;
+  --color-light-evening: #ff8c3c;
+  --color-light-night: #5064b4;
+  --color-glow: #ffd9a0;
+
+  --animate-develop: develop 1.4s var(--ease-memorai) both;
+  --animate-heart-rise: heart-rise 1.8s var(--ease-memorai) both;
+  --animate-drift: drift var(--drift-s, 16s) ease-in-out var(--drift-delay, 0s) infinite;
+  --animate-rise: rise var(--drift-s, 9s) ease-out var(--drift-delay, 0s) infinite;
+  --animate-stamp: stamp 0.6s var(--ease-memorai) both;
+  --animate-pile-in: pile-in 0.8s var(--ease-memorai) both;
+  --animate-sketch-in: sketch-in 1.8s var(--ease-memorai) both;
+  --animate-turntable: turntable 3s ease-in-out infinite alternate;
+  --animate-puff: puff 0.7s var(--ease-memorai) forwards;
+  --animate-card-fly: card-fly 1s var(--ease-memorai) both;
+  --animate-window-glow: window-glow 0.8s var(--ease-memorai) 0.9s both;
+  --animate-float-up: float-up 2.2s var(--ease-memorai) var(--drift-delay, 0s) both;
+  --animate-shimmer-sweep: shimmer-slide 2.4s ease-in-out infinite;
+
+  /* An instant photo developing: washed-out cream, then full colour. */
+  @keyframes develop {
+    from {
+      filter: sepia(0.7) brightness(1.45) contrast(0.55) saturate(0.3);
+    }
+    to {
+      filter: none;
+    }
+  }
+  /* The sent Heart rises towards the family at the top of the screen. */
+  @keyframes heart-rise {
+    from {
+      opacity: 0.9;
+      transform: translate(0, 0) scale(0.9);
+    }
+    to {
+      opacity: 0;
+      transform: translate(var(--rise-x, 0px), -420px) scale(0.45);
+    }
+  }
+  @keyframes drift {
+    0%,
+    100% {
+      opacity: 0;
+      transform: translate(0, 0);
+    }
+    20%,
+    80% {
+      opacity: var(--drift-o, 0.7);
+    }
+    50% {
+      transform: translate(var(--dx, 30px), var(--dy, -20px));
+    }
+  }
+  @keyframes rise {
+    0% {
+      opacity: 0;
+      transform: translateY(0) scale(0.6);
+    }
+    30% {
+      opacity: var(--drift-o, 0.35);
+    }
+    100% {
+      opacity: 0;
+      transform: translate(var(--dx, 10px), -140px) scale(1.6);
+    }
+  }
+  /* A rubber stamp landing on paper, with a tiny wobble. */
+  @keyframes stamp {
+    0% {
+      opacity: 0;
+      transform: scale(1.8) rotate(-10deg);
+    }
+    55% {
+      opacity: 1;
+      transform: scale(0.94) rotate(-2deg);
+    }
+    80% {
+      transform: scale(1.02) rotate(1.5deg);
+    }
+    100% {
+      transform: scale(1) rotate(0deg);
+    }
+  }
+  /* Photos land in a messy pile, then straighten into the grid. */
+  @keyframes pile-in {
+    0% {
+      opacity: 0;
+      transform: translateY(-36px) rotate(var(--pile-r, 6deg)) scale(1.08);
+    }
+    60% {
+      opacity: 1;
+      transform: translateY(4px) rotate(calc(var(--pile-r, 6deg) * -0.3)) scale(1);
+    }
+    100% {
+      transform: none;
+    }
+  }
+  /* A pencil sketch coloured in. */
+  @keyframes sketch-in {
+    from {
+      filter: grayscale(1) contrast(2.4) brightness(1.2);
+      opacity: 0.55;
+    }
+    to {
+      filter: none;
+      opacity: 1;
+    }
+  }
+  @keyframes turntable {
+    from {
+      transform: perspective(400px) rotateY(-24deg);
+    }
+    to {
+      transform: perspective(400px) rotateY(24deg);
+    }
+  }
+  @keyframes puff {
+    from {
+      opacity: 0.7;
+      transform: translate(-50%, -50%) scale(0.4);
+    }
+    to {
+      opacity: 0;
+      transform: translate(-50%, -50%) scale(1.8);
+    }
+  }
+  /* The Story card flies into the House. */
+  @keyframes card-fly {
+    0% {
+      opacity: 0;
+      transform: translate(-90px, 50px) rotate(-14deg) scale(1);
+    }
+    20% {
+      opacity: 1;
+    }
+    85% {
+      opacity: 1;
+      transform: translate(0, 0) rotate(0deg) scale(0.35);
+    }
+    100% {
+      opacity: 0;
+      transform: translate(0, 0) scale(0.2);
+    }
+  }
+  @keyframes window-glow {
+    from {
+      opacity: 0;
+      box-shadow: 0 0 0 0 var(--color-glow);
+    }
+    to {
+      opacity: 1;
+      box-shadow: 0 0 18px 6px var(--color-glow);
+    }
+  }
+  @keyframes float-up {
+    0% {
+      opacity: 0;
+      transform: translateY(40px) scale(0.6);
+    }
+    30% {
+      opacity: 1;
+    }
+    100% {
+      opacity: 0;
+      transform: translate(var(--dx, 0px), -70px) scale(1);
+    }
+  }
+}

@@ -212,9 +212,20 @@ function RoomRow({
     onSuccess: onDeleted,
   });
   const busy = patch.isPending || photo.isPending || describe.isPending || remove.isPending;
+  const thumb = room.backgroundPath.startsWith("/")
+    ? room.backgroundPath
+    : `/api/files/${room.backgroundPath}`;
   return (
     <Card className="space-y-3 p-4">
       <div className="flex flex-wrap items-end gap-3">
+        {/* B18: a new background appears as a pencil sketch, then gets coloured in. */}
+        {/* biome-ignore lint/performance/noImgElement: Room picture from /rooms or /api/files. */}
+        <img
+          key={thumb}
+          src={thumb}
+          alt=""
+          className="aspect-[1194/834] w-28 rounded-lg object-cover animate-sketch-in"
+        />
         <div className="space-y-1">
           <Label htmlFor={`room-${room.id}`}>{words.nameLabel}</Label>
           <Input

@@ -22,6 +22,36 @@ const RoomCanvas = dynamic(() => import("@/components/house/room-canvas"), { ssr
 const OTHER_LOOK: ObjectLook = { opacity: 0.55, scale: 1 };
 const CURRENT_ID = "placing";
 
+/** B18: a new Object falls into the Room and lands with a small bounce and a dust puff. */
+const DROP_MS = 750;
+const DROP_FROM = -0.35;
+
+/** 0 → 1 with one soft bounce at the end (ease-out-back on the way down, then settle). */
+function dropCurve(t: number): number {
+  const c = 1.6;
+  const p = t - 1;
+  return 1 + (c + 1) * p ** 3 + c * p ** 2;
+}
+
+function useDrop(key: string): { offset: number; landed: number } {
+  const [state, setState] = useState({ offset: 0, landed: 0 });
+  // biome-ignore lint/correctness/useExhaustiveDependencies: `key` is the trigger: a new Object drops in again.
+  useEffect(() => {
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    const t0 = performance.now();
+    let frame = 0;
+    const step = (now: number) => {
+      const t = Math.min((now - t0) / DROP_MS, 1);
+      setState((s) => ({ ...s, offset: DROP_FROM * (1 - dropCurve(t)) }));
+      if (t < 1) frame = requestAnimationFrame(step);
+      else setState((s) => ({ offset: 0, landed: s.landed + 1 }));
+    };
+    frame = requestAnimationFrame(step);
+    return () => cancelAnimationFrame(frame);
+  }, [key]);
+  return state;
+}
+
 export type PlacedObject = { id: string; object: StoryObject; position: StoryPosition };
 
 function toBundleSlot(id: string, object: StoryObject, at: StoryPosition): BundleSlot {
@@ -70,6 +100,7 @@ export function PlacementEditor({
   const [live, setLive] = useState<StoryPosition | null>(null);
   const [boxWidth, setBoxWidth] = useState(0);
   const shown = live ?? value;
+  const drop = useDrop(`${object.kind}:${object.path}`);
 
   // The 3D layer is laid out at 1194×834 and scaled with CSS to the editor's width, like the
   // House stage, so 1 three.js unit stays 1 stage pixel.
@@ -82,7 +113,7 @@ export function PlacementEditor({
   }, []);
   const canvasSlots = [
     ...others.map((o) => toBundleSlot(o.id, o.object, o.position)),
-    toBundleSlot(CURRENT_ID, object, shown),
+    toBundleSlot(CURRENT_ID, object, { ...shown, y: Math.max(0, shown.y + drop.offset) }),
   ];
   const looks = Object.fromEntries(others.map((o) => [o.id, OTHER_LOOK]));
 
@@ -152,6 +183,18 @@ export function PlacementEditor({
           className="absolute size-16 -translate-x-1/2 -translate-y-1/2 rounded-full border-2 border-dashed border-ink/20 bg-surface/20"
         />
       ))}
+      {drop.landed > 0 && (
+        <span
+          key={drop.landed}
+          aria-hidden
+          className="pointer-events-none absolute h-6 rounded-full bg-surface/80 blur-sm animate-puff"
+          style={{
+            left: `${shown.x * 100}%`,
+            top: `${(shown.y + (shown.scale * CANVAS_WIDTH) / CANVAS_HEIGHT / 2) * 100}%`,
+            width: `${shown.scale * 100}%`,
+          }}
+        />
+      )}
       <div
         role="img"
         aria-label={words.objectHandle}
