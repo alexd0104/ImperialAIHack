@@ -1,0 +1,22 @@
+# Owners are requested automatically as reviewers on PRs touching these paths.
+# Contracts and shared config: Timoté. Design system: Raphaël. Zones: their owner.
+
+/lib/contracts/   @Tmt-L
+/lib/db/          @Tmt-L
+/lib/ai/          @Tmt-L
+/lib/jobs/        @Tmt-L
+/.github/         @Tmt-L
+/.claude/         @Tmt-L
+/AGENTS.md        @Tmt-L
+/CLAUDE.md        @Tmt-L
+
+/components/ui/   @raphael-verger
+/app/globals.css  @raphael-verger
+/docs/DESIGN.md   @raphael-verger
+
+/app/studio/      @alexd0104
+/components/studio/ @alexd0104
+
+/app/house/       @yasiralzaid
+/components/house/ @yasiralzaid
+/lib/house/       @yasiralzaid

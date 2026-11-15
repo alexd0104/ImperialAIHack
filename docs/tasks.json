@@ -1,0 +1,1000 @@
+{
+  "$comment": "Task registry used by scripts/tasks.mjs, the Claude Code hook and the GitHub task workflow. Source of IDs, owners and dependencies (mirrors FEATURES.md). 'deps' block starting a task until they are merged on main; 'soft' only warn. A task is DONE when a commit on main has the ID in parentheses in its title, e.g. 'feat(studio): memory bank (S3)'. Use '(S3-wip)' for partial work. New tasks found during work (bugs, troubleshooting, missing pieces) use the B prefix (B1, B2, ...): append them at the END of 'tasks' with owner, priority 'FIX', deps and soft deps, and a 'note' explaining why.",
+  "people": {
+    "timote": {
+      "name": "Timoté",
+      "github": "Tmt-L",
+      "zone": "pipeline"
+    },
+    "alexandre": {
+      "name": "Alexandre",
+      "github": "alexd0104",
+      "zone": "studio"
+    },
+    "yasir": {
+      "name": "Yasir",
+      "github": "yasiralzaid",
+      "zone": "house"
+    },
+    "raphael": {
+      "name": "Raphaël",
+      "github": "raphael-verger",
+      "zone": "design"
+    }
+  },
+  "tasks": [
+    {
+      "id": "F1",
+      "title": "Scaffold",
+      "owner": "timote",
+      "priority": "MUST",
+      "deps": [],
+      "soft": []
+    },
+    {
+      "id": "F2",
+      "title": "Contracts v1",
+      "owner": "timote",
+      "priority": "MUST",
+      "deps": [
+        "F1"
+      ],
+      "soft": []
+    },
+    {
+      "id": "F3",
+      "title": "Mock layer",
+      "owner": "timote",
+      "priority": "MUST",
+      "deps": [
+        "F2"
+      ],
+      "soft": []
+    },
+    {
+      "id": "F4",
+      "title": "DB + storage + /api/files",
+      "owner": "timote",
+      "priority": "MUST",
+      "deps": [
+        "F2"
+      ],
+      "soft": []
+    },
+    {
+      "id": "F5",
+      "title": "Tokens, fonts, base UI",
+      "owner": "raphael",
+      "priority": "MUST",
+      "deps": [
+        "F1"
+      ],
+      "soft": []
+    },
+    {
+      "id": "F6",
+      "title": "Studio auth",
+      "owner": "timote",
+      "priority": "MUST",
+      "deps": [
+        "F1"
+      ],
+      "soft": []
+    },
+    {
+      "id": "P1",
+      "title": "Job engine",
+      "owner": "timote",
+      "priority": "MUST",
+      "deps": [
+        "F2",
+        "F3",
+        "F4"
+      ],
+      "soft": []
+    },
+    {
+      "id": "P2",
+      "title": "Scene chain live",
+      "owner": "timote",
+      "priority": "MUST",
+      "deps": [
+        "P1"
+      ],
+      "soft": [
+        "P3"
+      ]
+    },
+    {
+      "id": "P3",
+      "title": "Prompt compiler",
+      "owner": "timote",
+      "priority": "MUST",
+      "deps": [
+        "F3"
+      ],
+      "soft": []
+    },
+    {
+      "id": "P4",
+      "title": "Generate / job / retry routes",
+      "owner": "timote",
+      "priority": "MUST",
+      "deps": [
+        "P1"
+      ],
+      "soft": []
+    },
+    {
+      "id": "P5",
+      "title": "Object 3D job",
+      "owner": "timote",
+      "priority": "MUST",
+      "deps": [
+        "P1"
+      ],
+      "soft": []
+    },
+    {
+      "id": "P6",
+      "title": "Demo content generation",
+      "owner": "timote",
+      "priority": "MUST",
+      "deps": [
+        "P2",
+        "P5",
+        "S8"
+      ],
+      "soft": [
+        "H7"
+      ]
+    },
+    {
+      "id": "S1",
+      "title": "Create the House",
+      "owner": "alexandre",
+      "priority": "MUST",
+      "deps": [
+        "F2",
+        "F6"
+      ],
+      "soft": [
+        "F5"
+      ]
+    },
+    {
+      "id": "S2",
+      "title": "Create · 1 Object",
+      "owner": "alexandre",
+      "priority": "MUST",
+      "deps": [
+        "F2"
+      ],
+      "soft": [
+        "S1",
+        "P5"
+      ]
+    },
+    {
+      "id": "S3",
+      "title": "Create · 2 Memory bank",
+      "owner": "alexandre",
+      "priority": "MUST",
+      "deps": [
+        "F4"
+      ],
+      "soft": [
+        "S2"
+      ]
+    },
+    {
+      "id": "S4",
+      "title": "Guided questions + free text",
+      "owner": "alexandre",
+      "priority": "MUST",
+      "deps": [
+        "F2"
+      ],
+      "soft": [
+        "S3"
+      ]
+    },
+    {
+      "id": "S5",
+      "title": "Memory sheet",
+      "owner": "alexandre",
+      "priority": "MUST",
+      "deps": [
+        "F2"
+      ],
+      "soft": [
+        "S4"
+      ]
+    },
+    {
+      "id": "S6",
+      "title": "Bring to life (progress)",
+      "owner": "alexandre",
+      "priority": "MUST",
+      "deps": [
+        "P4"
+      ],
+      "soft": [
+        "S5"
+      ]
+    },
+    {
+      "id": "S7",
+      "title": "Approve every scene",
+      "owner": "alexandre",
+      "priority": "MUST",
+      "deps": [
+        "F2"
+      ],
+      "soft": [
+        "S6"
+      ]
+    },
+    {
+      "id": "S8",
+      "title": "Place + order + publish",
+      "owner": "alexandre",
+      "priority": "MUST",
+      "deps": [
+        "F2"
+      ],
+      "soft": [
+        "S7"
+      ]
+    },
+    {
+      "id": "S9",
+      "title": "Hear back (home)",
+      "owner": "alexandre",
+      "priority": "MUST",
+      "deps": [
+        "F2"
+      ],
+      "soft": [
+        "S8"
+      ]
+    },
+    {
+      "id": "H1",
+      "title": "Bundle route + demo mode",
+      "owner": "yasir",
+      "priority": "MUST",
+      "deps": [
+        "F2",
+        "F4"
+      ],
+      "soft": []
+    },
+    {
+      "id": "H2",
+      "title": "Preloader",
+      "owner": "yasir",
+      "priority": "MUST",
+      "deps": [
+        "F2"
+      ],
+      "soft": [
+        "H1"
+      ]
+    },
+    {
+      "id": "H3",
+      "title": "Choose a room",
+      "owner": "yasir",
+      "priority": "MUST",
+      "deps": [
+        "F2"
+      ],
+      "soft": [
+        "H2",
+        "F5"
+      ]
+    },
+    {
+      "id": "H4",
+      "title": "Room scene",
+      "owner": "yasir",
+      "priority": "MUST",
+      "deps": [
+        "F2"
+      ],
+      "soft": [
+        "H3"
+      ]
+    },
+    {
+      "id": "H5",
+      "title": "Object opens (polaroids)",
+      "owner": "yasir",
+      "priority": "MUST",
+      "deps": [
+        "F2"
+      ],
+      "soft": [
+        "H4"
+      ]
+    },
+    {
+      "id": "H6",
+      "title": "Memory player",
+      "owner": "yasir",
+      "priority": "MUST",
+      "deps": [
+        "F2"
+      ],
+      "soft": [
+        "H5"
+      ]
+    },
+    {
+      "id": "H7",
+      "title": "Heart + end of Story",
+      "owner": "yasir",
+      "priority": "MUST",
+      "deps": [
+        "F2"
+      ],
+      "soft": [
+        "H6"
+      ]
+    },
+    {
+      "id": "H8",
+      "title": "Alone mode",
+      "owner": "yasir",
+      "priority": "MUST",
+      "deps": [
+        "F2"
+      ],
+      "soft": [
+        "H4"
+      ]
+    },
+    {
+      "id": "Q1",
+      "title": "CI + pre-commit",
+      "owner": "timote",
+      "priority": "MUST",
+      "deps": [
+        "F1"
+      ],
+      "soft": []
+    },
+    {
+      "id": "Q2",
+      "title": "E2E smoke",
+      "owner": "yasir",
+      "priority": "MUST",
+      "deps": [
+        "S8",
+        "H7"
+      ],
+      "soft": []
+    },
+    {
+      "id": "Q3",
+      "title": "demo:check",
+      "owner": "yasir",
+      "priority": "MUST",
+      "deps": [
+        "H1"
+      ],
+      "soft": [
+        "H7"
+      ]
+    },
+    {
+      "id": "Q4",
+      "title": "DESIGN.md evidence",
+      "owner": "raphael",
+      "priority": "MUST",
+      "deps": [],
+      "soft": [
+        "F5"
+      ]
+    },
+    {
+      "id": "SH1",
+      "title": "Room from family photo",
+      "owner": "timote",
+      "priority": "SHOULD",
+      "deps": [
+        "P1",
+        "S1"
+      ],
+      "soft": []
+    },
+    {
+      "id": "SH2",
+      "title": "Second Room in demo",
+      "owner": "raphael",
+      "priority": "SHOULD",
+      "deps": [
+        "H3"
+      ],
+      "soft": []
+    },
+    {
+      "id": "SH3",
+      "title": "Don't show list",
+      "owner": "alexandre",
+      "priority": "SHOULD",
+      "deps": [
+        "S1"
+      ],
+      "soft": []
+    },
+    {
+      "id": "SH4",
+      "title": "Care & privacy screen",
+      "owner": "alexandre",
+      "priority": "SHOULD",
+      "deps": [
+        "S1"
+      ],
+      "soft": [
+        "SH3"
+      ]
+    },
+    {
+      "id": "SH5",
+      "title": "Voice recording screen",
+      "owner": "alexandre",
+      "priority": "SHOULD",
+      "deps": [
+        "S3"
+      ],
+      "soft": [
+        "SH7"
+      ]
+    },
+    {
+      "id": "SH6",
+      "title": "ElevenLabs voice agent",
+      "owner": "timote",
+      "priority": "SHOULD",
+      "deps": [
+        "S4"
+      ],
+      "soft": [
+        "S9",
+        "H8",
+        "P6"
+      ]
+    },
+    {
+      "id": "SH7",
+      "title": "Missing Figma frames",
+      "owner": "raphael",
+      "priority": "SHOULD",
+      "deps": [],
+      "soft": []
+    },
+    {
+      "id": "C1",
+      "title": "Fidelity check (vision)",
+      "owner": "timote",
+      "priority": "COULD",
+      "deps": [
+        "P2"
+      ],
+      "soft": []
+    },
+    {
+      "id": "C2",
+      "title": "Old video restoration",
+      "owner": "timote",
+      "priority": "COULD",
+      "deps": [
+        "P1"
+      ],
+      "soft": []
+    },
+    {
+      "id": "C3",
+      "title": "Live update on publish",
+      "owner": "yasir",
+      "priority": "COULD",
+      "deps": [
+        "H7"
+      ],
+      "soft": []
+    },
+    {
+      "id": "C4",
+      "title": "Text agent",
+      "owner": "timote",
+      "priority": "COULD",
+      "deps": [
+        "P3"
+      ],
+      "soft": []
+    },
+    {
+      "id": "C5",
+      "title": "Public deployment",
+      "owner": "timote",
+      "priority": "COULD",
+      "deps": [
+        "P4"
+      ],
+      "soft": []
+    },
+    {
+      "id": "B1",
+      "title": "Studio login: throttle repeated wrong passwords",
+      "owner": "timote",
+      "priority": "FIX",
+      "deps": [
+        "F6"
+      ],
+      "soft": [],
+      "note": "F6 review: /api/auth/login allows unlimited guesses; small in-memory per-IP delay is enough"
+    },
+    {
+      "id": "B2",
+      "title": "Base UI: fix contrast of primary text controls",
+      "owner": "raphael",
+      "priority": "FIX",
+      "deps": [],
+      "soft": [],
+      "note": "PR #11 review: Button white on primary is 3.22:1 at 18px/700 and 16px; Badge attention/photoPrimary and ToggleGroup primary also fail. Fix token pairing including hover/selected states and add contrast or axe regression before merging F5. Review: https://github.com/alexd0104/ImperialAIHack/pull/11#pullrequestreview-5906434308"
+    },
+    {
+      "id": "B3",
+      "title": "Studio auth: align login errors with shared contracts",
+      "owner": "timote",
+      "priority": "FIX",
+      "deps": [],
+      "soft": [],
+      "note": "PR #12 initial review: invalid_password, bad_request and not_configured were rejected by F2 ApiErrorResponse. Corrected in ac1ae03 (head ba1cbcd); reviewer confirmed unauthorized and validation_failed now parse. Pending F6 merge; retain the playbook 422 status and shared-copy alignment follow-up. B4 remains blocking. Review update: https://github.com/alexd0104/ImperialAIHack/pull/12"
+    },
+    {
+      "id": "B4",
+      "title": "Studio auth: reject short signing secrets in session verification",
+      "owner": "timote",
+      "priority": "FIX",
+      "deps": [],
+      "soft": [],
+      "note": "PR #12 review: verifySessionToken accepts a cookie signed with the synthetic secret short although login requires 32 characters. Apply SESSION_SECRET_MIN_LENGTH at verification and cover proxy rejection of short-secret cookies before merging F6. Review: https://github.com/alexd0104/ImperialAIHack/pull/12#pullrequestreview-5906434698"
+    },
+    {
+      "id": "B5",
+      "title": "Exclude .claude/worktrees from vitest, tsc and git",
+      "owner": "timote",
+      "priority": "FIX",
+      "deps": [],
+      "soft": [],
+      "note": "Parallel agent worktrees made pnpm test pick up their node_modules tests"
+    },
+    {
+      "id": "B6",
+      "title": "Demo seed script (pnpm seed:demo)",
+      "owner": "raphael",
+      "priority": "FIX",
+      "deps": [
+        "F2",
+        "F4"
+      ],
+      "soft": [],
+      "note": "demo-assets/demo.json manifest → published demo House in mh_demo (token DEMO_HOUSE_TOKEN), media copied to storage; idempotent; refuses non-demo DB"
+    },
+    {
+      "id": "B7",
+      "title": "Demo export script (pnpm export:demo)",
+      "owner": "raphael",
+      "priority": "FIX",
+      "deps": [
+        "H1"
+      ],
+      "soft": [],
+      "note": "Rewrite demo-assets/bundle.json from mh_demo by reusing H1's bundle builder"
+    },
+    {
+      "id": "B8",
+      "title": "House page breaks pnpm build (params outside Suspense)",
+      "owner": "yasir",
+      "priority": "FIX",
+      "deps": [
+        "H3"
+      ],
+      "soft": [],
+      "note": "Timoté STATUS request 20:15"
+    },
+    {
+      "id": "B9",
+      "title": "Studio auth browser test: scope error alert to sign-in form",
+      "owner": "alexandre",
+      "priority": "FIX",
+      "deps": [
+        "F6"
+      ],
+      "soft": [],
+      "note": "S2 regression: Next route announcer also has role alert; scope locator to sign-in form."
+    },
+    {
+      "id": "B10",
+      "title": "House: per-scene still fallback (stillUrl)",
+      "owner": "yasir",
+      "priority": "FIX",
+      "deps": [],
+      "soft": [],
+      "note": ""
+    },
+    {
+      "id": "B11",
+      "title": "Demo readiness: stuck live jobs, approval status, Place room picture, 3D sway",
+      "owner": "raphael",
+      "priority": "FIX",
+      "deps": [],
+      "soft": [],
+      "note": ""
+    },
+    {
+      "id": "F7",
+      "title": "Contracts v2",
+      "owner": "timote",
+      "priority": "V2",
+      "release": "v2",
+      "order": 0,
+      "deps": [],
+      "soft": [],
+      "brief": "docs/FEATURES-V2.md#F7"
+    },
+    {
+      "id": "P7",
+      "title": "Movement type and length per photo",
+      "owner": "timote",
+      "priority": "V2",
+      "release": "v2",
+      "order": 1,
+      "deps": [
+        "F7"
+      ],
+      "soft": [],
+      "brief": "docs/FEATURES-V2.md#P7"
+    },
+    {
+      "id": "H9",
+      "title": "Hear sound in review + Play full memory",
+      "owner": "yasir",
+      "priority": "V2",
+      "release": "v2",
+      "order": 2,
+      "deps": [],
+      "soft": [],
+      "brief": "docs/FEATURES-V2.md#H9"
+    },
+    {
+      "id": "P8",
+      "title": "Better sound prompts",
+      "owner": "timote",
+      "priority": "V2",
+      "release": "v2",
+      "order": 3,
+      "deps": [
+        "F7"
+      ],
+      "soft": [
+        "P7"
+      ],
+      "brief": "docs/FEATURES-V2.md#P8"
+    },
+    {
+      "id": "P9",
+      "title": "Ambience bed library",
+      "owner": "raphael",
+      "priority": "V2",
+      "release": "v2",
+      "order": 4,
+      "deps": [
+        "F7"
+      ],
+      "soft": [
+        "P8"
+      ],
+      "brief": "docs/FEATURES-V2.md#P9"
+    },
+    {
+      "id": "H10",
+      "title": "Loading feedback everywhere",
+      "owner": "raphael",
+      "priority": "V2",
+      "release": "v2",
+      "order": 5,
+      "deps": [],
+      "soft": [],
+      "brief": "docs/FEATURES-V2.md#H10"
+    },
+    {
+      "id": "S10",
+      "title": "Back navigation in new-Story steps",
+      "owner": "alexandre",
+      "priority": "V2",
+      "release": "v2",
+      "order": 6,
+      "deps": [],
+      "soft": [],
+      "brief": "docs/FEATURES-V2.md#S10"
+    },
+    {
+      "id": "S11",
+      "title": "Room management",
+      "owner": "alexandre",
+      "priority": "V2",
+      "release": "v2",
+      "order": 7,
+      "deps": [
+        "F7"
+      ],
+      "soft": [
+        "H10"
+      ],
+      "brief": "docs/FEATURES-V2.md#S11"
+    },
+    {
+      "id": "S12",
+      "title": "Place objects freely (editor)",
+      "owner": "alexandre",
+      "priority": "V2",
+      "release": "v2",
+      "order": 8,
+      "deps": [
+        "F7"
+      ],
+      "soft": [],
+      "brief": "docs/FEATURES-V2.md#S12"
+    },
+    {
+      "id": "H11",
+      "title": "House live refresh + gentle move",
+      "owner": "yasir",
+      "priority": "V2",
+      "release": "v2",
+      "order": 9,
+      "deps": [
+        "F7"
+      ],
+      "soft": [
+        "S12"
+      ],
+      "brief": "docs/FEATURES-V2.md#H11"
+    },
+    {
+      "id": "S14",
+      "title": "Default 3D objects from 3 images",
+      "owner": "raphael",
+      "priority": "V2",
+      "release": "v2",
+      "order": 10,
+      "deps": [],
+      "soft": [],
+      "brief": "docs/FEATURES-V2.md#S14",
+      "requiresFiles": "public/objects/src"
+    },
+    {
+      "id": "S13",
+      "title": "Studio logout button",
+      "owner": "alexandre",
+      "priority": "V2",
+      "release": "v2",
+      "order": 11,
+      "deps": [],
+      "soft": [],
+      "brief": "docs/FEATURES-V2.md#S13"
+    },
+    {
+      "id": "Q5",
+      "title": "Prompting experiment",
+      "owner": "yasir",
+      "priority": "V2",
+      "release": "v2",
+      "order": 12,
+      "deps": [
+        "F7",
+        "P7"
+      ],
+      "soft": [
+        "P8"
+      ],
+      "brief": "docs/FEATURES-V2.md#Q5"
+    },
+    {
+      "id": "SH8",
+      "title": "UI redesign v2",
+      "owner": "raphael",
+      "priority": "V2",
+      "release": "v2",
+      "order": 13,
+      "deps": [],
+      "soft": [],
+      "brief": "docs/FEATURES-V2.md#SH8",
+      "note": "Tomorrow morning, interactive (not autopilot).",
+      "relay": false
+    },
+    {
+      "id": "P10",
+      "title": "Sound and video in parallel",
+      "owner": "timote",
+      "priority": "V2",
+      "release": "v2",
+      "order": 14,
+      "deps": [
+        "F7",
+        "P8"
+      ],
+      "soft": [],
+      "brief": "docs/FEATURES-V2.md#P10"
+    },
+    {
+      "id": "B12",
+      "title": "Studio navigation: header, back links, sign out",
+      "owner": "yasir",
+      "priority": "FIX",
+      "deps": [],
+      "soft": [],
+      "note": ""
+    },
+    {
+      "id": "S15",
+      "title": "Demo room backgrounds from team photos",
+      "owner": "raphael",
+      "priority": "V2",
+      "release": "v2",
+      "order": 6,
+      "deps": [],
+      "soft": [],
+      "brief": "docs/FEATURES-V2.md#S15",
+      "requiresFiles": "public/rooms/src"
+    },
+    {
+      "id": "B13",
+      "title": "Autopilot heartbeat and relay",
+      "owner": "timote",
+      "priority": "FIX",
+      "deps": [],
+      "soft": [],
+      "note": ""
+    },
+    {
+      "id": "B14",
+      "title": "Integrate and push local pregen assets on main",
+      "owner": "alexandre",
+      "priority": "FIX",
+      "deps": [],
+      "soft": [],
+      "note": ""
+    },
+    {
+      "id": "B15",
+      "title": "Choose movement type and clip length before generating",
+      "owner": "timote",
+      "priority": "FIX",
+      "deps": [],
+      "soft": [],
+      "note": ""
+    },
+    {
+      "id": "B16",
+      "title": "3D-only Object library, 3D placement preview with the Room's other Objects",
+      "owner": "raphael",
+      "priority": "FIX",
+      "deps": [],
+      "soft": [],
+      "note": ""
+    },
+    {
+      "id": "B17",
+      "title": "Room background from a description (fal text-to-image)",
+      "owner": "timote",
+      "priority": "FIX",
+      "deps": [],
+      "soft": [],
+      "note": ""
+    },
+    {
+      "id": "B18",
+      "title": "Studio room picker with + Add room card (name, photo; generate later)",
+      "owner": "alexandre",
+      "priority": "FIX",
+      "deps": [],
+      "soft": [],
+      "note": ""
+    },
+    {
+      "id": "B19",
+      "title": "Review screen: one main Keep and continue action, secondary keep original",
+      "owner": "alexandre",
+      "priority": "FIX",
+      "deps": [],
+      "soft": [],
+      "note": ""
+    },
+    {
+      "id": "B20",
+      "title": "Test and fix adding a Memory to an existing Story",
+      "owner": "alexandre",
+      "priority": "FIX",
+      "deps": [],
+      "soft": [],
+      "note": ""
+    },
+    {
+      "id": "B21",
+      "title": "Playful motion: House breathing, glow, develop, hearts, light, particles; Studio reveal, drop, stamp, send, counters",
+      "owner": "raphael",
+      "priority": "FIX",
+      "deps": [],
+      "soft": [],
+      "note": ""
+    },
+    {
+      "id": "B22",
+      "title": "Studio Room doors carousel, Add room and Edit room pages",
+      "owner": "timote",
+      "priority": "FIX",
+      "deps": [],
+      "soft": [],
+      "note": ""
+    },
+    {
+      "id": "B23",
+      "title": "Room creation loading panel; clearer photo look options without the movement toggle",
+      "owner": "raphael",
+      "priority": "FIX",
+      "deps": [],
+      "soft": [],
+      "note": ""
+    },
+    {
+      "id": "B24",
+      "title": "Studio: photo chooser button with preview and Remove; Object icons on the Edit room page",
+      "owner": "timote",
+      "priority": "FIX",
+      "deps": [],
+      "soft": [],
+      "note": ""
+    },
+    {
+      "id": "B25",
+      "title": "Live test fixes: 10 MB upload cap, clip compression, custom motion prompt, ambience cost, room generate timeout",
+      "owner": "timote",
+      "priority": "FIX",
+      "deps": [],
+      "soft": [],
+      "note": ""
+    },
+    {
+      "id": "B26",
+      "title": "Landing page button to open the Studio",
+      "owner": "timote",
+      "priority": "FIX",
+      "deps": [],
+      "soft": [],
+      "note": ""
+    },
+    {
+      "id": "B27",
+      "title": "Edit room: real Object picture (library thumbnail or source photo), objectUrl was never filled",
+      "owner": "timote",
+      "priority": "FIX",
+      "deps": [],
+      "soft": [],
+      "note": ""
+    },
+    {
+      "id": "B28",
+      "title": "New Story: choose the Room (picker with pictures, full Rooms disabled)",
+      "owner": "timote",
+      "priority": "FIX",
+      "deps": [],
+      "soft": [],
+      "note": ""
+    }
+  ]
+}

@@ -1,0 +1,14 @@
+{
+  "id": "6650a1f0c0ffee0000000002",
+  "houseId": "6650a1f0c0ffee0000000001",
+  "name": "Garden",
+  "source": "style",
+  "style": "garden",
+  "backgroundPath": "/rooms/garden.svg",
+  "slots": [
+    { "id": "bench", "x": 0.22, "y": 0.68, "scale": 0.18, "storyId": "6650a1f0c0ffee0000000003" },
+    { "id": "tree", "x": 0.71, "y": 0.42, "scale": 0.24 },
+    { "id": "table", "x": 0.5, "y": 0.78, "scale": 0.15 }
+  ],
+  "createdAt": "2026-11-14T15:03:00.000Z"
+}

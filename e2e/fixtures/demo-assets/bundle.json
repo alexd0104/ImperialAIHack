@@ -1,0 +1,110 @@
+{
+  "house": {
+    "firstName": "Frank",
+    "avatars": [{ "initial": "S", "color": "#F2B45A" }, { "initial": "T", "color": "#8FB08A" }]
+  },
+  "mode": "together",
+  "rooms": [
+    {
+      "id": "garden",
+      "name": "Garden",
+      "background": "/rooms/garden.svg",
+      "slots": [
+        {
+          "id": "can",
+          "x": 0.2,
+          "y": 0.7,
+          "scale": 0.22,
+          "story": {
+            "id": "story-can",
+            "title": "Gardening with Dad",
+            "object": { "kind": "svg", "url": "/objects/watering-can.svg" },
+            "available": true,
+            "memories": [
+              {
+                "id": "memory-can-1",
+                "title": "Test memory one",
+                "okAlone": true,
+                "polaroidUrl": "/rooms/garden.svg",
+                "caption": "Test fixture, not a real memory",
+                "scenes": [
+                  {
+                    "kind": "clip",
+                    "url": "/api/files/demo/missing-clip.mp4",
+                    "durationMs": 3000
+                  },
+                  { "kind": "photo", "url": "/rooms/kitchen.svg", "durationMs": 3000 }
+                ],
+                "songUrl": "/api/files/demo/missing-song.mp3"
+              },
+              {
+                "id": "memory-can-2",
+                "title": "Test memory two",
+                "polaroidUrl": "/rooms/living-room.svg",
+                "scenes": [{ "kind": "photo", "url": "/rooms/living-room.svg", "durationMs": 3000 }]
+              }
+            ]
+          }
+        },
+        {
+          "id": "flower",
+          "x": 0.5,
+          "y": 0.6,
+          "scale": 0.2,
+          "story": {
+            "id": "story-flower",
+            "title": "Flowers",
+            "object": { "kind": "svg", "url": "/objects/flower.svg" },
+            "available": true,
+            "memories": [
+              {
+                "id": "memory-flower-1",
+                "title": "Test memory three",
+                "polaroidUrl": "/rooms/kitchen.svg",
+                "scenes": [{ "kind": "photo", "url": "/rooms/kitchen.svg", "durationMs": 3000 }]
+              }
+            ]
+          }
+        },
+        { "id": "spot", "x": 0.78, "y": 0.74, "scale": 0.18, "story": null }
+      ]
+    },
+    {
+      "id": "kitchen",
+      "name": "Kitchen",
+      "background": "/rooms/kitchen.svg",
+      "slots": [
+        {
+          "id": "teapot",
+          "x": 0.5,
+          "y": 0.62,
+          "scale": 0.2,
+          "story": {
+            "id": "story-teapot",
+            "title": "Tea time",
+            "object": { "kind": "svg", "url": "/objects/teapot.svg" },
+            "available": true,
+            "memories": [
+              {
+                "id": "memory-teapot-1",
+                "title": "Test memory four",
+                "polaroidUrl": "/rooms/kitchen.svg",
+                "scenes": [{ "kind": "photo", "url": "/rooms/kitchen.svg", "durationMs": 3000 }]
+              }
+            ]
+          }
+        }
+      ]
+    }
+  ],
+  "files": [
+    "/rooms/garden.svg",
+    "/objects/watering-can.svg",
+    "/api/files/demo/missing-clip.mp4",
+    "/rooms/kitchen.svg",
+    "/api/files/demo/missing-song.mp3",
+    "/rooms/living-room.svg",
+    "/objects/flower.svg",
+    "/objects/teapot.svg"
+  ]
+}

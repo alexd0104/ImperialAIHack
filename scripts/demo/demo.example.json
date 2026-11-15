@@ -1,0 +1,43 @@
+{
+  "house": { "firstName": "Rose", "dontShow": [] },
+  "rooms": [
+    {
+      "style": "garden",
+      "stories": [
+        {
+          "slot": "bench",
+          "title": "Summers at the lake",
+          "object": "3d-armchair",
+          "memories": [
+            {
+              "title": "The picnic",
+              "people": ["Rose", "Paul"],
+              "place": "Lake Annecy",
+              "when": "1972",
+              "message": "Do you remember the cherries?",
+              "okAlone": true,
+              "colour": "keep_bw",
+              "photos": ["photos/picnic-1.jpg", "photos/picnic-2.jpg"],
+              "clips": ["clips/picnic-1.mp4", null],
+              "song": "audio/song.mp3",
+              "voice": "audio/voice.m4a",
+              "voiceDurationMs": 12000,
+              "ambience": "audio/lake.mp3"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "style": "kitchen",
+      "stories": [
+        {
+          "slot": "table",
+          "title": "Sunday lunch",
+          "object": { "glb": "objects/teapot.glb" },
+          "memories": [{ "title": "Lunch at home", "photos": ["photos/lunch.jpg"] }]
+        }
+      ]
+    }
+  ]
+}

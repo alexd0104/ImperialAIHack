@@ -1,0 +1,123 @@
+import "server-only";
+import { type ClaudePromptClient, getClaude } from "./claude";
+import {
+  AMBIENCE_NEGATIVE_PROMPT,
+  DEFAULT_NEGATIVE_PROMPT,
+  extractSoundEvents,
+  MOTION_REFUSED,
+  MOTION_TEMPLATE,
+  NO_MUSIC,
+  templatePrompts,
+} from "./prompt-templates";
+import { CompiledPrompts, type PromptCompilerInput } from "./prompt-types";
+import { detectRefusedRequests, mergeRefusedRequests } from "./refused-requests";
+
+export type PromptSource = "claude" | "mock" | "template";
+
+export interface CompiledPromptsResult extends CompiledPrompts {
+  source: PromptSource;
+}
+
+/**
+ * The only way a prompt reaches a model (AGENTS.md §3.1). Never throws: if
+ * Claude fails or returns something invalid, fixed templates take over so a
+ * scene can always be generated.
+ */
+export async function compilePrompts(
+  input: PromptCompilerInput,
+  deps: { claude?: ClaudePromptClient } = {},
+): Promise<CompiledPromptsResult> {
+  try {
+    const client = deps.claude ?? getClaude();
+    const parsed = CompiledPrompts.safeParse(await client.compilePrompts(input));
+    if (!parsed.success) throw new Error(`invalid output: ${parsed.error.message}`);
+    return enforce(parsed.data, input, client.mode === "live" ? "claude" : "mock");
+  } catch (error) {
+    const message = error instanceof Error ? error.message : String(error);
+    console.warn(`[prompt-compiler] using templates: ${message}`);
+    return enforce(templatePrompts(input), input, "template");
+  }
+}
+
+/**
+ * The family's own motion words ("running on the beach") may only move what is
+ * already in the photo. A request to add or change something is dropped and
+ * explained gently and the gentle prompt is used instead (AGENTS.md §3.1).
+ */
+export function applyCustomMotion(
+  base: string,
+  motion: PromptCompilerInput["motion"],
+): { motionPrompt: string; motionRefused?: string } {
+  const text = motion?.preset === "custom" ? motion.text?.trim() : undefined;
+  if (!text) return { motionPrompt: base };
+  if (detectRefusedRequests(text).length > 0) {
+    return { motionPrompt: base, motionRefused: MOTION_REFUSED };
+  }
+  // The family's words replace the "almost static" base: appending them to it gave the
+  // video model two contradicting instructions (live test, 15 Nov). The guardrails stay.
+  return {
+    motionPrompt: `${text}. Only the people and things already in the photo move, naturally and realistically. Every person, object and place stays exactly as in the photo: never add or remove anyone or anything. Static camera, no cuts.`,
+  };
+}
+
+// Keeps the video model's negative prompt within input limits.
+const MAX_NEGATIVE_PROMPT_CHARS = 500;
+
+/** Guarantees that hold whatever the model (or the mock fixture) wrote. */
+function enforce(
+  prompts: CompiledPrompts,
+  input: PromptCompilerInput,
+  source: PromptSource,
+): CompiledPromptsResult {
+  const { sheet, motion } = input;
+  const extraNegative = prompts.negativePrompt.trim().slice(0, MAX_NEGATIVE_PROMPT_CHARS);
+  const negativePrompt =
+    extraNegative.length === 0 || extraNegative === DEFAULT_NEGATIVE_PROMPT
+      ? DEFAULT_NEGATIVE_PROMPT
+      : extraNegative.startsWith(DEFAULT_NEGATIVE_PROMPT)
+        ? extraNegative
+        : `${DEFAULT_NEGATIVE_PROMPT}, ${extraNegative}`;
+  // Explicit events from the answers always join the model's own, whatever it wrote.
+  const soundEvents = [
+    ...new Set([...(prompts.soundEvents ?? []), ...extractSoundEvents(input)].map((e) => e.trim())),
+  ].filter(Boolean);
+  const ambience = prompts.ambiencePrompt.trim() || soundEvents.join(", ");
+  const ambiencePrompt = /\bno music\b/i.test(ambience)
+    ? ambience
+    : [ambience, NO_MUSIC].filter(Boolean).join(", ");
+  const custom = applyCustomMotion(prompts.motionPrompt.trim() || MOTION_TEMPLATE, motion);
+  return {
+    ...prompts,
+    // An empty motion prompt would let the video model improvise.
+    motionPrompt: custom.motionPrompt,
+    motionRefused: custom.motionRefused ?? prompts.motionRefused,
+    negativePrompt,
+    ambiencePrompt,
+    soundEvents,
+    ambienceNegativePrompt: prompts.ambienceNegativePrompt?.trim() || AMBIENCE_NEGATIVE_PROMPT,
+    // The family's choice decides colourisation, never the model.
+    colourStyle:
+      sheet.colour === "colourise" ? prompts.colourStyle.trim() || "contemporary color" : "none",
+    // Free-text edit requests are always surfaced to the family, even when the
+    // model missed one or templates took over (FEATURES.md P3).
+    refusedRequests: mergeRefusedRequests(
+      prompts.refusedRequests,
+      detectRefusedRequests(sheet.freeText),
+    ),
+    source,
+  };
+}
+
+/**
+ * Room background from the family's words (B17). A Room is a backdrop, not a Memory:
+ * realistic like the standard photo Rooms, never people, and clear surfaces for the Objects.
+ */
+export function compileRoomPrompt(description: string): string {
+  const text = description.replace(/\s+/g, " ").trim().slice(0, 300);
+  return (
+    `A realistic, calm photograph of a room in a family home: ${text}. ` +
+    "Soft natural daylight, eye-level wide view, landscape framing, simple and uncluttered. " +
+    "Leave clear empty surfaces (table tops, shelves, floor) where objects can be placed. " +
+    "No people, no pets, no text, no logos, no screens showing images."
+  );
+}

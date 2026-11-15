@@ -1,0 +1,13 @@
+{
+  "images": [
+    {
+      "url": "mocks/media/photo.jpg",
+      "content_type": "image/jpeg",
+      "file_name": "photo.jpg",
+      "file_size": 10574,
+      "width": 480,
+      "height": 360
+    }
+  ],
+  "description": ""
+}

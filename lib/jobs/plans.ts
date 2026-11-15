@@ -1,0 +1,130 @@
+import "server-only";
+import { AMBIENCE_NEGATIVE_PROMPT } from "@/lib/ai/prompt-templates";
+import type {
+  Job,
+  JobStep,
+  JobType,
+  MemorySheet,
+  SceneMotion,
+  SoundMode,
+  StepName,
+} from "@/lib/contracts";
+import type { NewEntity } from "@/lib/db/collections";
+
+type PlannedStep = { name: StepName; enabled: boolean };
+
+function toSteps(planned: PlannedStep[]): JobStep[] {
+  return planned.map(({ name, enabled }) => ({
+    name,
+    status: enabled ? "pending" : "skipped",
+    attempts: 0,
+  }));
+}
+
+/**
+ * TECHNICAL.md §5.1. Disabled steps stay in the list as "skipped" so the Studio
+ * always shows the same chain for a scene.
+ */
+export function scenePlan(
+  sheet: Pick<MemorySheet, "restore" | "colour" | "motion">,
+  // "text": a parallel `scene_sound` job makes the sound, so this job skips ambience (P10).
+  soundMode: SoundMode = "clip",
+): JobStep[] {
+  return toSteps([
+    { name: "compile", enabled: true },
+    { name: "upload", enabled: true },
+    { name: "restore", enabled: sheet.restore },
+    { name: "colourise", enabled: sheet.colour === "colourise" },
+    { name: "animate", enabled: sheet.motion === "gentle" },
+    { name: "ambience", enabled: soundMode === "clip" },
+    { name: "finalize", enabled: true },
+  ]);
+}
+
+/** Sound from the photo's text only, no clip: runs next to the scene job (P10). */
+export function soundPlan(): JobStep[] {
+  return toSteps(
+    (["compile", "ambience", "finalize"] as const).map((name) => ({ name, enabled: true })),
+  );
+}
+
+export function object3dPlan(): JobStep[] {
+  return toSteps(
+    (["upload", "cutout", "model3d", "compress", "finalize"] as const).map((name) => ({
+      name,
+      enabled: true,
+    })),
+  );
+}
+
+export function roomBackgroundPlan(): JobStep[] {
+  return toSteps(
+    (["upload", "room_edit", "finalize"] as const).map((name) => ({ name, enabled: true })),
+  );
+}
+
+type JobRefs = Pick<Job, "houseId" | "memoryId" | "sceneId" | "storyId" | "roomId" | "assetId">;
+
+/** A queued job ready for `db.jobs.insert` (P4 / P5 / SH1 create them). */
+export function newJob(
+  input: JobRefs & {
+    type: JobType;
+    steps: JobStep[];
+    falKeyLabel: string;
+    bypassCache?: boolean;
+    now: string;
+  },
+): NewEntity<Job> {
+  const { now, ...rest } = input;
+  return {
+    ...rest,
+    current: 0,
+    status: "queued",
+    lockedUntil: null,
+    createdAt: now,
+    updatedAt: now,
+  };
+}
+
+/** The `object_3d` job of a Story made from an Object photo (P5). */
+export function newObjectJob(input: {
+  houseId: string;
+  roomId: string;
+  storyId: string;
+  assetId: string;
+  falKeyLabel: string;
+  now: string;
+}): NewEntity<Job> {
+  return newJob({ ...input, type: "object_3d", steps: object3dPlan() });
+}
+
+/** Animate-step params for one scene (P7): the compiled prompts plus the family's length. */
+export function animateParams(
+  prompts: { motionPrompt: string; negativePrompt: string },
+  motion: SceneMotion,
+): { params: Record<string, unknown>; seconds: number } {
+  return {
+    params: {
+      prompt: prompts.motionPrompt,
+      negative_prompt: prompts.negativePrompt,
+      // The video model takes the duration as the string "5" | "10".
+      duration: String(motion.durationSec),
+    },
+    seconds: motion.durationSec,
+  };
+}
+
+/** MMAudio params (P8): sound events as prompt, negative prompt, duration = clip length. */
+export function ambienceParams(
+  prompts: { ambiencePrompt: string; ambienceNegativePrompt?: string },
+  seconds: number,
+): Record<string, unknown> {
+  return {
+    prompt: prompts.ambiencePrompt,
+    negative_prompt: prompts.ambienceNegativePrompt ?? AMBIENCE_NEGATIVE_PROMPT,
+    duration: seconds,
+    num_steps: 25,
+    // Slightly above the 4.5 default: follow the events more closely, less generic hiss.
+    cfg_strength: 5.5,
+  };
+}

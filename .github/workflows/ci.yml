@@ -1,0 +1,75 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      AI_MODE: mock
+      MOCK_FAIL_RATE: "0"
+      MONGODB_URI: mongodb://localhost:27017
+      MONGODB_DB: mh_ci
+      STORAGE_DIR: ./storage
+      STUDIO_PASSWORD: ci-password
+      SESSION_SECRET: ci-session-secret-ci-session-secret
+      FAL_KEY: ci-dummy
+      ANTHROPIC_API_KEY: ci-dummy
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: pnpm/action-setup@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+
+      - name: Install
+        run: pnpm install --frozen-lockfile
+
+      - name: Typecheck
+        run: pnpm typecheck
+
+      - name: Lint (Biome)
+        run: pnpm lint
+
+      - name: Secret scan (all tracked files)
+        run: node scripts/secret-scan.mjs --all
+
+      - name: Unit tests
+        run: pnpm test
+
+      - name: Build
+        run: pnpm build
+
+      - name: Zone check (warning only)
+        if: github.event_name == 'pull_request'
+        run: |
+          branch="${{ github.head_ref }}"
+          zone=$(echo "$branch" | sed -nE 's#^(feat|fix)/([a-z]+)-.*#\2#p')
+          case "$zone" in
+            pipeline) allowed='^(lib/(ai|jobs|contracts|db|storage)/|lib/(http|session)\.ts|app/api/(jobs|files|auth)/|app/api/memories/\[id\]/generate/|app/api/scenes/\[id\]/retry/|instrumentation\.ts|proxy\.ts|mocks/|\.github/|\.claude/)' ;;
+            studio)   allowed='^(app/studio/|components/studio/|app/api/(houses|rooms|stories|memories|assets)/|app/api/scenes/\[id\]/choice/)' ;;
+            house)    allowed='^(app/house/|components/house/|lib/house/|app/api/h/|e2e/|scripts/demo-check\.ts)' ;;
+            design)   allowed='^(app/globals\.css|app/fonts\.ts|components/ui/|public/|docs/DESIGN\.md|docs/design-evidence/|scripts/(seed|export)-demo\.ts)' ;;
+            *) echo "No zone in branch name ($branch): skipping zone check."; exit 0 ;;
+          esac
+          shared='^(docs/|lib/copy\.ts|README\.md|FEATURES\.md|PLAN\.md|TESTING\.md|TECHNICAL\.md|GIT\.md|AGENTS\.md|CLAUDE\.md|package\.json|pnpm-lock\.yaml|.*\.test\.tsx?$)'
+          outside=$(git diff --name-only "origin/${{ github.base_ref }}...HEAD" | grep -Ev "$allowed" | grep -Ev "$shared" || true)
+          if [ -n "$outside" ]; then
+            echo "::warning::Files outside the $zone zone (list them in the PR description):"
+            echo "$outside"
+          else
+            echo "All files inside the $zone zone."
+          fi
