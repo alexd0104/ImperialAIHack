@@ -2,6 +2,10 @@
 
 Newest on top. Written by the agent after each task (what was done, Human TODO, Requests). Read this in the morning.
 
+- **S15 done (08:25, interactive):** live `rooms:make` on Raphaël's garden + kitchen photos (Unsplash) → `public/rooms/{garden,kitchen}.jpg`; all 3 styles now use photos (`room-styles.ts` photoRooms, `scripts/demo/plan.ts` PRESET_BACKGROUNDS); Slots moved onto the garden table/grass and the kitchen counter/island (Studio and demo plan kept equal). Seed + export + `demo:check` green. Note: the live cleanup removed the tree house/swing and added a small jar on the kitchen counter.
+- Outside zone: `components/studio/room-styles.ts`, `app/api/houses/route.test.ts`, `scripts/demo/plan.ts`.
+- Human TODO: eyeball Objects on the new Slots in the House. Existing Houses keep their saved backgrounds/Slots; only new Rooms get the photos.
+
 - **S14 done (08:05, interactive):** live `objects:make` → `public/objects/glb/{armchair,record-player,teapot}.glb` (534–692 KB) + thumbs, committed. Library lists them first as `3d-<name>` (`components/studio/object-library.ts` + test); the stories route stores `{kind:"glb", path:"/objects/glb/<n>.glb"}`; the bundle serves that static path as-is; PlacementEditor shows the thumb; `pnpm objects:make` script added.
 - Outside zone: `app/api/rooms/[id]/stories/route.ts`, `components/studio/{CreateStoryForm,PlacementEditor}.tsx` (Studio), `lib/house/bundle.ts` (House), `lib/copy.ts`, `package.json`.
 - Human TODO: pick a 3D default in a new Story and check it floats in the House. P9 beds still need ffmpeg + `AI_MODE=live pnpm beds:make`.

@@ -19,14 +19,14 @@ import type {
 /** Same slots as the Studio presets (components/studio/room-styles.ts; a test keeps them equal). */
 export const PRESET_SLOTS: Record<RoomStyle, Slot[]> = {
   garden: [
-    { id: "bench", x: 0.22, y: 0.68, scale: 0.18 },
-    { id: "tree", x: 0.71, y: 0.42, scale: 0.24 },
-    { id: "table", x: 0.5, y: 0.78, scale: 0.15 },
+    { id: "bench", x: 0.58, y: 0.84, scale: 0.14 },
+    { id: "tree", x: 0.84, y: 0.8, scale: 0.14 },
+    { id: "table", x: 0.25, y: 0.665, scale: 0.12 },
   ],
   kitchen: [
-    { id: "counter-left", x: 0.22, y: 0.565, scale: 0.18 },
-    { id: "counter-right", x: 0.76, y: 0.565, scale: 0.18 },
-    { id: "table", x: 0.5, y: 0.58, scale: 0.16 },
+    { id: "counter-left", x: 0.36, y: 0.57, scale: 0.12 },
+    { id: "counter-right", x: 0.79, y: 0.585, scale: 0.1 },
+    { id: "table", x: 0.5, y: 0.68, scale: 0.14 },
   ],
   living: [
     { id: "shelf", x: 0.13, y: 0.43, scale: 0.12 },
@@ -43,8 +43,8 @@ export const ROOM_NAMES: Record<RoomStyle, string> = {
 };
 
 export const PRESET_BACKGROUNDS: Record<RoomStyle, string> = {
-  garden: "/rooms/garden.svg",
-  kitchen: "/rooms/kitchen.svg",
+  garden: "/rooms/garden.jpg",
+  kitchen: "/rooms/kitchen.jpg",
   living: "/rooms/living-room.jpg",
 };
 

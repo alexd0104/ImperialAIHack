@@ -67,7 +67,7 @@ describe("S1 House and style Room routes", () => {
   });
 
   it.each(["garden", "kitchen", "living"])(
-    "creates a %s Room with empty fixed Slots and an exported SVG",
+    "creates a %s Room with empty fixed Slots and its room photo",
     async (style) => {
       const created = await house();
       const response = await room(created.id, { ...roomInput, style });
@@ -75,7 +75,7 @@ describe("S1 House and style Room routes", () => {
       const result = apiSuccess(Room).parse(await response.json()).data;
       expect(result.houseId).toBe(created.id);
       expect(result.backgroundPath).toBe(
-        `/rooms/${style === "living" ? "living-room.jpg" : `${style}.svg`}`,
+        `/rooms/${style === "living" ? "living-room" : style}.jpg`,
       );
       expect(result.slots.length).toBeGreaterThan(0);
       expect(result.slots.every((slot) => slot.storyId === undefined)).toBe(true);

@@ -6,7 +6,7 @@ import { copy } from "@/lib/copy";
 // top (y 560–586) or the living-room floor (from y 614). Ids stay stable: saved Rooms use them.
 // Room photos made by `pnpm rooms:make` (public/rooms/<name>.jpg). A style uses its photo when
 // listed here, its drawn SVG otherwise, so a missing photo never leaves a Room blank.
-const photoRooms: readonly string[] = ["living-room"];
+const photoRooms: readonly string[] = ["garden", "kitchen", "living-room"];
 const roomImage = (name: string) => `/rooms/${name}.${photoRooms.includes(name) ? "jpg" : "svg"}`;
 
 export const roomStyles: Record<RoomStyle, { name: string; image: string; slots: Slot[] }> = {
@@ -14,18 +14,20 @@ export const roomStyles: Record<RoomStyle, { name: string; image: string; slots:
     name: copy.studio.createHouse.rooms.garden,
     image: roomImage("garden"),
     slots: [
-      { id: "bench", x: 0.22, y: 0.68, scale: 0.18 },
-      { id: "tree", x: 0.71, y: 0.42, scale: 0.24 },
-      { id: "table", x: 0.5, y: 0.78, scale: 0.15 },
+      // Photo surfaces: grass in front, grass under the chestnut tree, garden table top.
+      { id: "bench", x: 0.58, y: 0.84, scale: 0.14 },
+      { id: "tree", x: 0.84, y: 0.8, scale: 0.14 },
+      { id: "table", x: 0.25, y: 0.665, scale: 0.12 },
     ],
   },
   kitchen: {
     name: copy.studio.createHouse.rooms.kitchen,
     image: roomImage("kitchen"),
     slots: [
-      { id: "counter-left", x: 0.22, y: 0.565, scale: 0.18 },
-      { id: "counter-right", x: 0.76, y: 0.565, scale: 0.18 },
-      { id: "table", x: 0.5, y: 0.58, scale: 0.16 },
+      // Photo surfaces: back counter either side of the sink, front island.
+      { id: "counter-left", x: 0.36, y: 0.57, scale: 0.12 },
+      { id: "counter-right", x: 0.79, y: 0.585, scale: 0.1 },
+      { id: "table", x: 0.5, y: 0.68, scale: 0.14 },
     ],
   },
   living: {
