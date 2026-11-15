@@ -33,7 +33,12 @@ export function PlacementEditor({
   const drag = useRef<Drag | null>(null);
   const [live, setLive] = useState<StoryPosition | null>(null);
   const shown = live ?? value;
-  const src = object.kind === "svg" ? `/objects/${object.path}.svg` : `/api/files/${object.path}`; // glb has no 2D picture; falls back to the label below
+  const src =
+    object.kind === "svg"
+      ? `/objects/${object.path}.svg`
+      : object.path.startsWith("/objects/glb/")
+        ? object.path.replace("/objects/glb/", "/objects/thumbs/").replace(/\.glb$/, ".png")
+        : `/api/files/${object.path}`; // glb has no 2D picture; falls back to the label below
 
   const rect = () => box.current?.getBoundingClientRect();
 

@@ -23,6 +23,7 @@
     "prepare": "husky",
     "beds:make": "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --import ./scripts/ts-resolve.mjs --conditions=react-server --env-file-if-exists=.env.local scripts/make-beds.mts",
     "lab:experiment": "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --import ./scripts/ts-resolve.mjs --conditions=react-server --env-file-if-exists=.env.local scripts/lab-experiment.mts",
+    "objects:make": "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --import ./scripts/ts-resolve.mjs --conditions=react-server --env-file-if-exists=.env.local scripts/make-objects.mts",
     "rooms:make": "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --import ./scripts/ts-resolve.mjs --conditions=react-server --env-file-if-exists=.env.local scripts/make-rooms.mts",
     "scene:run": "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --import ./scripts/ts-resolve.mjs --conditions=react-server --env-file-if-exists=.env.local scripts/run-scene.mts"
   },

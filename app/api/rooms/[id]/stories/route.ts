@@ -2,7 +2,7 @@ import "server-only";
 import { createHash } from "node:crypto";
 import { creationId } from "@/app/api/houses/_store";
 import { getEntity, insertEntity, isDuplicate } from "@/app/api/stories/_store";
-import { objectLibrary } from "@/components/studio/object-library";
+import { libraryGlbPath, objectLibrary } from "@/components/studio/object-library";
 import { CreateStoryRequest, Job, Story } from "@/lib/contracts";
 import { copy } from "@/lib/copy";
 import { fail, ok, parseJson } from "@/lib/http";
@@ -26,7 +26,8 @@ export async function POST(request: Request, context: { params: Promise<{ id: st
         body.object.kind === "photo" ? await getEntity("assets", body.object.assetId) : null;
       const sameObject =
         body.object.kind === "library"
-          ? !existing.object.jobId && existing.object.path === body.object.name
+          ? !existing.object.jobId &&
+            existing.object.path === (libraryGlbPath(body.object.name) ?? body.object.name)
           : asset && (job?.assetId === asset.id || job?.steps[0]?.output === asset.path);
       return existing.roomId === roomId &&
         existing.title === body.title &&
@@ -43,7 +44,8 @@ export async function POST(request: Request, context: { params: Promise<{ id: st
       const libraryName = body.object.name;
       if (!objectLibrary.some((name) => name === libraryName))
         return fail("validation_failed", words.invalid, 422);
-      object = { kind: "svg", path: body.object.name };
+      const glb = libraryGlbPath(libraryName);
+      object = glb ? { kind: "glb", path: glb } : { kind: "svg", path: libraryName };
     } else {
       // The offline file store has no job engine: it keeps S2's synthetic progress.
       const offline = process.env.STUDIO_MOCK_STORE === "true";

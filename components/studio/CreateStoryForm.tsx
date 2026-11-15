@@ -13,11 +13,10 @@ import { AssetView, CreateStoryRequest, JobView, Room, Story } from "@/lib/contr
 import { copy } from "@/lib/copy";
 import { cn } from "@/lib/utils";
 import { postStudio, requestStudio, StudioApiError } from "./api";
-import { objectLabel, objectLibrary } from "./object-library";
+import { type LibraryName, libraryImage, objectLabel, objectLibrary } from "./object-library";
 import { resizeObjectPhoto } from "./photo";
 
 const words = copy.studio.createStory;
-type LibraryName = (typeof objectLibrary)[number];
 
 function errorMessage(error: unknown) {
   if (error instanceof StudioApiError) return error.message;
@@ -289,7 +288,7 @@ function StoryForm({ roomId }: { roomId: string }) {
           ) : (
             <div className="relative h-40 w-45">
               <Image
-                src={`/objects/${name}.svg`}
+                src={libraryImage(name)}
                 alt={objectLabel(name)}
                 fill
                 sizes="180px"
@@ -389,7 +388,7 @@ function StoryForm({ roomId }: { roomId: string }) {
                       >
                         <div className="relative h-18 w-full">
                           <Image
-                            src={`/objects/${value}.svg`}
+                            src={libraryImage(value)}
                             alt=""
                             fill
                             sizes="100px"

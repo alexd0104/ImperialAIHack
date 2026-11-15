@@ -138,8 +138,10 @@ export function orderMemories(story: Story, memories: Memory[]): Memory[] {
 }
 
 function objectUrl(story: Story, token: string): string {
-  return story.object.kind === "svg"
-    ? `/objects/${story.object.path}.svg`
+  if (story.object.kind === "svg") return `/objects/${story.object.path}.svg`;
+  // 3D library defaults (S14) are committed static files under /objects/glb.
+  return story.object.path.startsWith("/objects/")
+    ? story.object.path
     : fileUrl(story.object.path, token);
 }
 

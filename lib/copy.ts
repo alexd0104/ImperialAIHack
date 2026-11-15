@@ -55,6 +55,9 @@ export const copy = {
       unsaved: "Your browser can’t save this draft. Keep this page open until you finish.",
       liveUnavailable: "Please choose an Object from the collection for now.",
       objects: {
+        "3d-armchair": "Armchair",
+        "3d-record-player": "Record player",
+        "3d-teapot": "Teapot (3D)",
         "watering-can": "Watering can",
         flower: "Flower",
         "sun-hat": "Sun hat",

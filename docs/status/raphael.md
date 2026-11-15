@@ -2,6 +2,10 @@
 
 Newest on top. Written by the agent after each task (what was done, Human TODO, Requests). Read this in the morning.
 
+- **S14 done (08:05, interactive):** live `objects:make` → `public/objects/glb/{armchair,record-player,teapot}.glb` (534–692 KB) + thumbs, committed. Library lists them first as `3d-<name>` (`components/studio/object-library.ts` + test); the stories route stores `{kind:"glb", path:"/objects/glb/<n>.glb"}`; the bundle serves that static path as-is; PlacementEditor shows the thumb; `pnpm objects:make` script added.
+- Outside zone: `app/api/rooms/[id]/stories/route.ts`, `components/studio/{CreateStoryForm,PlacementEditor}.tsx` (Studio), `lib/house/bundle.ts` (House), `lib/copy.ts`, `package.json`.
+- Human TODO: pick a 3D default in a new Story and check it floats in the House. P9 beds still need ffmpeg + `AI_MODE=live pnpm beds:make`.
+
 - **Q5 done (code):** `lib/lab/` (4 approaches as functions → MemorySheet, mock model, 5 test photos, `runExperiment` → 20 runs through the prompt compiler, live Claude model) + `scripts/lab-experiment.mts` (`pnpm lab:experiment`; mock writes 20 `lab_runs` to MongoDB, or `storage/lab/runs.json` if no DB) + `docs/LAB-REPORT.md` template. No `/dev/lab` page (not worth it).
 - Outside zone: `package.json` (script only).
 - Human TODO: `AI_MODE=live pnpm lab:experiment --photos <dir>` (≈ $10; beach/fireplace/garden/wedding/kitchen .jpg), generate and review outputs, enter scores, fill the verdict in `docs/LAB-REPORT.md`. Live model code is untested.
