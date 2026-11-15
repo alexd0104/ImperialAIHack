@@ -19,7 +19,7 @@
     "autopilot": "node scripts/autopilot.mjs",
     "demo:check": "node --env-file-if-exists=.env.local scripts/demo-check.mts",
     "seed:demo": "node --conditions=react-server --env-file-if-exists=.env.local scripts/seed-demo.mts",
-    "export:demo": "node --conditions=react-server --env-file-if-exists=.env.local scripts/export-demo.mts",
+    "export:demo": "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --import ./scripts/ts-resolve.mjs --conditions=react-server --env-file-if-exists=.env.local scripts/export-demo.mts",
     "prepare": "husky",
     "beds:make": "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --import ./scripts/ts-resolve.mjs --conditions=react-server --env-file-if-exists=.env.local scripts/make-beds.mts",
     "lab:experiment": "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --import ./scripts/ts-resolve.mjs --conditions=react-server --env-file-if-exists=.env.local scripts/lab-experiment.mts",
