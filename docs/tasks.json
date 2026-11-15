@@ -941,6 +941,15 @@
       "deps": [],
       "soft": [],
       "note": ""
+    },
+    {
+      "id": "B23",
+      "title": "Room creation loading panel; clearer photo look options without the movement toggle",
+      "owner": "raphael",
+      "priority": "FIX",
+      "deps": [],
+      "soft": [],
+      "note": ""
     }
   ]
 }

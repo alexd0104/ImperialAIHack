@@ -74,6 +74,12 @@ _(newest first: date — from → to — what)_
 
 ## Log
 
+### 2026-11-15 11:20 — Raphaël (design, B23)
+- Add room / Edit room: while a Room or its background is being made, the form is replaced by a "Getting your Room ready" panel (room-shaped placeholder, moving dots, hint per kind; for a description, a bar that fills towards 90 % over ~20 s).
+- Sheet step "How should the photos look?": no more switch hiding the rest. Three always-visible rows of buttons (Scratches and fading: Gently repair / Keep as it is; Movement: Keep still / Gentle movement / Describe it; Length 5 s / 10 s, hidden only when Keep still). Each tap saves `answers.motion` and `sceneMotion` together, so they can't disagree; "Saved" shows under the card.
+- **Outside my zone (Studio, Alexandre):** `components/studio/RoomManager.tsx`, `components/studio/MemorySheetView.tsx`, `lib/copy.ts` (new keys in `studio.rooms` and `studio.progress`; removed `progress.restore/motion/motionHint`). `MotionPicker` at review is unchanged.
+- Checked in the browser (dev, mock): loading panel shows; Describe it shows the text box; Keep still persists after reload. `pnpm verify` green.
+
 - 2026-11-15 10:00 — Timoté — B22: Studio home Rooms are now a door carousel (`components/studio/RoomDoors.tsx`): each door opens `/studio/rooms/[id]` (background, name, move each Object via its place page, delete, New Story here); the "+" doorway opens `/studio/rooms/new` (AddRoom). **Alexandre:** `RoomManager.tsx` now only renders the carousel; `AddRoom` and `RoomRow` are exported and reused by `components/studio/RoomPages.tsx`. Keep editing them in place. e2e `room-picker.spec.ts` updated (link "Add room", door "Open: <name>").
 
 ### 2026-11-15 10:40 — Raphaël (design, B21)

@@ -1,11 +1,12 @@
 "use client";
 
 import { QueryClient, QueryClientProvider, useMutation, useQuery } from "@tanstack/react-query";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardTitle } from "@/components/ui/card";
 import { Input, Label, Textarea } from "@/components/ui/input";
 import { MovingDots } from "@/components/ui/moving-dots";
+import { ShimmerBar } from "@/components/ui/shimmer-bar";
 import {
   AssetView,
   DeletedResponse,
@@ -68,6 +69,49 @@ function generateRoom(
   });
 }
 const DESCRIPTION_MIN = 3;
+/** Text-to-image takes ~20 s: the bar creeps towards 90 % over that, then waits. */
+const DESCRIBE_EXPECTED_MS = 20_000;
+
+/**
+ * Shown while a Room or its background is being made, in place of the form, so the family
+ * sees something is happening (the description path takes ~20 s).
+ */
+function RoomMaking({ kind }: { kind: Background["kind"] }) {
+  const [progress, setProgress] = useState(0);
+  useEffect(() => {
+    if (kind !== "description") return;
+    const t0 = Date.now();
+    const timer = setInterval(
+      () => setProgress(Math.min(0.9, ((Date.now() - t0) / DESCRIBE_EXPECTED_MS) * 0.9)),
+      250,
+    );
+    return () => clearInterval(timer);
+  }, [kind]);
+  const hint =
+    kind === "description"
+      ? words.makingDescribe
+      : kind === "photo"
+        ? words.makingPhoto
+        : words.makingStyle;
+  return (
+    <div role="status" aria-live="polite" className="space-y-4">
+      <div className="relative aspect-[1194/834] w-full overflow-hidden rounded-xl bg-surface-muted">
+        <div
+          aria-hidden
+          className="absolute inset-0 animate-pulse bg-surface/40 motion-reduce:hidden"
+        />
+        <div className="absolute inset-0 flex items-center justify-center">
+          <MovingDots />
+        </div>
+      </div>
+      <div className="space-y-2">
+        <p className="font-display text-22">{words.makingTitle}</p>
+        <p className="text-16 text-ink/70">{hint}</p>
+        <ShimmerBar value={kind === "description" ? progress : undefined} />
+      </div>
+    </div>
+  );
+}
 
 async function uploadPhoto(houseId: string, file: File) {
   const body = new FormData();
@@ -208,9 +252,7 @@ export function RoomRow({
         </Button>
       </div>
       {(photo.isPending || describe.isPending) && (
-        <p role="status" className="flex items-center gap-2 text-16">
-          <MovingDots /> {words.working}
-        </p>
+        <RoomMaking kind={describe.isPending ? "description" : "photo"} />
       )}
       {(patch.isError || photo.isError || describe.isError || remove.isError) && (
         <p role="alert" className="rounded-lg bg-warning-surface p-3 text-16">
@@ -275,6 +317,12 @@ export function AddRoom({ houseId, onCreated }: { houseId: string; onCreated: ()
     picked ?? (text.length >= DESCRIPTION_MIN ? { kind: "description", text } : null);
   const missing = !trimmed ? words.needName : !background ? words.needBackground : null;
   const busy = create.isPending;
+  if (busy && create.variables)
+    return (
+      <Card className="p-5">
+        <RoomMaking kind={create.variables.background.kind} />
+      </Card>
+    );
   return (
     <Card className="space-y-4 p-5">
       <p className="text-18 font-bold">{words.addTitle}</p>

@@ -3,21 +3,22 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { type ReactNode, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { Label } from "@/components/ui/input";
-import { Switch } from "@/components/ui/switch";
+import { Input } from "@/components/ui/input";
+import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import {
   DEFAULT_SCENE_MOTION,
   HouseDetail,
   RetryResponse,
   type SceneMotion,
+  type UpdateMemoryRequest,
 } from "@/lib/contracts";
 import { copy } from "@/lib/copy";
 import { postStudio, requestStudio, StudioApiError } from "./api";
 import { DontShowWarning } from "./DontShowWarning";
 import { dontShowMatches } from "./dont-show";
-import { MotionFields } from "./MotionPicker";
 import { hasVisual } from "./memory-bank";
 import { fetchMemory, generateMemory, memoryKey, patchMemory } from "./memory-client";
 import { sheetRows } from "./memory-sheet-rows";
@@ -132,6 +133,12 @@ function Sheet({ memoryId }: { memoryId: string }) {
 }
 
 /** S6 options, chosen before anything is made. Memory-wide: the contract has no per-photo field yet. */
+type Movement = "still" | "gentle" | "custom";
+
+/**
+ * B23: every choice is visible at once as a labelled row of big buttons, and each tap saves.
+ * (Before, a "Gentle movement" switch hid the movement and length choices.)
+ */
 function LookOptions(props: {
   memoryId: string;
   restore: boolean;
@@ -139,44 +146,126 @@ function LookOptions(props: {
   sceneMotion: SceneMotion;
 }) {
   const client = useQueryClient();
+  const words = copy.studio.progress;
+  const motionWords = copy.studio.motion;
+  const [restore, setRestore] = useState(props.restore);
+  const [movement, setMovement] = useState<Movement>(
+    props.motion === "still" ? "still" : props.sceneMotion.preset,
+  );
+  const [text, setText] = useState(props.sceneMotion.text ?? "");
+  const [durationSec, setDuration] = useState<SceneMotion["durationSec"]>(
+    props.sceneMotion.durationSec,
+  );
+
   const save = useMutation({
-    mutationFn: (answers: { restore?: boolean; motion?: "gentle" | "still" }) =>
-      patchMemory(props.memoryId, { answers }),
+    mutationFn: (body: UpdateMemoryRequest) => patchMemory(props.memoryId, body),
     onSettled: () => client.invalidateQueries({ queryKey: memoryKey(props.memoryId) }),
   });
-  const words = copy.studio.progress;
+
+  /** Writes the movement answer and the scene motion together, so they never disagree. */
+  function saveMotion(next: { movement?: Movement; text?: string; durationSec?: 5 | 10 }) {
+    const m = next.movement ?? movement;
+    const t = (next.text ?? text).trim();
+    const d = next.durationSec ?? durationSec;
+    // "Describe it" with nothing typed yet behaves as gentle until the family writes something.
+    const sceneMotion: SceneMotion =
+      m === "custom" && t
+        ? { preset: "custom", text: t, durationSec: d }
+        : { preset: "gentle", durationSec: d };
+    save.mutate({ answers: { motion: m === "still" ? "still" : "gentle" }, sceneMotion });
+  }
+
   return (
-    <Card className="space-y-4 p-5">
-      <h2 className="font-display text-22">{words.optionsTitle}</h2>
-      <div className="flex items-center justify-between gap-4">
-        <Label htmlFor="opt-restore">{words.restore}</Label>
-        <Switch
-          id="opt-restore"
-          checked={props.restore}
-          onCheckedChange={(restore) => save.mutate({ restore })}
-        />
+    <Card className="space-y-6 p-5">
+      <div className="space-y-1">
+        <h2 className="font-display text-22">{words.optionsTitle}</h2>
+        <p className="text-14 text-ink/70">{words.optionsIntro}</p>
       </div>
-      <div className="flex items-center justify-between gap-4">
-        <div>
-          <Label htmlFor="opt-motion">{words.motion}</Label>
-          <p className="text-14 text-ink/70">{words.motionHint}</p>
-        </div>
-        <Switch
-          id="opt-motion"
-          checked={props.motion === "gentle"}
-          onCheckedChange={(on) => save.mutate({ motion: on ? "gentle" : "still" })}
-        />
-      </div>
-      {/* Type of movement and length are chosen here, before anything is made (not only at review). */}
-      {props.motion === "gentle" && (
-        <MotionFields
-          initial={props.sceneMotion}
-          hint={copy.studio.motion.hintBefore}
-          savedText={copy.studio.motion.savedBefore}
-          save={(sceneMotion) => patchMemory(props.memoryId, { sceneMotion })}
-          onSaved={() => client.invalidateQueries({ queryKey: memoryKey(props.memoryId) })}
-        />
+
+      <OptionRow label={words.repairLabel}>
+        <ToggleGroup
+          type="single"
+          value={restore ? "yes" : "no"}
+          aria-label={words.repairLabel}
+          onValueChange={(value) => {
+            if (!value) return;
+            setRestore(value === "yes");
+            save.mutate({ answers: { restore: value === "yes" } });
+          }}
+        >
+          <ToggleGroupItem value="yes">{words.repairYes}</ToggleGroupItem>
+          <ToggleGroupItem value="no">{words.repairNo}</ToggleGroupItem>
+        </ToggleGroup>
+      </OptionRow>
+
+      <OptionRow
+        label={words.movementLabel}
+        hint={movement === "still" ? words.movementStillHint : words.movementGentleHint}
+      >
+        <ToggleGroup
+          type="single"
+          value={movement}
+          aria-label={words.movementLabel}
+          onValueChange={(value) => {
+            if (!value) return;
+            setMovement(value as Movement);
+            saveMotion({ movement: value as Movement });
+          }}
+        >
+          <ToggleGroupItem value="still">{words.movementStill}</ToggleGroupItem>
+          <ToggleGroupItem value="gentle">{words.movementGentle}</ToggleGroupItem>
+          <ToggleGroupItem value="custom">{words.movementCustom}</ToggleGroupItem>
+        </ToggleGroup>
+        {movement === "custom" && (
+          <Input
+            value={text}
+            maxLength={200}
+            placeholder={motionWords.placeholder}
+            aria-label={motionWords.custom}
+            onChange={(event) => setText(event.target.value)}
+            onBlur={() => saveMotion({})}
+          />
+        )}
+      </OptionRow>
+
+      {movement !== "still" && (
+        <OptionRow label={words.lengthLabel} hint={motionWords.hintBefore}>
+          <ToggleGroup
+            type="single"
+            value={String(durationSec)}
+            aria-label={words.lengthLabel}
+            onValueChange={(value) => {
+              if (!value) return;
+              const d = value === "10" ? 10 : 5;
+              setDuration(d);
+              saveMotion({ durationSec: d });
+            }}
+          >
+            <ToggleGroupItem value="5">{motionWords.seconds5}</ToggleGroupItem>
+            <ToggleGroupItem value="10">{motionWords.seconds10}</ToggleGroupItem>
+          </ToggleGroup>
+        </OptionRow>
       )}
+
+      <p aria-live="polite" className="min-h-5 text-14 text-ink/70">
+        {save.isPending
+          ? words.saving
+          : save.isError
+            ? motionWords.error
+            : save.isSuccess
+              ? words.saved
+              : ""}
+      </p>
     </Card>
+  );
+}
+
+function OptionRow(props: { label: string; hint?: string; children: ReactNode }) {
+  return (
+    <div className="space-y-2">
+      <p className="text-16 font-bold">{props.label}</p>
+      <div className="flex flex-wrap items-center gap-3">{props.children}</div>
+      {props.hint && <p className="text-14 text-ink/70">{props.hint}</p>}
+    </div>
   );
 }
