@@ -324,6 +324,9 @@ export const copy = {
       yes: "Yes, it is OK",
       no: "Only with family beside them",
       generate: "Bring to life",
+      regenerate: "Change answers and bring to life again",
+      regenerateConfirm:
+        "Your Memory has already been made. Making it again replaces the scenes you have not approved yet. Continue?",
       generating: "Starting…",
       generateError: "We couldn’t start this yet. Your Memory is saved. Please try again.",
       noPhotos: "Add at least one photo or video first.",

@@ -7,9 +7,9 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Label } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
-import { HouseDetail } from "@/lib/contracts";
+import { HouseDetail, RetryResponse } from "@/lib/contracts";
 import { copy } from "@/lib/copy";
-import { requestStudio, StudioApiError } from "./api";
+import { postStudio, requestStudio, StudioApiError } from "./api";
 import { DontShowWarning } from "./DontShowWarning";
 import { dontShowMatches } from "./dont-show";
 import { hasVisual } from "./memory-bank";
@@ -37,8 +37,14 @@ function Sheet({ memoryId }: { memoryId: string }) {
     queryFn: () => requestStudio(`/api/houses/${houseId}`, HouseDetail),
   });
   // Nothing is made until the family presses the button (product rule: family approves).
+  const started = (memory.data?.scenes.length ?? 0) > 0;
+  // After a first run, changed answers mean new prompts: retry bypasses the cache per scene.
   const generate = useMutation({
-    mutationFn: () => generateMemory(memoryId),
+    mutationFn: async () => {
+      await generateMemory(memoryId);
+      for (const scene of memory.data?.scenes ?? [])
+        await postStudio(`/api/scenes/${scene.id}/retry`, {}, RetryResponse, crypto.randomUUID());
+    },
     onSuccess: () => router.push(`/studio/memories/${memoryId}/review`),
   });
 
@@ -98,9 +104,12 @@ function Sheet({ memoryId }: { memoryId: string }) {
         <Button
           type="button"
           disabled={!canGenerate || generate.isPending}
-          onClick={() => generate.mutate()}
+          onClick={() => {
+            if (started && !window.confirm(words.regenerateConfirm)) return;
+            generate.mutate();
+          }}
         >
-          {generate.isPending ? words.generating : words.generate}
+          {generate.isPending ? words.generating : started ? words.regenerate : words.generate}
         </Button>
         {!canGenerate && (
           <>

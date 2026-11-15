@@ -2,6 +2,9 @@
 
 Newest on top. Written by the agent after each task (what was done, Human TODO, Requests). Read this in the morning.
 
+- S10 (done): back navigation. Clickable stepper `StepNav.tsx` (earlier steps link, in `StudioNav`), browser Back works (each step is its own route), questions autosave flushes on leaving the step. New: once scenes exist, the sheet's button reads "Change answers and bring to life again", asks `window.confirm`, then calls generate and `POST /api/scenes/:id/retry` per scene (cache bypass). Files outside zone: `components/studio/MemorySheetView.tsx` (button only), `lib/copy.ts` (2 strings).
+- Human TODO: click through all 5 steps back and forth on the tablet; try "Change answers" on a Memory with approved scenes (it regenerates them, approved choices are replaced). Not done: no Playwright test for the stepper. Request: none.
+
 - S12: Free placement. `components/studio/PlacementEditor.tsx` (drag to move, corner handle to resize, pointer events so touch works, faint old Slots snap on tap) replaces the slot picker in `PlaceStory.tsx`; `placement.ts` holds the normalisation (tested). `PATCH /api/stories/:id` now saves `position` (`null` clears it). The bundle builder uses it. Files outside zone: `lib/house/bundle.ts` (few lines: `story.position` in the bundle Story and used as the slot's x/y/scale so the House shows it there), `lib/copy.ts`.
 - Human TODO: try dragging/resizing on the tablet; check the House shows the Object at the saved spot. glb Objects show a plain placeholder box in the editor (no 2D picture). Not done: no test for the bundle position and no Playwright test. Request: Yasir — House could read `story.position` directly if it prefers.
 
