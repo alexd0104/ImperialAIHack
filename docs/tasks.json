@@ -860,6 +860,15 @@
       "deps": [],
       "soft": [],
       "note": ""
+    },
+    {
+      "id": "B14",
+      "title": "Integrate and push local pregen assets on main",
+      "owner": "alexandre",
+      "priority": "FIX",
+      "deps": [],
+      "soft": [],
+      "note": ""
     }
   ]
 }

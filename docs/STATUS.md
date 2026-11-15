@@ -71,6 +71,13 @@ _(newest first: date — from → to — what)_
 
 ## Log
 
+### 2026-11-15 — Alexandre (main integration, B14)
+- Done: rebased the local pregen commit onto origin/main; no conflicts occurred, all three assets preserved.
+- Validation: AI_MODE=mock pnpm verify passed (48 files, 433 tests); task registry lint passed.
+- In progress: push to main and remote CI verification.
+- Blocked: nothing.
+- Outside Studio zone: existing user-provided pregen/ assets; shared docs/tasks.json and this handoff. No contracts or application code changed.
+
 ### 2026-11-15 00:55 — Timoté (pipeline, F7)
 - Done: Contracts v2 (see Contract changes). `pnpm verify` green (387 tests).
 - Outside my zone: `scripts/check-env.mjs` (two optional rules, listed in F7's files).
