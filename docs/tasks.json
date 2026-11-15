@@ -896,6 +896,33 @@
       "deps": [],
       "soft": [],
       "note": ""
+    },
+    {
+      "id": "B18",
+      "title": "Studio room picker with + Add room card (name, photo; generate later)",
+      "owner": "alexandre",
+      "priority": "FIX",
+      "deps": [],
+      "soft": [],
+      "note": ""
+    },
+    {
+      "id": "B19",
+      "title": "Review screen: one main Keep and continue action, secondary keep original",
+      "owner": "alexandre",
+      "priority": "FIX",
+      "deps": [],
+      "soft": [],
+      "note": ""
+    },
+    {
+      "id": "B20",
+      "title": "Test and fix adding a Memory to an existing Story",
+      "owner": "alexandre",
+      "priority": "FIX",
+      "deps": [],
+      "soft": [],
+      "note": ""
     }
   ]
 }

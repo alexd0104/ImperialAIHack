@@ -1,10 +1,12 @@
 "use client";
 
 import { QueryClient, QueryClientProvider, useMutation, useQuery } from "@tanstack/react-query";
+import { Plus } from "lucide-react";
+import Link from "next/link";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardTitle } from "@/components/ui/card";
-import { Input, Label } from "@/components/ui/input";
+import { Input, Label, Textarea } from "@/components/ui/input";
 import { MovingDots } from "@/components/ui/moving-dots";
 import {
   AssetView,
@@ -31,6 +33,10 @@ export function RoomManager({ houseId }: { houseId?: string }) {
   );
 }
 
+/**
+ * Room picker on the Studio home: one card per Room (opens a new Story there), plus a clear
+ * "+ Add room" card. Editing (rename, background, delete) stays behind each card's "Edit".
+ */
 function Rooms({ initialHouseId }: { initialHouseId?: string }) {
   const { houseId } = useStudioHouseId(initialHouseId);
   const house = useQuery({
@@ -38,28 +44,88 @@ function Rooms({ initialHouseId }: { initialHouseId?: string }) {
     enabled: Boolean(houseId),
     queryFn: () => requestStudio(`/api/houses/${houseId}`, HouseDetail),
   });
-  const [open, setOpen] = useState(false);
+  const [editing, setEditing] = useState<string | null>(null);
+  const [adding, setAdding] = useState(false);
   if (!houseId) return null;
   const refresh = () => house.refetch();
+  const rooms = house.data?.rooms ?? [];
+  const edited = rooms.find((room) => room.id === editing);
   return (
-    <section className="mt-8">
-      <div className="flex items-center justify-between gap-4">
+    <section className="mt-8 space-y-4">
+      <div>
         <CardTitle>{words.title}</CardTitle>
-        <Button size="sm" variant="secondary" onClick={() => setOpen(!open)} aria-expanded={open}>
-          {words.open}
-        </Button>
+        <p className="text-16 text-ink/70">{words.pickerIntro}</p>
       </div>
-      {open && (
-        <div className="mt-4 space-y-4">
-          <p className="text-16 text-ink/70">{words.intro}</p>
-          {house.data?.rooms.length === 0 && <p className="text-16">{words.empty}</p>}
-          {house.data?.rooms.map((room) => (
-            <RoomRow key={room.id} room={room} onChanged={refresh} />
-          ))}
-          <AddRoom houseId={houseId} onChanged={refresh} />
-        </div>
+      <ul className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
+        {rooms.map((room) => (
+          <li key={room.id}>
+            <RoomCard
+              room={room}
+              editing={editing === room.id}
+              onEdit={() => setEditing(editing === room.id ? null : room.id)}
+            />
+          </li>
+        ))}
+        <li>
+          <button
+            type="button"
+            aria-expanded={adding}
+            onClick={() => setAdding(!adding)}
+            className="flex aspect-[4/3] min-h-16 w-full flex-col items-center justify-center gap-2 rounded-xl border-2 border-dashed border-ink/30 bg-surface text-18 font-bold hover:border-primary-strong"
+          >
+            <Plus aria-hidden className="size-8" />
+            {words.addCard}
+          </button>
+        </li>
+      </ul>
+      {adding && (
+        <AddRoom
+          houseId={houseId}
+          onCreated={() => {
+            setAdding(false);
+            refresh();
+          }}
+        />
+      )}
+      {edited && (
+        <RoomRow
+          key={edited.id}
+          room={edited}
+          onChanged={refresh}
+          onDeleted={() => {
+            setEditing(null);
+            refresh();
+          }}
+        />
       )}
     </section>
+  );
+}
+
+const backgroundUrl = (path: string) => (path.startsWith("/") ? path : `/api/files/${path}`);
+
+function RoomCard({ room, editing, onEdit }: { room: Room; editing: boolean; onEdit: () => void }) {
+  return (
+    <Card className="overflow-hidden p-0">
+      <Link
+        href={`/studio/stories/new?roomId=${encodeURIComponent(room.id)}`}
+        className="block"
+        aria-label={`${words.openRoom}: ${room.name}`}
+      >
+        {/* biome-ignore lint/performance/noImgElement: Room picture from /rooms or /api/files, not optimised by Next. */}
+        <img
+          src={backgroundUrl(room.backgroundPath)}
+          alt=""
+          className="aspect-[4/3] w-full object-cover"
+        />
+      </Link>
+      <div className="flex items-center justify-between gap-2 p-3">
+        <p className="truncate text-16 font-bold">{room.name}</p>
+        <Button size="sm" variant="secondary" aria-expanded={editing} onClick={onEdit}>
+          {editing ? words.done : words.manage}
+        </Button>
+      </div>
+    </Card>
   );
 }
 
@@ -88,7 +154,15 @@ function StylePicker({ onPick, disabled }: { onPick: (s: RoomStyle) => void; dis
   );
 }
 
-function RoomRow({ room, onChanged }: { room: Room; onChanged: () => void }) {
+function RoomRow({
+  room,
+  onChanged,
+  onDeleted,
+}: {
+  room: Room;
+  onChanged: () => void;
+  onDeleted: () => void;
+}) {
   const [name, setName] = useState(room.name);
   const [confirming, setConfirming] = useState(false);
   const patch = useMutation({
@@ -113,7 +187,7 @@ function RoomRow({ room, onChanged }: { room: Room; onChanged: () => void }) {
   });
   const remove = useMutation({
     mutationFn: () => requestStudio(`/api/rooms/${room.id}`, DeletedResponse, { method: "DELETE" }),
-    onSuccess: onChanged,
+    onSuccess: onDeleted,
   });
   const busy = patch.isPending || photo.isPending || remove.isPending;
   return (
@@ -185,51 +259,104 @@ function RoomRow({ room, onChanged }: { room: Room; onChanged: () => void }) {
   );
 }
 
-function AddRoom({ houseId, onChanged }: { houseId: string; onChanged: () => void }) {
+/**
+ * Generating a background from a description needs the pipeline's room endpoint (not on main
+ * yet). Flip this once it lands and send `description` in `create` below.
+ */
+const ROOM_FROM_DESCRIPTION = false;
+
+type Background = { kind: "photo"; file: File } | { kind: "style"; style: RoomStyle } | null;
+
+function AddRoom({ houseId, onCreated }: { houseId: string; onCreated: () => void }) {
+  const [name, setName] = useState("");
+  const [background, setBackground] = useState<Background>(null);
+  const [description, setDescription] = useState("");
+  const [tried, setTried] = useState(false);
   const create = useMutation({
-    mutationFn: async (input: { name: string; style?: RoomStyle; file?: File }) => {
-      const body = input.file
-        ? {
-            name: input.name,
-            source: "photo",
-            assetId: (await uploadPhoto(houseId, input.file)).id,
-          }
-        : { name: input.name, source: "style", style: input.style };
+    mutationFn: async (input: { name: string; background: NonNullable<Background> }) => {
+      const body =
+        input.background.kind === "photo"
+          ? {
+              name: input.name,
+              source: "photo",
+              assetId: (await uploadPhoto(houseId, input.background.file)).id,
+            }
+          : { name: input.name, source: "style", style: input.background.style };
       return requestStudio(`/api/houses/${houseId}/rooms`, Room, {
         method: "POST",
         headers: { ...json, "Idempotency-Key": crypto.randomUUID() },
         body: JSON.stringify(body),
       });
     },
-    onSuccess: onChanged,
+    onSuccess: onCreated,
   });
+  const trimmed = name.trim();
+  const missing = !trimmed ? words.needName : !background ? words.needBackground : null;
+  const busy = create.isPending;
   return (
-    <Card className="space-y-3 p-4">
-      <p className="text-18 font-bold">{words.add}</p>
-      <StylePicker
-        disabled={create.isPending}
-        onPick={(style) => create.mutate({ name: roomStyles[style].name, style })}
-      />
+    <Card className="space-y-4 p-5">
+      <p className="text-18 font-bold">{words.addTitle}</p>
       <div className="space-y-1">
-        <Label htmlFor="new-room-photo">{words.photoLabel}</Label>
+        <Label htmlFor="new-room-name">{words.newNameLabel}</Label>
+        <Input
+          id="new-room-name"
+          value={name}
+          maxLength={60}
+          placeholder={words.newNamePlaceholder}
+          disabled={busy}
+          onChange={(event) => setName(event.target.value)}
+        />
+      </div>
+      <div className="space-y-1">
+        <Label htmlFor="new-room-photo">{words.newPhotoLabel}</Label>
         <input
           id="new-room-photo"
           type="file"
           accept="image/jpeg"
-          disabled={create.isPending}
+          disabled={busy}
           onChange={(event) => {
             const file = event.target.files?.[0];
-            if (file)
-              create.mutate({
-                name: file.name.replace(/\.[^.]+$/, "").slice(0, 60) || words.title,
-                file,
-              });
+            setBackground(file ? { kind: "photo", file } : null);
           }}
         />
+        <p className="text-14 text-ink/70">{words.newPhotoHint}</p>
       </div>
-      {create.isPending && (
-        <p role="status" className="flex items-center gap-2 text-16">
-          <MovingDots /> {words.working}
+      <fieldset className="space-y-2">
+        <legend className="text-16 font-bold">{words.newStyleLabel}</legend>
+        <div className="flex flex-wrap gap-2">
+          {RoomStyle.options.map((style) => {
+            const picked = background?.kind === "style" && background.style === style;
+            return (
+              <Button
+                key={style}
+                size="sm"
+                variant={picked ? "primary" : "secondary"}
+                aria-pressed={picked}
+                disabled={busy || background?.kind === "photo"}
+                onClick={() => setBackground(picked ? null : { kind: "style", style })}
+              >
+                {roomStyles[style].name}
+              </Button>
+            );
+          })}
+        </div>
+      </fieldset>
+      {ROOM_FROM_DESCRIPTION && (
+        <div className="space-y-1">
+          <Label htmlFor="new-room-description">{words.describeLabel}</Label>
+          <Textarea
+            id="new-room-description"
+            value={description}
+            maxLength={300}
+            placeholder={words.describePlaceholder}
+            disabled={busy}
+            onChange={(event) => setDescription(event.target.value)}
+          />
+        </div>
+      )}
+      {tried && missing && (
+        <p role="alert" className="text-16">
+          {missing}
         </p>
       )}
       {create.isError && (
@@ -237,6 +364,21 @@ function AddRoom({ houseId, onChanged }: { houseId: string; onChanged: () => voi
           {words.error}
         </p>
       )}
+      <Button
+        disabled={busy}
+        onClick={() => {
+          setTried(true);
+          if (background && trimmed) create.mutate({ name: trimmed, background });
+        }}
+      >
+        {busy ? (
+          <>
+            <MovingDots /> {words.creating}
+          </>
+        ) : (
+          words.create
+        )}
+      </Button>
     </Card>
   );
 }
