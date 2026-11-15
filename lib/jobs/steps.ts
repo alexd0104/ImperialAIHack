@@ -17,6 +17,7 @@ import {
 import { db } from "@/lib/db/collections";
 import { openReadStream, saveFile, sha256File } from "@/lib/storage";
 import { compressGlb, GLB_TARGET_BYTES } from "./compress-glb";
+import { isFinalStatus } from "./engine";
 import { mongoGenerationStore, refreshMemoryStatusById } from "./generation";
 import { ambienceParams, animateParams } from "./plans";
 import type { FalPlan, StepContext, StepHandlers } from "./types";
@@ -324,14 +325,62 @@ export function sceneOutputsOf(job: Job): SceneOutputs {
   };
 }
 
+/**
+ * Merge what a finished scene/scene_sound job produced into the scene's outputs (P10).
+ * The scene job owns restored/colourised/clip; the sound job owns the separate `ambience`
+ * file, so whichever settles first never erases the other's result.
+ */
+export function mergeSceneOutputs(
+  existing: SceneOutputs,
+  job: Pick<Job, "type" | "steps">,
+  soundSeparate: boolean,
+): SceneOutputs {
+  if (job.type === "scene_sound") {
+    const ambience = job.steps.find((s) => s.name === "ambience" && s.status === "done")?.output;
+    return ambience ? { ...existing, ambience } : existing;
+  }
+  const own = sceneOutputsOf(job as Job);
+  return {
+    ...own,
+    ambience: own.ambience ?? (soundSeparate ? existing.ambience : undefined),
+  };
+}
+
+/**
+ * Scene status once a job settles: it follows the scene job and waits while the sound
+ * job still runs. A failed sound job never fails the scene (clip or photo plays silent).
+ */
+export function sceneStatusAfter(
+  sceneJob: Pick<Job, "status"> | null,
+  soundJob: Pick<Job, "status"> | null,
+): "generating" | "done" | "fallback" | "failed" {
+  if (!sceneJob || !isFinalStatus(sceneJob.status)) return "generating";
+  if (soundJob && !isFinalStatus(soundJob.status)) return "generating";
+  return sceneJob.status === "done"
+    ? "done"
+    : sceneJob.status === "fallback"
+      ? "fallback"
+      : "failed";
+}
+
+async function settleSceneJob(job: Job, sceneId: string): Promise<void> {
+  const scene = await db.scenes.findById(sceneId);
+  if (!scene) return;
+  const other = async (id?: string) => (id ? await db.jobs.findById(id) : null);
+  // `job` is the freshest copy of itself: its DB row may not say final yet.
+  const sceneJob = job.type === "scene" ? job : await other(scene.jobId);
+  const soundJob = job.type === "scene_sound" ? job : await other(scene.soundJobId);
+  await db.scenes.update(sceneId, {
+    outputs: mergeSceneOutputs(scene.outputs, job, Boolean(scene.soundJobId)),
+    status: sceneStatusAfter(sceneJob, soundJob),
+  });
+  if (job.memoryId) await refreshMemoryStatusById(mongoGenerationStore, job.memoryId);
+}
+
 /** Writes a final job's result where the Studio and House read it. */
 export async function settleJob(job: Job): Promise<void> {
-  if (job.type === "scene" && job.sceneId) {
-    await db.scenes.update(job.sceneId, {
-      outputs: sceneOutputsOf(job),
-      status: job.status === "done" ? "done" : job.status === "fallback" ? "fallback" : "failed",
-    });
-    if (job.memoryId) await refreshMemoryStatusById(mongoGenerationStore, job.memoryId);
+  if ((job.type === "scene" || job.type === "scene_sound") && job.sceneId) {
+    await settleSceneJob(job, job.sceneId);
     return;
   }
   const last = (name: JobStep["name"]) =>

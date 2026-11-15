@@ -11,7 +11,7 @@ import {
 } from "./generation";
 
 const NOW = "2026-11-14T21:00:00.000Z";
-const OPTS = { falKeyLabel: "dev", now: NOW };
+const OPTS = { falKeyLabel: "dev", now: NOW, soundModeDefault: "clip" as const };
 
 let counter = 0;
 const nextId = () => `6650a1f0c0ffee${(0x100000 + counter++).toString(16).padStart(10, "0")}`;
@@ -184,6 +184,49 @@ describe("retryScene", () => {
       ok: false,
       code: "not_found",
     });
+  });
+});
+
+describe("sound mode (P10)", () => {
+  it("text mode adds a scene_sound job next to each scene job, without ambience in the scene", async () => {
+    const { store, memory } = setup({}, 1);
+    const result = await startGeneration(store, memory.id, { ...OPTS, soundModeDefault: "text" });
+    if (!result.ok) throw new Error("expected ok");
+    const jobs = [...store.jobs.values()];
+    expect(jobs.map((j) => j.type).sort()).toEqual(["scene", "scene_sound"]);
+    const scene = jobs.find((j) => j.type === "scene");
+    const sound = jobs.find((j) => j.type === "scene_sound");
+    expect(scene?.steps.find((s) => s.name === "ambience")?.status).toBe("skipped");
+    expect(sound?.steps.filter((s) => s.status === "pending").map((s) => s.name)).toEqual([
+      "compile",
+      "ambience",
+      "finalize",
+    ]);
+    expect([...store.scenes.values()][0]?.soundJobId).toBe(sound?.id);
+  });
+
+  it("clip mode stays one job with ambience", async () => {
+    const { store, memory } = setup({}, 1);
+    await startGeneration(store, memory.id, OPTS);
+    const jobs = [...store.jobs.values()];
+    expect(jobs).toHaveLength(1);
+    expect(jobs[0]?.steps.find((s) => s.name === "ambience")?.status).toBe("pending");
+  });
+
+  it("a scene's own soundMode beats the default", async () => {
+    const { store, memory } = setup({}, 1);
+    await store.insertScene({
+      houseId: memory.houseId,
+      memoryId: memory.id,
+      assetId: store.assets[0]?.id ?? "",
+      order: 0,
+      outputs: {},
+      status: "pending",
+      soundMode: "clip",
+      createdAt: NOW,
+    });
+    await startGeneration(store, memory.id, { ...OPTS, soundModeDefault: "text" });
+    expect([...store.jobs.values()].map((j) => j.type)).toEqual(["scene"]);
   });
 });
 

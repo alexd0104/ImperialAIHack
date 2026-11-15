@@ -2,7 +2,7 @@ import "server-only";
 import { GenerateRequest, GenerateResponse } from "@/lib/contracts";
 import { copy } from "@/lib/copy";
 import { fail, ok, parseJson } from "@/lib/http";
-import { jobConfig } from "@/lib/jobs/config";
+import { jobConfig, soundModeDefault } from "@/lib/jobs/config";
 import { mongoGenerationStore, startGeneration } from "@/lib/jobs/generation";
 
 const words = copy.studio.generation;
@@ -14,6 +14,7 @@ export async function POST(request: Request, context: { params: Promise<{ id: st
   try {
     const result = await startGeneration(mongoGenerationStore, (await context.params).id, {
       falKeyLabel: jobConfig().falKeyLabel,
+      soundModeDefault: soundModeDefault(),
       now: new Date().toISOString(),
     });
     if (result.ok) return ok(GenerateResponse.parse(result.data), 202);

@@ -207,6 +207,8 @@ export const Scene = z.object({
   /** Absent → gentle 5 s: read it with `resolveSceneMotion`. */
   motion: SceneMotion.optional(),
   soundMode: SoundMode.optional(),
+  /** Parallel `scene_sound` job when soundMode is "text" (P10). */
+  soundJobId: Id.optional(),
   // Generation results that are not files, so not in `outputs` (only storage paths there).
   /** Id of the library ambience bed chosen for this scene (P9). */
   bedId: z.string().optional(),

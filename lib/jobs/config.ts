@@ -1,4 +1,5 @@
 import "server-only";
+import { DEFAULT_SOUND_MODE, SoundMode } from "@/lib/contracts";
 
 export interface JobConfig {
   /** How long one advance may hold a job (TECHNICAL.md §5.2 step 1). */
@@ -34,4 +35,10 @@ export function jobConfig(): JobConfig {
     budgetUsd: numberEnv("FAL_BUDGET_USD", 5),
     falKeyLabel: process.env.FAL_KEY_LABEL?.trim() || "dev",
   };
+}
+
+/** Env `SOUND_MODE_DEFAULT` ("clip" | "text"); anything else → the contract default. */
+export function soundModeDefault(): SoundMode {
+  const parsed = SoundMode.safeParse(process.env.SOUND_MODE_DEFAULT?.trim());
+  return parsed.success ? parsed.data : DEFAULT_SOUND_MODE;
 }

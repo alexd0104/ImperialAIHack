@@ -3,7 +3,7 @@ import { RetryRequest, RetryResponse } from "@/lib/contracts";
 import { copy } from "@/lib/copy";
 import { db } from "@/lib/db";
 import { fail, ok, parseJson } from "@/lib/http";
-import { jobConfig } from "@/lib/jobs/config";
+import { jobConfig, soundModeDefault } from "@/lib/jobs/config";
 import { mongoGenerationStore, retryLimiter, retryScene } from "@/lib/jobs/generation";
 
 const words = copy.studio.generation;
@@ -20,6 +20,7 @@ export async function POST(request: Request, context: { params: Promise<{ id: st
       return fail("rate_limited", words.tooManyRetries);
     const result = await retryScene(mongoGenerationStore, sceneId, {
       falKeyLabel: jobConfig().falKeyLabel,
+      soundModeDefault: soundModeDefault(),
       now: new Date().toISOString(),
     });
     if (result.ok) return ok(RetryResponse.parse(result.data), 202);

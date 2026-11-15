@@ -2,6 +2,11 @@
 
 Newest on top. Written by the agent after each task (what was done, Human TODO, Requests). Read this in the morning.
 
+**P10 — Sound and video in parallel (done in code, mock).** In `soundMode` "text" (scene's own, else env `SOUND_MODE_DEFAULT`, else "text") generation inserts a `scene_sound` job (`soundPlan`: compile → ambience → finalize) next to the scene job, which skips ambience (`scenePlan(sheet, mode)`). `Scene.soundJobId` added (optional). `settleJob` merges outputs (`mergeSceneOutputs`) so either can finish first; scene status stays "generating" until both are final, and a failed sound never fails the scene (`sceneStatusAfter`). "clip" mode unchanged.
+Files outside my zone: `lib/contracts/entities.ts` (+`soundJobId`), both generate/retry routes (pass `soundModeDefault`) — all Timoté's.
+Human TODO: one mock run in the Studio to watch sound/video finish separately; note the Studio polls only `scene.jobId`, so the UI may show the scene done only once both settle (by design).
+Request: none.
+
 **P8 — Better sound prompts (done in code, mock).** `extractSoundEvents` (keyword rules over answers, free text and photo description) feeds `soundEvents` + `ambienceNegativePrompt` on every compile (Claude, mock or template); ambience step now sends `prompt`, `negative_prompt`, `duration` = clip length, `num_steps` 25, `cfg_strength` 5.5 via `ambienceParams` (`lib/jobs/plans.ts`). "no music" kept. Old template test updated to the new event wording.
 Files outside my zone: none. `lib/ai/models.ts` unchanged (params live in `ambienceParams`).
 Human TODO: one live run on the beach photo, listen, note result in docs/STATUS.md; check on fal that `num_steps`/`cfg_strength`/`negative_prompt` names match mmaudio-v2 and tune cfg_strength by ear.

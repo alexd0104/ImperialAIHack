@@ -8,8 +8,15 @@ import {
   object3dPlan,
   roomBackgroundPlan,
   scenePlan,
+  soundPlan,
 } from "./plans";
-import { briaColour, extensionOf, sceneOutputsOf } from "./steps";
+import {
+  briaColour,
+  extensionOf,
+  mergeSceneOutputs,
+  sceneOutputsOf,
+  sceneStatusAfter,
+} from "./steps";
 import { makeJob } from "./test-fakes";
 
 const enabled = (steps: { name: string; status: string }[]) =>
@@ -121,6 +128,48 @@ describe("ambienceParams (P8)", () => {
     const p = ambienceParams({ ambiencePrompt: "waves breaking, no music" }, 10);
     expect(p).toMatchObject({ prompt: "waves breaking, no music", duration: 10 });
     expect(String(p.negative_prompt)).toMatch(/music/);
+  });
+});
+
+describe("sound and video in parallel (P10)", () => {
+  const sheet = { restore: true, colour: "keep_bw", motion: "gentle" } as const;
+  const step = (name: string, status: string, output?: string) => ({
+    name,
+    status,
+    attempts: 0,
+    output,
+  });
+  const jobOf = (type: string, status: string, steps: ReturnType<typeof step>[]) =>
+    ({ type, status, steps }) as never;
+
+  it("skips ambience in the scene plan in text mode only", () => {
+    expect(enabled(scenePlan(sheet, "text"))).not.toContain("ambience");
+    expect(enabled(scenePlan(sheet, "clip"))).toContain("ambience");
+    expect(enabled(soundPlan())).toEqual(["compile", "ambience", "finalize"]);
+  });
+
+  it("merges outputs whichever job settles first", () => {
+    const sceneJob = jobOf("scene", "done", [step("animate", "done", "clip.mp4")]);
+    const soundJob = jobOf("scene_sound", "done", [step("ambience", "done", "air.wav")]);
+    const afterSound = mergeSceneOutputs({}, soundJob, true);
+    expect(afterSound).toEqual({ ambience: "air.wav" });
+    expect(mergeSceneOutputs(afterSound, sceneJob, true)).toMatchObject({
+      clip: "clip.mp4",
+      ambience: "air.wav",
+    });
+    const afterScene = mergeSceneOutputs({}, sceneJob, true);
+    expect(mergeSceneOutputs(afterScene, soundJob, true)).toMatchObject({
+      clip: "clip.mp4",
+      ambience: "air.wav",
+    });
+  });
+
+  it("finishes the scene only when both jobs are final; failed sound is not fatal", () => {
+    expect(sceneStatusAfter({ status: "done" }, { status: "running" })).toBe("generating");
+    expect(sceneStatusAfter({ status: "running" }, { status: "done" })).toBe("generating");
+    expect(sceneStatusAfter({ status: "done" }, { status: "failed" })).toBe("done");
+    expect(sceneStatusAfter({ status: "fallback" }, { status: "done" })).toBe("fallback");
+    expect(sceneStatusAfter({ status: "done" }, null)).toBe("done");
   });
 });
 

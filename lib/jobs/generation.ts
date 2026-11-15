@@ -1,8 +1,24 @@
 import "server-only";
-import type { Asset, ErrorCode, Job, Memory, MemoryStatus, Scene } from "@/lib/contracts";
+import {
+  type Asset,
+  DEFAULT_SOUND_MODE,
+  type ErrorCode,
+  type Job,
+  type Memory,
+  type MemoryStatus,
+  type Scene,
+  type SoundMode,
+} from "@/lib/contracts";
 import { db, type NewEntity } from "@/lib/db/collections";
 import { isFinalStatus } from "./engine";
-import { newJob, scenePlan } from "./plans";
+import { newJob, scenePlan, soundPlan } from "./plans";
+
+export type GenerationOpts = {
+  falKeyLabel: string;
+  now: string;
+  /** Env `SOUND_MODE_DEFAULT` for scenes without their own soundMode. */
+  soundModeDefault?: SoundMode;
+};
 
 // P4: what POST /api/memories/:id/generate and POST /api/scenes/:id/retry do,
 // behind a small store so the rules are unit-tested without MongoDB.
@@ -43,22 +59,41 @@ async function sceneJob(
   store: GenerationStore,
   memory: Memory,
   scene: Scene,
-  opts: { falKeyLabel: string; now: string; bypassCache?: boolean },
+  opts: GenerationOpts & { bypassCache?: boolean },
 ): Promise<Job> {
   if (!memory.sheet) throw new Error("sceneJob needs a MemorySheet");
+  const mode = scene.soundMode ?? opts.soundModeDefault ?? DEFAULT_SOUND_MODE;
+  const refs = { houseId: memory.houseId, memoryId: memory.id, sceneId: scene.id };
   const job = await store.insertJob(
     newJob({
+      ...refs,
       type: "scene",
-      houseId: memory.houseId,
-      memoryId: memory.id,
-      sceneId: scene.id,
-      steps: scenePlan(memory.sheet),
+      steps: scenePlan(memory.sheet, mode),
       falKeyLabel: opts.falKeyLabel,
       bypassCache: opts.bypassCache,
       now: opts.now,
     }),
   );
-  await store.updateScene(scene.id, { jobId: job.id, status: "generating" });
+  // Text mode: sound and video run as two independent jobs (P10).
+  const sound =
+    mode === "text"
+      ? await store.insertJob(
+          newJob({
+            ...refs,
+            type: "scene_sound",
+            steps: soundPlan(),
+            falKeyLabel: opts.falKeyLabel,
+            bypassCache: opts.bypassCache,
+            now: opts.now,
+          }),
+        )
+      : undefined;
+  await store.updateScene(scene.id, {
+    jobId: job.id,
+    // Never `undefined` here: MongoDB would store null and the Scene schema rejects it.
+    ...(sound && { soundJobId: sound.id }),
+    status: "generating",
+  });
   return job;
 }
 
@@ -75,7 +110,7 @@ async function refreshMemoryStatus(store: GenerationStore, memory: Memory): Prom
 export async function startGeneration(
   store: GenerationStore,
   memoryId: string,
-  opts: { falKeyLabel: string; now: string },
+  opts: GenerationOpts,
 ): Promise<GenerationResult<{ jobIds: string[] }>> {
   const memory = await store.getMemory(memoryId);
   if (!memory) return { ok: false, code: "not_found" };
@@ -119,7 +154,7 @@ export async function startGeneration(
 export async function retryScene(
   store: GenerationStore,
   sceneId: string,
-  opts: { falKeyLabel: string; now: string },
+  opts: GenerationOpts,
 ): Promise<GenerationResult<{ jobId: string }>> {
   const scene = await store.getScene(sceneId);
   if (!scene) return { ok: false, code: "not_found" };

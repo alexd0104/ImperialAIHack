@@ -1,6 +1,14 @@
 import "server-only";
 import { AMBIENCE_NEGATIVE_PROMPT } from "@/lib/ai/prompt-templates";
-import type { Job, JobStep, JobType, MemorySheet, SceneMotion, StepName } from "@/lib/contracts";
+import type {
+  Job,
+  JobStep,
+  JobType,
+  MemorySheet,
+  SceneMotion,
+  SoundMode,
+  StepName,
+} from "@/lib/contracts";
 import type { NewEntity } from "@/lib/db/collections";
 
 type PlannedStep = { name: StepName; enabled: boolean };
@@ -17,16 +25,27 @@ function toSteps(planned: PlannedStep[]): JobStep[] {
  * TECHNICAL.md §5.1. Disabled steps stay in the list as "skipped" so the Studio
  * always shows the same chain for a scene.
  */
-export function scenePlan(sheet: Pick<MemorySheet, "restore" | "colour" | "motion">): JobStep[] {
+export function scenePlan(
+  sheet: Pick<MemorySheet, "restore" | "colour" | "motion">,
+  // "text": a parallel `scene_sound` job makes the sound, so this job skips ambience (P10).
+  soundMode: SoundMode = "clip",
+): JobStep[] {
   return toSteps([
     { name: "compile", enabled: true },
     { name: "upload", enabled: true },
     { name: "restore", enabled: sheet.restore },
     { name: "colourise", enabled: sheet.colour === "colourise" },
     { name: "animate", enabled: sheet.motion === "gentle" },
-    { name: "ambience", enabled: true },
+    { name: "ambience", enabled: soundMode === "clip" },
     { name: "finalize", enabled: true },
   ]);
+}
+
+/** Sound from the photo's text only, no clip: runs next to the scene job (P10). */
+export function soundPlan(): JobStep[] {
+  return toSteps(
+    (["compile", "ambience", "finalize"] as const).map((name) => ({ name, enabled: true })),
+  );
 }
 
 export function object3dPlan(): JobStep[] {
