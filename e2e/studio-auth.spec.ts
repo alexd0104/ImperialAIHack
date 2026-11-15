@@ -35,7 +35,7 @@ async function seedMemory(page: Page) {
       data: {
         slotId: room.slots[0]?.id,
         title: "Summers in the garden",
-        object: { kind: "library", name: "flower" },
+        object: { kind: "library", name: "3d-teapot" },
       },
     }),
   );

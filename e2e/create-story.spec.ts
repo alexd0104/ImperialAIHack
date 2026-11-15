@@ -16,11 +16,11 @@ test("S1 links to S2, library choices autosave, and the provisional Slot stays u
   await page.getByRole("button", { name: "Create the House", exact: true }).click();
   await page.getByRole("link", { name: "Choose an Object", exact: true }).click();
   await expect(page).toHaveURL(/\/studio\/stories\/new\?roomId=/);
-  await page.getByRole("radio", { name: "Flower", exact: true }).check();
+  await page.getByRole("radio", { name: "Teapot", exact: true }).check();
   await page.getByLabel("Name this Story").fill("Summers in the garden");
   await page.reload();
   await expect(page.getByLabel("Name this Story")).toHaveValue("Summers in the garden");
-  await expect(page.getByRole("radio", { name: "Flower", exact: true })).toBeChecked();
+  await expect(page.getByRole("radio", { name: "Teapot", exact: true })).toBeChecked();
   expect(
     (
       await new AxeBuilder({ page })
@@ -37,7 +37,7 @@ test("S1 links to S2, library choices autosave, and the provisional Slot stays u
     page.getByRole("heading", { name: "Your Story is ready for Memories" }),
   ).toBeVisible();
   expect(story.publishedAt).toBeUndefined();
-  expect(story.object.path).toBe("flower");
+  expect(story.object.path).toBe("/objects/glb/teapot.glb");
   const room = (await (await page.request.get(`/api/rooms/${story.roomId}`)).json()).data;
   expect(
     room.slots.find((slot: { id: string }) => slot.id === story.slotId).storyId,

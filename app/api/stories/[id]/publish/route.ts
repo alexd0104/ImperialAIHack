@@ -16,7 +16,7 @@ export async function POST(request: Request, context: { params: Promise<{ id: st
     for (const memory of all) {
       const scenes = await listEntities("scenes", (item) => item.memoryId === memory.id);
       // A Memory started then left with no photo stays a draft: it must not block the others
-      // (adding to an existing Story, B18). The House never shows a draft anyway.
+      // (adding to an existing Story, B19). The House never shows a draft anyway.
       if (scenes.length === 0 && memory.status === "draft") continue;
       if (scenes.length === 0 || scenes.some((scene) => !scene.choice))
         return fail("conflict", copy.studio.place.notApproved);

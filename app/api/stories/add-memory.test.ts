@@ -7,7 +7,7 @@ import { getEntity, insertEntity, listEntities, updateEntity } from "./_store";
 import { POST as addMemory } from "./[id]/memories/route";
 import { POST as publish } from "./[id]/publish/route";
 
-// B18: a family adds a Memory to a Story that already exists (and is already in the House).
+// B19: a family adds a Memory to a Story that already exists (and is already in the House).
 const houseId = "a".repeat(24);
 const roomId = "b".repeat(24);
 const storyId = "c".repeat(24);
@@ -96,7 +96,7 @@ async function add(title: string) {
   return apiSuccess(Memory).parse(await response.json()).data;
 }
 
-describe("B18 adding a Memory to an existing Story", () => {
+describe("B19 adding a Memory to an existing Story", () => {
   it("appends a draft Memory after the existing ones, in the same House", async () => {
     const second = await add("  The garden  ");
     expect(second).toMatchObject({ houseId, storyId, title: "The garden", status: "draft" });
