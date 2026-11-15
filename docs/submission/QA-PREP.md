@@ -14,8 +14,8 @@ The family member who creates the House must tick a consent checkbox, and the ti
 **4. Isn't it risky to show this to someone living with Alzheimer's?**
 We make no medical claim. Reminiscence and familiar music are widely used in care, with small benefits in the research we read, and we only promise a shared moment. Watching together is the default; the family must mark a Memory "OK alone" before it shows when the person is on their own.
 
-**5. Why not voice cloning or an AI narrator?**
-Rule: real voices only. A cloned voice of a family member would be an invented memory in sound. The family records its own message, and generated audio is limited to ambience, never music or speech.
+**5. ElevenLabs and Anam sponsor your track. Why didn't you use them?**
+On purpose. Our rule is real voices only: a cloned family voice or an avatar would be an invented memory, so the family records its own message and generated audio is limited to ambience, never music or speech. An ElevenLabs agent that *asks* the guided questions out loud fits that rule; it was planned (`FEATURES.md` SH6) but we didn't build it. (Adaption: that prize needs a fine-tuned model; we have none, so we don't enter.)
 
 **6. How much does one Memory cost, and how long does it take?**
 One live scene measured 157 s and about $0.48: Claude 6 s, restore 30 s, colourise 18 s, animate 94 s, ambience 9 s (on a small test photo). Our estimate for a 3-photo Memory is about $1.50; a 3D Object is about $0.10 for Rodin. A full multi-photo Memory timing has not been measured: [TODO: confirm].
@@ -23,11 +23,11 @@ One live scene measured 157 s and about $0.48: Claude 6 s, restore 30 s, colouri
 **7. What in the demo is live and what is mocked?**
 The demo House runs from an exported bundle in offline demo mode so it can't fail on stage; that content was generated live earlier [TODO: confirm]. A full Studio → fal → House run worked live in the browser with one scene. Mock mode returns fixtures with the same interface and is what we use for tests and CI. Not tested live: a Memory with several photos, song and voice together.
 
-**8. Why fal?**
-One API and one client for every step we needed: restore, colourise, image-to-video, audio, cutout, 3D and image editing, with a queue that fits long jobs. Model IDs sit in one file (`lib/ai/models.ts`), so swapping Kling for another video model is a one-line change.
+**8. Why fal and Claude, and what makes this a strong use of fal?**
+fal runs every generative step: 11 endpoints for 9 tasks (restore, colourise, image-to-video, two kinds of ambience, cutout, photo-to-3D, room edit, room from text) behind one client and one queue, which fits long jobs with retries, fallbacks, a cache and a budget guard. We compared models before choosing (Rodin beat Trellis 2 on 3 of 3 objects, at $0.10), and swapping a model is one line in `lib/ai/models.ts`. Claude (`claude-haiku-5-5`) is the guardrail in front of fal: it turns plain family answers into strict motion, negative and ambience prompts as Zod-validated JSON, with fixed templates if it fails.
 
-**9. Why Claude?**
-It turns plain family answers into the precise prompts video and audio models need, while enforcing our fidelity rules and returning structured JSON we validate with Zod. We use the small Haiku model by default and can switch to Sonnet by env variable. If Claude fails, fixed templates take over.
+**9. How did you use Figma, and how do you qualify for Best-Designed?**
+The v5 Figma page (17 frames, tablet size) is the source of truth, and we worked both ways through the Figma MCP server: exact specs and 13 SVG assets came into code, and 8 new frames plus 35 code tokens (as Figma Variables) went back into the file. `docs/design-evidence/` has 14 Figma-vs-code pairs at the same size, and `docs/DESIGN.md` §7 lists every difference. Some Studio screens are still simpler than their frames, and we raised text contrast above Figma's to meet WCAG AA.
 
 **10. Where does the data go? Privacy?**
 Photos, voices and outputs are stored on our own disk, not in a public folder; fal inputs are uploaded with a 1-hour expiry preference because we keep our own copies. API keys stay on the server, the Studio is behind a password, and each House is reached by a private token link. Data retention by fal and Anthropic beyond that: [TODO: confirm].

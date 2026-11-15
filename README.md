@@ -67,6 +67,59 @@ flowchart LR
 
 We make no medical claim. The idea is inspired by reminiscence and familiar music; the promise is a shared moment.
 
+## Sponsor technology: how we used it
+
+**What we enter.** Main track: **Voice, Vision & Generative Media**, going for the **Best use of fal** bounty. Extra prize: **Figma Best-Designed AI Product**.
+
+**What we don't enter, and why.**
+- **ElevenLabs and Anam** (track sponsors): not used, on purpose. Our rule is real voices only: no cloning, no synthetic narration, no avatar. An ElevenLabs voice agent that would *ask* the guided questions was planned as an option (`FEATURES.md` SH6) but not built.
+- **Adaption:** that prize needs a fine-tuned model. We fine-tuned nothing, so we don't qualify.
+- **MongoDB:** its bounty sits in the Autonomous Agents track, not ours. We use Atlas as our database (below) but don't enter it.
+
+### fal: the generation engine (Best use of fal)
+
+fal runs every generative step in the product: **11 endpoints for 9 different tasks**, chained per photo.
+
+| Task | fal model | Where in the product |
+|---|---|---|
+| Repair scratches, fading, lost detail | `topaz/restore/image` | Every Memory photo, if the family keeps "Gently repair" |
+| Bring colour back | `bria/fibo-edit/colorize` (fallback `fal-ai/ddcolor`) | Only when the family chooses colour |
+| Gentle motion, 5 or 10 s | `fal-ai/kling-video/v2.5-turbo/pro/image-to-video` | Each photo the family wants to move |
+| Sound of the place from the clip | `fal-ai/mmaudio-v2` | Ambience that matches what moves (no music) |
+| Sound of the place for a still | `fal-ai/mmaudio-v2/text-to-audio` | Photos kept still |
+| Cut the object out | `fal-ai/birefnet/v2` | Before 3D, so the background doesn't bleed in |
+| Object photo → 3D model | `fal-ai/hyper3d/rodin/v2.5/fast` (fallback `fal-ai/trellis-2`) | The teapot, radio, etc. that the person taps in the House |
+| Real room photo → Room background | `fal-ai/nano-banana-2/edit` | "Use a photo of their room" |
+| Description → Room background | `fal-ai/nano-banana-2` | "Describe the room" |
+
+How we call it: `@fal-ai/client` on the server only. Inputs go up with `fal.storage.upload` (1-hour expiry preference, we keep our own copies), then `fal.queue.submit` / `status` / `result` inside resumable MongoDB jobs: retries (2), a fallback per step, a cap of 2 concurrent requests, a cache keyed on input and params, and a budget guard that switches to mock above a set spend. Every output is downloaded to our storage. Swapping a model is a one-line change in `lib/ai/models.ts`.
+
+Measured live (from `docs/STATUS.md`):
+- One scene: Claude 6 s → restore 30 s ($0.08) → colourise 18 s ($0.04) → animate 94 s ($0.35) → ambience 9 s ($0.005). **157 s, about $0.48.** This was on a 480×360 test photo, not a real family photo.
+- A 10 s custom-motion clip with 10 s of ambience, and a Room from a description in 13 s.
+- Rodin vs Trellis 2 on 3 object photos: Rodin was cleaner on all 3 at $0.10 per model, so it is the default.
+
+Limits, honestly:
+- Kling can still change a face. Our only guard today is the family's approval of each scene; an automatic check is not built.
+- Not run live end to end: a Memory with several photos, song and voice together. Fallback models `fal-ai/ddcolor` and the room-photo edit `fal-ai/nano-banana-2/edit`: live use [TODO: confirm].
+- In mock mode the clip is always the same short placeholder.
+
+### Figma: design source and two-way MCP workflow (Best-Designed AI Product)
+
+- **Source of truth:** page "v5 · Full flow · memorAI", 17 frames at tablet size (1194 × 834), plus 8 frames added during the hackathon (voice recording, ordering, Story end, loading states, phone Studio and more). `docs/DESIGN.md` §2 maps every frame to its route and component.
+- **Figma → code, through the Figma MCP server:** `get_metadata` listed every frame and node; `get_design_context` and read-only `use_figma` returned exact sizes, radii, shadows and opacities, so the 14 `components/ui` pieces were written from numbers; `download_assets` exported the logo, 3 Rooms and 9 Objects as SVG.
+- **Code → Figma:** the 8 missing frames were built in the file with `use_figma` from the file's own components; one script pushed our 35 code tokens back into Figma as Variables and re-bound 16 Primary buttons to them, so design and code share names and values.
+- **Evidence:** 14 v5 frames exported with `get_screenshot` next to code captures at the same size, in `docs/design-evidence/`; every difference is logged in `docs/DESIGN.md` §7.
+- **Where code differs from Figma, on purpose or not yet:** we raised low-contrast text (0.45–0.65 opacity → 0.7) and the Primary button (3.2:1 → 4.9:1) to meet WCAG AA. Several Studio screens are simpler than their frames (for example no 4-step stepper, no polaroid grid in the Memory bank); `docs/DESIGN.md` §7 lists them.
+
+### Anthropic Claude: the guardrail between family words and models
+
+`claude-haiku-5-5` (via `@anthropic-ai/sdk`, structured output validated with Zod) turns the MemorySheet into the motion, negative and ambience prompts that fal needs. It enforces "only what is already in the photo": requests to add something go to `refusedRequests` and are shown gently to the family. It reads text only; it does not look at the photo or check the result. If Claude fails, fixed templates take over.
+
+### MongoDB Atlas: data and job queue
+
+Collections for houses, rooms, stories, memories, scenes, assets, events (views and Hearts), jobs and a generation cache (the same input with the same params reuses the stored output; "Try again" bypasses it). The jobs collection is the generation queue: each job holds a lease so two server ticks never advance the same step. We don't use Vector Search.
+
 ## APIs, models and datasets
 
 All model IDs live in `lib/ai/models.ts`.
