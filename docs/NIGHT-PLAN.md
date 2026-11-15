@@ -4,7 +4,7 @@ Your Claude reads this with `node scripts/doc.mjs docs/NIGHT-PLAN.md <Name>` and
 
 ## What is automatic and what is not
 
-**Automatic (the autopilot, all night, on your laptop):** picks your next task in order, waits for dependencies (e.g. F7) without blocking, codes in mock mode, tests, `pnpm verify`, rebases, pushes green commits to `main`, writes a handoff at the top of `docs/status/<you>.md`, moves to the next task. Stops at $20, after 2 agent errors, or when your list is finished.
+**Automatic (the autopilot, all night, on your laptop):** picks your next task in order, waits for dependencies (e.g. F7) without blocking, codes in mock mode, tests, `pnpm verify`, rebases, pushes green commits to `main`, writes a handoff at the top of `docs/status/<you>.md`, moves to the next task. Stops at $20, after 2 agent errors, or when your list is finished. **Relay:** each runner pushes a heartbeat every 10 min; when its own list has nothing ready, it takes over the next task of a teammate whose runner has been silent for 2 h (claims it with an empty `(ID-wip)` commit). SH8 is never taken over.
 
 **Only humans:** typing the API key and copying `.env.local` (agents are blocked from `.env*`) · keeping the laptop on (plugged in, lid open) · Figma design decisions · adding the 3 object photos · everything that spends live fal credits or needs ears/eyes (listed per person under "Morning").
 
