@@ -1,5 +1,5 @@
 import "server-only";
-import { getEntity, listEntities, updateEntity } from "@/app/api/stories/_store";
+import { getEntity, listEntities, replaceEntity, updateEntity } from "@/app/api/stories/_store";
 import { UpdateStoryRequest } from "@/lib/contracts";
 import { copy } from "@/lib/copy";
 import { fail, ok, parseJson } from "@/lib/http";
@@ -20,7 +20,7 @@ export async function PATCH(request: Request, context: { params: Promise<{ id: s
     if (!body.success) return fail("validation_failed", body.message);
     const story = await getEntity("stories", (await context.params).id);
     if (!story) return fail("not_found", copy.studio.createStory.error);
-    const { title, memoryOrder, slotId } = body.data;
+    const { title, memoryOrder, slotId, position } = body.data;
     if (memoryOrder) {
       const own = (await listEntities("memories", (item) => item.storyId === story.id)).map(
         (m) => m.id,
@@ -38,10 +38,16 @@ export async function PATCH(request: Request, context: { params: Promise<{ id: s
       if (slot.storyId && slot.storyId !== story.id)
         return fail("conflict", copy.studio.createStory.noSlot);
     }
+    // position: null clears the free placement (the Story goes back to its Slot).
+    if (position === null) {
+      const { position: _cleared, ...rest } = story;
+      await replaceEntity("stories", rest);
+    }
     const updated = await updateEntity("stories", story.id, {
       ...(title ? { title } : {}),
       ...(memoryOrder ? { memoryOrder } : {}),
       ...(slotId ? { slotId } : {}),
+      ...(position ? { position } : {}),
     });
     return updated ? ok(updated) : fail("not_found", copy.studio.createStory.error);
   } catch {

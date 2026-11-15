@@ -6,13 +6,13 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Switch } from "@/components/ui/switch";
-import { HouseDetail, Room, Story } from "@/lib/contracts";
+import { HouseDetail, Room, Story, type StoryPosition } from "@/lib/contracts";
 import { copy } from "@/lib/copy";
-import { cn } from "@/lib/utils";
 import { postStudio, requestStudio, StudioApiError } from "./api";
 import { DontShowWarning } from "./DontShowWarning";
 import { dontShowMatches } from "./dont-show";
 import { fetchMemory, memoryKey, patchMemory } from "./memory-client";
+import { PlacementEditor } from "./PlacementEditor";
 import { StudioQuery } from "./StudioQuery";
 
 const words = copy.studio.place;
@@ -52,7 +52,7 @@ function Place({ storyId }: { storyId: string }) {
   });
 
   const patchStory = useMutation({
-    mutationFn: (body: { slotId?: string; memoryOrder?: string[] }) =>
+    mutationFn: (body: { position?: StoryPosition; memoryOrder?: string[] }) =>
       requestStudio(`/api/stories/${storyId}`, Story, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
@@ -117,7 +117,12 @@ function Place({ storyId }: { storyId: string }) {
       </Card>
     );
 
-  const published = Boolean(story.data.publishedAt);
+  const ownSlot = room.data.slots.find((slot) => slot.id === story.data?.slotId);
+  const current: StoryPosition =
+    story.data.position ??
+    (ownSlot
+      ? { x: ownSlot.x, y: ownSlot.y, scale: ownSlot.scale }
+      : { x: 0.5, y: 0.6, scale: 0.18 });
 
   return (
     <div className="space-y-6">
@@ -129,45 +134,19 @@ function Place({ storyId }: { storyId: string }) {
 
       <Card className="space-y-3 p-5">
         <h2 className="font-display text-22">{words.slotLegend}</h2>
-        {/* Slots sit where they will in the Room (normalised 0..1 on 1194×834); once published they never move. */}
-        <div className="relative aspect-[1194/834] w-full overflow-hidden rounded-xl bg-ink/5">
-          {/* biome-ignore lint/performance/noImgElement: Room picture from /rooms or /api/files, not optimised by Next. */}
-          <img
-            src={
-              room.data.backgroundPath.startsWith("/")
-                ? room.data.backgroundPath
-                : `/api/files/${room.data.backgroundPath}`
-            }
-            alt=""
-            draggable={false}
-            className="absolute inset-0 size-full object-cover"
-          />
-          {room.data.slots.map((slot, index) => {
-            const chosen = slot.id === story.data?.slotId;
-            const taken = Boolean(slot.storyId && slot.storyId !== storyId);
-            return (
-              <button
-                key={slot.id}
-                type="button"
-                disabled={taken || published || patchStory.isPending}
-                onClick={() => patchStory.mutate({ slotId: slot.id })}
-                aria-pressed={chosen}
-                aria-label={`${index + 1}: ${taken ? words.slotTaken : chosen ? words.slotChosen : words.slotFree}`}
-                style={{ left: `${slot.x * 100}%`, top: `${slot.y * 100}%` }}
-                className={cn(
-                  "absolute flex size-16 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full border-2 text-18 font-bold",
-                  chosen
-                    ? "border-primary-strong bg-primary-strong text-white"
-                    : taken
-                      ? "border-ink/10 bg-ink/10 text-ink/40"
-                      : "border-ink/30 bg-surface",
-                )}
-              >
-                {chosen ? <Check aria-hidden className="size-6" /> : index + 1}
-              </button>
-            );
-          })}
-        </div>
+        <p className="text-16 text-ink/70">{words.slotHint}</p>
+        <PlacementEditor
+          background={
+            room.data.backgroundPath.startsWith("/")
+              ? room.data.backgroundPath
+              : `/api/files/${room.data.backgroundPath}`
+          }
+          slots={room.data.slots.filter((slot) => !slot.storyId || slot.storyId === storyId)}
+          object={story.data.object}
+          value={current}
+          disabled={patchStory.isPending}
+          onChange={(position) => patchStory.mutate({ position })}
+        />
       </Card>
 
       <Card className="space-y-3 p-5">

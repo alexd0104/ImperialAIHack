@@ -175,11 +175,14 @@ export function buildBundle(src: BundleSource): { bundle: HouseBundle; okAloneId
             title: story.title,
             object: { kind: story.object.kind, url: objectUrl(story, src.token) },
             available: true,
+            ...(story.position ? { position: story.position } : {}),
             memories,
           };
         }
       }
-      return { id: slot.id, x: slot.x, y: slot.y, scale: slot.scale, story: bundleStory };
+      // Free placement overrides the Slot's coordinates so the House shows it there as is.
+      const at = bundleStory && story?.position ? story.position : slot;
+      return { id: slot.id, x: at.x, y: at.y, scale: at.scale, story: bundleStory };
     }),
   }));
 
