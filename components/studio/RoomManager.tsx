@@ -17,6 +17,7 @@ import {
 } from "@/lib/contracts";
 import { copy } from "@/lib/copy";
 import { requestStudio } from "./api";
+import { FilePicker } from "./FilePicker";
 import { RoomDoors } from "./RoomDoors";
 import { roomStyles } from "./room-styles";
 import { useStudioHouseId } from "./studio-house";
@@ -158,6 +159,7 @@ export function RoomRow({
       }),
     onSuccess: onChanged,
   });
+  const [chosen, setChosen] = useState<File | null>(null);
   const photo = useMutation({
     mutationFn: async (file: File) => {
       const asset = await uploadPhoto(room.houseId, file);
@@ -167,7 +169,10 @@ export function RoomRow({
         body: JSON.stringify({ background: { kind: "photo", assetId: asset.id } }),
       });
     },
-    onSuccess: onChanged,
+    onSuccess: () => {
+      setChosen(null);
+      onChanged();
+    },
   });
   const [description, setDescription] = useState("");
   const describe = useMutation({
@@ -220,16 +225,18 @@ export function RoomRow({
       />
       <div className="space-y-1">
         <Label htmlFor={`photo-${room.id}`}>{words.photoLabel}</Label>
-        <input
+        <FilePicker
           id={`photo-${room.id}`}
-          type="file"
           accept="image/jpeg"
+          file={chosen}
           disabled={busy}
-          onChange={(event) => {
-            const file = event.target.files?.[0];
-            if (file) photo.mutate(file);
-          }}
+          onChange={setChosen}
         />
+        {chosen && (
+          <Button size="sm" disabled={busy} onClick={() => photo.mutate(chosen)}>
+            {copy.studio.filePicker.use}
+          </Button>
+        )}
         <p className="text-14 text-ink/70">{words.photoHint}</p>
       </div>
       <div className="space-y-1">
@@ -339,15 +346,12 @@ export function AddRoom({ houseId, onCreated }: { houseId: string; onCreated: ()
       </div>
       <div className="space-y-1">
         <Label htmlFor="new-room-photo">{words.newPhotoLabel}</Label>
-        <input
+        <FilePicker
           id="new-room-photo"
-          type="file"
           accept="image/jpeg"
+          file={picked?.kind === "photo" ? picked.file : null}
           disabled={busy}
-          onChange={(event) => {
-            const file = event.target.files?.[0];
-            setBackground(file ? { kind: "photo", file } : null);
-          }}
+          onChange={(file) => setBackground(file ? { kind: "photo", file } : null)}
         />
         <p className="text-14 text-ink/70">{words.newPhotoHint}</p>
       </div>

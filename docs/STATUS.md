@@ -74,6 +74,10 @@ _(newest first: date — from → to — what)_
 
 ## Log
 
+### 2026-11-15 10:15 — Timoté (B24)
+- Done: shared `components/studio/FilePicker.tsx` (real "Choose a photo" button, preview, Remove). Used for a Room's background photo (Edit room: pick → preview → "Use this photo"; Add room) and the Object photo in New Story (choose / take a photo buttons; uploaded photo can be removed). Edit room lists each Object with its picture: library 3D Objects by their thumbnail, photo-made 3D Objects by a cube icon (no more blank square).
+- Outside my zone: `components/studio/{FilePicker,RoomManager,CreateStoryForm,RoomPages}.tsx`, `lib/copy.ts` (`studio.filePicker`). Alexandre / Raphaël: small edits only, no layout or motion changed.
+
 ### 2026-11-15 11:20 — Raphaël (design, B23)
 - Add room / Edit room: while a Room or its background is being made, the form is replaced by a "Getting your Room ready" panel (room-shaped placeholder, moving dots, hint per kind; for a description, a bar that fills towards 90 % over ~20 s).
 - Sheet step "How should the photos look?": no more switch hiding the rest. Three always-visible rows of buttons (Scratches and fading: Gently repair / Keep as it is; Movement: Keep still / Gentle movement / Describe it; Length 5 s / 10 s, hidden only when Keep still). Each tap saves `answers.motion` and `sceneMotion` together, so they can't disagree; "Saved" shows under the card.

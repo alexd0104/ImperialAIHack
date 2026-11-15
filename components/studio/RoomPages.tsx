@@ -1,7 +1,7 @@
 "use client";
 
 import { QueryClient, QueryClientProvider, useQuery } from "@tanstack/react-query";
-import { ArrowLeft, Move } from "lucide-react";
+import { ArrowLeft, Box, Move } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
@@ -120,12 +120,7 @@ function EditRoom({ fromUrl, roomId }: { fromUrl?: string; roomId: string }) {
                   href={`/studio/stories/${encodeURIComponent(story.id)}/place`}
                   className="flex min-h-16 items-center gap-3 rounded-xl border border-ink/15 bg-surface p-3 hover:border-primary-strong"
                 >
-                  {story.objectUrl && !story.objectUrl.endsWith(".glb") ? (
-                    // biome-ignore lint/performance/noImgElement: Object picture from /objects or /api/files.
-                    <img src={story.objectUrl} alt="" className="size-12 object-contain" />
-                  ) : (
-                    <span className="size-12 rounded-lg bg-surface-muted" aria-hidden />
-                  )}
+                  <ObjectIcon url={story.objectUrl} />
                   <span className="flex-1 truncate text-16 font-bold">{story.title}</span>
                   <Move aria-hidden className="size-5" />
                   <span className="sr-only">{words.moveObject}</span>
@@ -137,5 +132,27 @@ function EditRoom({ fromUrl, roomId }: { fromUrl?: string; roomId: string }) {
       </Card>
       <RoomRow room={room} onChanged={() => house.refetch()} onDeleted={() => router.push(home)} />
     </section>
+  );
+}
+
+/**
+ * Picture of an Object in the Room list: SVG/PNG as is, a library 3D Object by its thumbnail,
+ * and a 3D Object made from a family photo (no thumbnail yet) by a cube icon, never a blank box.
+ */
+function ObjectIcon({ url }: { url?: string }) {
+  const library = url?.match(/^\/objects\/glb\/([a-z0-9-]+)\.glb$/);
+  const src = library ? `/objects/thumbs/${library[1]}.png` : url?.endsWith(".glb") ? null : url;
+  if (src)
+    return (
+      // biome-ignore lint/performance/noImgElement: Object picture from /objects or /api/files.
+      <img src={src} alt="" className="size-12 rounded-lg bg-surface-muted object-contain p-1" />
+    );
+  return (
+    <span
+      className="flex size-12 items-center justify-center rounded-lg bg-surface-muted text-primary-strong"
+      aria-hidden
+    >
+      <Box className="size-6" />
+    </span>
   );
 }

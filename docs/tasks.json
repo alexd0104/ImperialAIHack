@@ -950,6 +950,15 @@
       "deps": [],
       "soft": [],
       "note": ""
+    },
+    {
+      "id": "B24",
+      "title": "Studio: photo chooser button with preview and Remove; Object icons on the Edit room page",
+      "owner": "timote",
+      "priority": "FIX",
+      "deps": [],
+      "soft": [],
+      "note": ""
     }
   ]
 }

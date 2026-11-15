@@ -92,6 +92,13 @@ export const copy = {
       another: "Create another House",
       startAgain: "Start again",
     },
+    // B24: shared photo chooser (components/studio/FilePicker.tsx).
+    filePicker: {
+      choose: "Choose a photo",
+      chosen: "Chosen photo",
+      remove: "Remove",
+      use: "Use this photo",
+    },
     rooms: {
       title: "Rooms",
       intro: "Rename a Room, give it a new background, or remove it.",

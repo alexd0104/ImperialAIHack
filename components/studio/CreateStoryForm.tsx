@@ -13,6 +13,7 @@ import { AssetView, CreateStoryRequest, JobView, Room, Story } from "@/lib/contr
 import { copy } from "@/lib/copy";
 import { cn } from "@/lib/utils";
 import { postStudio, requestStudio, StudioApiError } from "./api";
+import { ChosenPhoto, PickPhotoButton } from "./FilePicker";
 import { type LibraryName, libraryImage, objectLabel, objectLibrary } from "./object-library";
 import { resizeObjectPhoto } from "./photo";
 
@@ -410,49 +411,42 @@ function StoryForm({ roomId }: { roomId: string }) {
             ) : (
               <Card className="space-y-3 p-5">
                 <Label htmlFor="object-photo">{words.photoLabel}</Label>
-                <input
-                  id="object-photo"
-                  type="file"
-                  accept="image/jpeg,image/png"
-                  className="block w-full text-16"
-                  onChange={(event) => {
-                    const file = event.target.files?.[0];
-                    if (file) {
+                <div className="flex flex-wrap gap-3">
+                  <PickPhotoButton
+                    id="object-photo"
+                    accept="image/jpeg,image/png"
+                    label={copy.studio.filePicker.choose}
+                    disabled={upload.isPending}
+                    onPick={(file) => {
                       upload.reset();
                       upload.mutate(file);
-                    }
-                    event.target.value = "";
-                  }}
-                />
-                <Label htmlFor="object-camera">{words.takePhoto}</Label>
-                <input
-                  id="object-camera"
-                  type="file"
-                  accept="image/jpeg,image/png"
-                  capture="environment"
-                  className="block w-full text-16"
-                  onChange={(event) => {
-                    const file = event.target.files?.[0];
-                    if (file) {
+                    }}
+                  />
+                  <PickPhotoButton
+                    id="object-camera"
+                    camera
+                    accept="image/jpeg,image/png"
+                    label={words.takePhoto}
+                    disabled={upload.isPending}
+                    onPick={(file) => {
                       upload.reset();
                       upload.mutate(file);
-                    }
-                    event.target.value = "";
-                  }}
-                />
+                    }}
+                  />
+                </div>
                 <p className="text-14 text-ink/70">{words.photoHint}</p>
                 {upload.isPending ? (
                   <p role="status">{words.uploading}</p>
                 ) : (
                   asset && (
                     <>
-                      <Image
+                      <ChosenPhoto
                         src={asset.url}
-                        alt={words.photoLabel}
-                        width={160}
-                        height={120}
-                        className="h-30 w-40 rounded-lg object-cover"
-                        unoptimized
+                        name={words.photoLabel}
+                        onRemove={() => {
+                          setAsset(null);
+                          saveDraft({ asset: undefined });
+                        }}
                       />
                       <p role="status" className="text-14 text-success-strong">
                         {words.uploaded}
