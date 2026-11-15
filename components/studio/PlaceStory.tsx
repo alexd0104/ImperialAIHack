@@ -1,7 +1,7 @@
 "use client";
 
 import { useMutation, useQueries, useQuery, useQueryClient } from "@tanstack/react-query";
-import { ArrowDown, ArrowUp, Check } from "lucide-react";
+import { ArrowDown, ArrowUp, Check, Plus } from "lucide-react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -89,9 +89,14 @@ function Place({ storyId }: { storyId: string }) {
   const name = house.data?.firstName ?? "";
   const order = story.data.memoryOrder;
   const loaded = memories.map((query) => query.data).filter((memory) => memory !== undefined);
-  const pending = loaded.some(
-    (memory) => memory.scenes.length === 0 || memory.scenes.some((scene) => !scene.choice),
-  );
+  // Same rule as the publish route: an empty draft is skipped, any unchosen scene waits.
+  const pending =
+    loaded.every((memory) => memory.scenes.length === 0 && memory.status === "draft") ||
+    loaded.some(
+      (memory) =>
+        (memory.scenes.length === 0 && memory.status !== "draft") ||
+        memory.scenes.some((scene) => !scene.choice),
+    );
   const mentions = [
     ...new Set(
       loaded.flatMap((memory) =>
@@ -119,6 +124,9 @@ function Place({ storyId }: { storyId: string }) {
         <div className="flex flex-wrap justify-center gap-3">
           <Button asChild>
             <Link href={`/studio?house=${story.data.houseId}`}>{words.backToHouse}</Link>
+          </Button>
+          <Button asChild variant="secondary">
+            <Link href={`/studio/stories/${storyId}/memories/new`}>{words.addMemory}</Link>
           </Button>
           <Button asChild variant="secondary">
             <Link href={`/studio/stories/new?roomId=${story.data.roomId}`}>{words.another}</Link>
@@ -224,6 +232,12 @@ function Place({ storyId }: { storyId: string }) {
             );
           })}
         </ol>
+        <Button asChild size="sm" variant="secondary">
+          <Link href={`/studio/stories/${storyId}/memories/new`}>
+            <Plus aria-hidden />
+            {words.addMemory}
+          </Link>
+        </Button>
       </Card>
 
       {mentions.length > 0 && <DontShowWarning mentions={mentions} />}

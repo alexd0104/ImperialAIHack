@@ -111,6 +111,16 @@ test("Q2 create a Memory, approve, publish, then the House plays a Story", async
   await page.getByRole("button", { name: "Send to Frank’s house" }).click();
   await expect(page.getByRole("heading", { name: "Sent with love" })).toBeVisible();
 
+  // B18: add a second Memory to the Story that is already in the House.
+  await page.getByRole("link", { name: "Add a Memory to this Story" }).click();
+  await page.getByLabel("Name this Memory").fill("The garden");
+  await page.getByRole("button", { name: "Start this Memory" }).click();
+  await expect(page).toHaveURL(/\/studio\/memories\/[0-9a-f]{24}$/);
+  const added = page.url().split("/").pop() ?? "";
+  expect(added).not.toBe(memoryId);
+  const updated = await page.request.get(`/api/stories/${story.id}`);
+  expect((await updated.json()).data.memoryOrder).toEqual([memoryId, added]);
+
   // House: choose a room → tap the Object → polaroids → the first Memory plays.
   await page.goto(`/house/${DEMO_TOKEN}`);
   await page.getByTestId("room-card").first().click();

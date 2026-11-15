@@ -11,13 +11,18 @@ export async function POST(request: Request, context: { params: Promise<{ id: st
     if (!body.success) return fail("validation_failed", body.message);
     const story = await getEntity("stories", (await context.params).id);
     if (!story) return fail("not_found", copy.studio.place.missing);
-    const memories = await listEntities("memories", (item) => item.storyId === story.id);
-    if (memories.length === 0) return fail("conflict", copy.studio.place.noMemories);
-    for (const memory of memories) {
+    const all = await listEntities("memories", (item) => item.storyId === story.id);
+    const memories = [];
+    for (const memory of all) {
       const scenes = await listEntities("scenes", (item) => item.memoryId === memory.id);
+      // A Memory started then left with no photo stays a draft: it must not block the others
+      // (adding to an existing Story, B18). The House never shows a draft anyway.
+      if (scenes.length === 0 && memory.status === "draft") continue;
       if (scenes.length === 0 || scenes.some((scene) => !scene.choice))
         return fail("conflict", copy.studio.place.notApproved);
+      memories.push(memory);
     }
+    if (memories.length === 0) return fail("conflict", copy.studio.place.noMemories);
     const room = await getEntity("rooms", story.roomId);
     const slot = room?.slots.find((candidate) => candidate.id === story.slotId);
     if (!room || !slot) return fail("conflict", copy.studio.place.badSlot);

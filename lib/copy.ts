@@ -438,6 +438,7 @@ export const copy = {
       sentTitle: "Sent with love",
       sentBody: "{name} can now find this Story in the House.",
       another: "Create another Story",
+      addMemory: "Add a Memory to this Story",
       backToHouse: "Back to the House",
       blocked: "Approve every scene before sending.",
     },
