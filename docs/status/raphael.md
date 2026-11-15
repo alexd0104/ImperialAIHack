@@ -2,6 +2,11 @@
 
 Newest on top. Written by the agent after each task (what was done, Human TODO, Requests). Read this in the morning.
 
+- **H11 done:** bundle now carries a content `version` (`lib/house/bundle.ts`); the existing 30 s poller compares it (`lib/house/refresh.ts` `bundleChanged`, `diffObjects` + test) and still applies only when calm. `room-scene.tsx` fades moved/removed Objects out then the new layout in (~1.2 s), new Objects fade in, new backgrounds cross-fade; `room-canvas.tsx` keys Objects by Story id.
+- Outside zone: none beyond the brief's files.
+- Human TODO: run `pnpm demo:check` (not run); manually move an Object in the Studio and watch the House update within 30 s with a fade, also while a Memory plays (must wait until closed).
+- Request: none.
+
 - **H9 done:** review clip plays with sound (`controls`, no `muted`/autoplay), stills show an `<audio controls>` for their separate ambience; "Play full memory" (`components/studio/MemoryPreview.tsx`) opens the House `MemoryPlayer` with a new `preview` prop (X close instead of Home) on a bundle built client-side by `lib/studio/preview-memory.ts` (+test).
 - Outside zone: `components/house/memory-player.tsx` (preview prop, few lines), `lib/copy.ts` (`closePreview`, `playFull`).
 - Human TODO: listen in the browser to an animated scene and a still in review; open "Play full memory", check song+voice+ambience mix and close; run `pnpm demo:check` (not run here).

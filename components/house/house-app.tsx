@@ -13,6 +13,7 @@ import {
   reduceFlow,
 } from "@/lib/house/flow";
 import { preloadFiles } from "@/lib/house/preload";
+import { bundleChanged } from "@/lib/house/refresh";
 import { ChooseRoom } from "./choose-room";
 import { HeartScreen } from "./heart-screen";
 import { HouseStage } from "./house-stage";
@@ -65,7 +66,7 @@ export function HouseApp({ token, mode }: { token: string; mode: HouseMode }) {
     const poll = setInterval(async () => {
       const next = await fetchHouseBundle(token, mode);
       if (cancelled || !next) return;
-      const key = JSON.stringify(next);
+      const key = next.version ?? JSON.stringify(next);
       if (key === latest.current) return;
       const failed = await preloadFiles(next.files);
       if (cancelled) return;
@@ -79,12 +80,12 @@ export function HouseApp({ token, mode }: { token: string; mode: HouseMode }) {
   }, [loaded, token, mode]);
 
   useEffect(() => {
-    if (bundle && !latest.current) latest.current = JSON.stringify(bundle);
+    if (bundle && !latest.current) latest.current = bundle.version ?? JSON.stringify(bundle);
   }, [bundle]);
 
   useEffect(() => {
     if (!pending || !calm) return;
-    if (JSON.stringify(pending.bundle) !== JSON.stringify(bundle)) {
+    if (!bundle || bundleChanged(bundle, pending.bundle)) {
       setFailedFiles(pending.failed);
       setBundle(pending.bundle);
     }

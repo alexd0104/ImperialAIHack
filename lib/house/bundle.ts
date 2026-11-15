@@ -193,7 +193,21 @@ export function buildBundle(src: BundleSource): { bundle: HouseBundle; okAloneId
     rooms,
     files: [],
   };
-  return { bundle: { ...bundle, files: collectFiles(bundle) }, okAloneIds };
+  return {
+    bundle: { ...bundle, files: collectFiles(bundle), version: contentVersion(rooms) },
+    okAloneIds,
+  };
+}
+
+/** H11: changes whenever anything the House shows changes (FNV-1a over the rooms). */
+function contentVersion(rooms: BundleRoom[]): string {
+  const text = JSON.stringify(rooms);
+  let hash = 0x811c9dc5;
+  for (let i = 0; i < text.length; i++) {
+    hash ^= text.charCodeAt(i);
+    hash = Math.imul(hash, 0x01000193);
+  }
+  return (hash >>> 0).toString(36);
 }
 
 /** Every URL the House shows or plays, deduplicated, in display order. */

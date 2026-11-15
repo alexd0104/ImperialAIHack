@@ -5,9 +5,10 @@ import dynamic from "next/dynamic";
 import { useEffect, useState } from "react";
 import { AvatarGroup } from "@/components/ui/avatar-group";
 import { IconButton } from "@/components/ui/icon-button";
-import type { BundleRoom, HouseBundle } from "@/lib/contracts";
+import type { BundleRoom, BundleSlot, HouseBundle } from "@/lib/contracts";
 import { copy } from "@/lib/copy";
 import { slotBox } from "@/lib/house/layout";
+import { diffObjects, MOVE_FADE_MS } from "@/lib/house/refresh";
 import { EmptySlot } from "./empty-slot";
 import { ObjectOpen } from "./object-open";
 import type { ObjectLook } from "./room-canvas";
@@ -20,6 +21,43 @@ const RoomCanvas = dynamic(() => import("./room-canvas"), { ssr: false });
 const UNAVAILABLE_OPACITY = 0.28;
 const FADED_WHILE_OPEN = 0.3;
 const OPEN_SCALE = 1.12;
+
+/** H11: a new background fades in over the old one (already preloaded), never a flash. */
+function RoomBackground({ src }: { src: string }) {
+  const [layers, setLayers] = useState<{ current: string; previous: string | null }>({
+    current: src,
+    previous: null,
+  });
+  const [fadedIn, setFadedIn] = useState(true);
+  useEffect(() => {
+    if (src === layers.current) return;
+    setLayers({ current: src, previous: layers.current });
+    setFadedIn(false);
+    const frame = requestAnimationFrame(() => requestAnimationFrame(() => setFadedIn(true)));
+    const done = setTimeout(() => setLayers((l) => ({ ...l, previous: null })), MOVE_FADE_MS + 100);
+    return () => {
+      cancelAnimationFrame(frame);
+      clearTimeout(done);
+    };
+  }, [src, layers.current]);
+  const cls = "absolute inset-0 size-full object-cover";
+  return (
+    <>
+      {layers.previous && (
+        // biome-ignore lint/performance/noImgElement: preloaded by the House, not optimised by Next.
+        <img src={layers.previous} alt="" draggable={false} className={cls} />
+      )}
+      {/* biome-ignore lint/performance/noImgElement: preloaded by the House, not optimised by Next. */}
+      <img
+        src={layers.current}
+        alt=""
+        draggable={false}
+        className={`${cls} transition-opacity ease-memorai`}
+        style={{ opacity: fadedIn ? 1 : 0, transitionDuration: `${MOVE_FADE_MS}ms` }}
+      />
+    </>
+  );
+}
 
 // Figma v5 "Room · Garden" (20-176) and "watching alone" (20-701).
 export function RoomScene({
@@ -46,9 +84,35 @@ export function RoomScene({
     return () => cancelAnimationFrame(frame);
   }, []);
 
+  // H11: a moved or removed Object fades out where it was, then the new layout fades in.
+  const [staged, setStaged] = useState<{ slots: BundleSlot[]; leaving: Set<string> }>({
+    slots: room.slots,
+    leaving: new Set(),
+  });
+  const shownSlots = staged.slots;
+  useEffect(() => {
+    if (shownSlots === room.slots) return;
+    const diff = diffObjects(shownSlots, room.slots);
+    const leaving = new Set([...diff.moved, ...diff.removed]);
+    if (leaving.size === 0 || reducedMotion) {
+      setStaged({ slots: room.slots, leaving: new Set() });
+      return;
+    }
+    setStaged({ slots: shownSlots, leaving });
+    const timer = setTimeout(
+      () => setStaged({ slots: room.slots, leaving: new Set() }),
+      MOVE_FADE_MS / 2,
+    );
+    return () => clearTimeout(timer);
+  }, [room.slots, shownSlots, reducedMotion]);
+
   const looks: Record<string, ObjectLook> = {};
-  for (const slot of room.slots) {
+  for (const slot of shownSlots) {
     if (!slot.story) continue;
+    if (staged.leaving.has(slot.story.id)) {
+      looks[slot.id] = { opacity: 0, scale: 1 };
+      continue;
+    }
     const opacity = !slot.story.available
       ? UNAVAILABLE_OPACITY
       : openSlotId && openSlotId !== slot.id
@@ -67,23 +131,17 @@ export function RoomScene({
       className="relative size-full transition-opacity duration-900 ease-memorai"
       style={{ opacity: shown ? 1 : 0 }}
     >
-      {/* biome-ignore lint/performance/noImgElement: preloaded by the House, not optimised by Next. */}
-      <img
-        src={room.background}
-        alt=""
-        draggable={false}
-        className="absolute inset-0 size-full object-cover"
-      />
+      <RoomBackground src={room.background} />
 
-      {room.slots.map((slot) => (slot.story ? null : <EmptySlot key={slot.id} slot={slot} />))}
+      {shownSlots.map((slot) => (slot.story ? null : <EmptySlot key={slot.id} slot={slot} />))}
 
       <div className="absolute inset-0">
-        <RoomCanvas slots={room.slots} looks={looks} reducedMotion={reducedMotion} />
+        <RoomCanvas slots={shownSlots} looks={looks} reducedMotion={reducedMotion} />
       </div>
 
       {/* Tap targets over each Object (≥ 200 px, Figma Objects 200–290). */}
       {!openSlot &&
-        room.slots.map((slot) => {
+        shownSlots.map((slot) => {
           const story = slot.story;
           if (!story) return null;
           const box = slotBox(slot, 1.1);

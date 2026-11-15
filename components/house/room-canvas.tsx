@@ -162,7 +162,7 @@ export default function RoomCanvas({ slots, looks, reducedMotion }: Props) {
           );
         // Lower on screen = nearer, so overlapping Objects stack naturally.
         return (
-          <group key={slot.id} position={[x, y, slot.y * 100]}>
+          <group key={story.id} position={[x, y, slot.y * 100]}>
             {reducedMotion ? (
               object
             ) : (
