@@ -405,7 +405,8 @@ async function main() {
     const r = await runAgent(
       "Reply with exactly this line and nothing else: RESULT: DONE",
       "check",
-      0.1,
+      // One cold turn caches ~26k tokens of repo context (~$0.11): 0.1 always failed.
+      0.3,
     );
     console.log(
       r.text.includes("RESULT: DONE")
