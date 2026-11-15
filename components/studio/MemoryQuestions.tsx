@@ -66,6 +66,16 @@ function Form(props: { memoryId: string; initial: AnswerDraft; songs: AssetView[
     return () => clearTimeout(timer);
   }, [draft, mutate]);
 
+  // Leaving (stepper, Back, browser Back) inside the debounce window must not drop typing.
+  const latest = useRef(draft);
+  latest.current = draft;
+  useEffect(
+    () => () => {
+      if (dirty.current) mutate(latest.current);
+    },
+    [mutate],
+  );
+
   const set = <K extends keyof AnswerDraft>(key: K, value: AnswerDraft[K]) => {
     dirty.current = true;
     setDraft((current) => ({ ...current, [key]: value }));
