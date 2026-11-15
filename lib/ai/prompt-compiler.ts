@@ -105,3 +105,17 @@ function enforce(
     source,
   };
 }
+
+/**
+ * Room background from the family's words (B17). A Room is a backdrop, not a Memory:
+ * realistic like the standard photo Rooms, never people, and clear surfaces for the Objects.
+ */
+export function compileRoomPrompt(description: string): string {
+  const text = description.replace(/\s+/g, " ").trim().slice(0, 300);
+  return (
+    `A realistic, calm photograph of a room in a family home: ${text}. ` +
+    "Soft natural daylight, eye-level wide view, landscape framing, simple and uncluttered. " +
+    "Leave clear empty surfaces (table tops, shelves, floor) where objects can be placed. " +
+    "No people, no pets, no text, no logos, no screens showing images."
+  );
+}

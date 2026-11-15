@@ -415,6 +415,7 @@ All model IDs and default params live in `lib/ai/models.ts`. Verify each ID and 
 | model3d | `fal-ai/hyper3d/rodin/v2.5/fast` | cutout as `image_urls: [url]`, tier `Gen-2.5-Extreme-Low`, GLB | $0.10 / generation (20K faces max; measured in Test 4) | `fal-ai/trellis-2` (texture 1024, decimation 20000; $0.30 / run, weaker on busy photos, Test 4) → library SVG |
 | compress | local `@gltf-transform/functions` in process (dedup, prune, weld, textures ≤ 1024 px WebP) | target < 3 MB per GLB | free | keep raw GLB |
 | room_edit | `fal-ai/nano-banana-2/edit` | family room photo + "warm, tidy, soft light, keep the room" | $0.08 / image | default illustrated style |
+| room_generate (B17) | `fal-ai/nano-banana-2` (text-to-image) | `prompt` = `compileRoomPrompt(description)` (realistic, no people, free surfaces), `aspect_ratio: "3:2"`, `resolution: "1K"`, jpeg; cropped to 1194×834 | $0.08 / image (checked 15 Nov 2026) | closest standard Room (garden / kitchen / living) |
 
 Default room styles are **not generated**: they are the 3 Figma SVG scenes (garden, kitchen, living) in `public/rooms/`.
 

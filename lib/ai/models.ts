@@ -94,6 +94,14 @@ export const MODELS = {
     price: { unit: "image", usd: 0.08, verified: true },
     output: { path: ["images", 0, "url"], mime: "image/jpeg" },
   },
+  roomGenerate: {
+    // Verified 2026-11-15 (fal API page): text-to-image, `images[0].url`; $0.08 per image at 1K.
+    // 3:2 is the closest ratio to the 1194×834 tablet Room; fitRoomPhoto crops the rest.
+    id: "fal-ai/nano-banana-2",
+    defaults: { num_images: 1, aspect_ratio: "3:2", output_format: "jpeg", resolution: "1K" },
+    price: { unit: "image", usd: 0.08, verified: true },
+    output: { path: ["images", 0, "url"], mime: "image/jpeg" },
+  },
 } as const satisfies Record<string, FalModel>;
 
 export type FalModelKey = keyof typeof MODELS;

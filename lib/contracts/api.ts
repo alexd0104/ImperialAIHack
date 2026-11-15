@@ -88,6 +88,17 @@ export const CreateRoomRequest = z.discriminatedUnion("source", [
 ]);
 export type CreateRoomRequest = z.infer<typeof CreateRoomRequest>;
 
+// POST /api/houses/:id/rooms/generate → Room (B17). No roomId: a new Room; roomId: new background.
+// If generation fails the Room gets the closest standard style instead (source "style").
+export const GenerateRoomRequest = z
+  .object({
+    name: z.string().trim().min(1).max(60).optional(),
+    description: z.string().trim().min(3).max(300),
+    roomId: Id.optional(),
+  })
+  .refine((input) => input.roomId || input.name, { path: ["name"] });
+export type GenerateRoomRequest = z.infer<typeof GenerateRoomRequest>;
+
 /** Background a family picks in the Studio; a photo starts a `room_edit` job (v2, F7). */
 export const RoomBackgroundInput = z.discriminatedUnion("kind", [
   z.object({ kind: z.literal("style"), style: RoomStyle }),

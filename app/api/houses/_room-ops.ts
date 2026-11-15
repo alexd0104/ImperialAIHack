@@ -67,7 +67,7 @@ export async function updateRoom(
   fields.pendingBackground = undefined;
   const next = await updateEntity("rooms", room.id, fields);
   // The previous cleaned photo is now unreachable.
-  if (next && background && room.source === "photo" && room.backgroundPath !== next.backgroundPath)
+  if (next && background && room.source !== "style" && room.backgroundPath !== next.backgroundPath)
     await rm(resolveStoragePath(room.backgroundPath), { force: true });
   return next;
 }
@@ -84,7 +84,7 @@ export async function deleteRoom(room: Room): Promise<void> {
   for (const scene of scenes) for (const p of Object.values(scene.outputs)) if (p) paths.add(p);
   for (const asset of assets) paths.add(asset.path);
   for (const story of stories) if (story.object.kind === "glb") paths.add(story.object.path);
-  if (room.source === "photo") paths.add(room.backgroundPath);
+  if (room.source !== "style") paths.add(room.backgroundPath);
   for (const scene of scenes) await deleteEntity("scenes", scene.id);
   for (const asset of assets) await deleteEntity("assets", asset.id);
   for (const memory of memories) await deleteEntity("memories", memory.id);

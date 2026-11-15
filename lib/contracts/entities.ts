@@ -40,6 +40,8 @@ export const RoomBackground = z.discriminatedUnion("kind", [
     /** Storage path of the edited background, once the `room_edit` job is done. */
     path: z.string().optional(),
   }),
+  /** Generated from the family's words (B17); `path` is the stored picture. */
+  z.object({ kind: z.literal("description"), text: z.string().max(300), path: z.string() }),
 ]);
 export type RoomBackground = z.infer<typeof RoomBackground>;
 
@@ -47,6 +49,7 @@ export type RoomBackground = z.infer<typeof RoomBackground>;
 export const PendingRoomBackground = z.discriminatedUnion("kind", [
   RoomBackground.options[0].extend({ jobId: Id }),
   RoomBackground.options[1].extend({ jobId: Id }),
+  RoomBackground.options[2].extend({ jobId: Id }),
 ]);
 export type PendingRoomBackground = z.infer<typeof PendingRoomBackground>;
 
@@ -54,7 +57,7 @@ export const Room = z.object({
   id: Id,
   houseId: Id,
   name: z.string().min(1).max(60),
-  source: z.enum(["style", "photo"]),
+  source: z.enum(["style", "photo", "description"]),
   style: RoomStyle.optional(),
   /** Storage path or public path; the API exposes it as a URL. */
   backgroundPath: z.string(),

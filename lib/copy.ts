@@ -111,6 +111,7 @@ export const copy = {
       empty: "No Rooms yet.",
       invalid: "Check the Room details and try again.",
       photoMissing: "We couldn’t find that photo. Please choose it again.",
+      describeInvalid: "Describe the room in a few words and give it a name.",
       error: "We couldn’t save that yet. Nothing was changed. Please try again.",
     },
     hearBack: {

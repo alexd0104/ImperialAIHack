@@ -23,6 +23,7 @@ Async coordination. **Append only; never edit someone else's lines.** Newest ent
 
 _(newest first: date — what changed — who)_
 
+- 2026-11-15 — Room from a description (B17): `RoomBackground` gains `{ kind: "description", text, path }` (Pending too), `Room.source` gains `"description"`, new `GenerateRoomRequest` for `POST /api/houses/:id/rooms/generate`. Additive; code switching on `source`/`background.kind` should treat unknown values like `"photo"` (storage path) — Timoté.
 - 2026-11-15 — `Memory.sceneMotion` + `UpdateMemoryRequest.sceneMotion` (optional `SceneMotion`): movement chosen before generation, copied onto every scene — Timoté (B15).
 - 2026-11-15 — **Contracts v2 published (F7)** — Timoté. All additive and optional; every v1 fixture still parses.
   1. `Scene`: `motion?` (`SceneMotion`, read with `resolveSceneMotion` → gentle 5 s), `soundMode?` (`"clip"|"text"`, absent → env `SOUND_MODE_DEFAULT`, default `"text"`), `bedId?`, `soundEvents?`. **Deviation:** `bedId`/`soundEvents` live on `Scene`, not in `outputs`, which stays files only (the Studio turns every output into a URL).
@@ -43,6 +44,7 @@ _(newest first: date — what changed — who)_
 
 ## Requests
 
+- 2026-11-15 09:35 — Timoté → Alexandre — Room from a description (B17) backend is on main: `POST /api/houses/:id/rooms/generate` `{ name, description }` creates a Room, `{ roomId, description, name? }` replaces its background (send `Idempotency-Key`). Takes ~10–20 s live (2–5 s mock): show the "Preparing the new background…" state. If the response has `source: "style"`, generation failed and the closest standard Room was used. Ask: a "Describe a room" field in `RoomManager` / Create House.
 - 2026-11-14 22:30 — Yasir → Timoté / Alexandre — e2e runs with `STUDIO_MOCK_STORE=true`, but `POST /api/memories/:id/generate` (`mongoGenerationStore`) and the House bundle (`lib/house/load-bundle.ts`) read MongoDB only, so Studio → generate → House can't chain in e2e (CI has no Mongo service either). Q2 seeds the finished scene file in the mock store and plays the House from `e2e/fixtures/demo-assets` in demo mode. Ask: a mock-store generation store (and bundle loader), or a Mongo service in CI, so Q2 can drop the seeding.
 - 2026-11-14 22:00 — Raphaël → Yasir — Q4 found (Studio): (1) after `POST /api/scenes/:id/choice` on every scene the Memory stays `ready_for_review`; the choice route should call `refreshMemoryStatusById` (`lib/jobs/generation.ts`) so it becomes `approved`. (2) Place (`components/studio/PlaceStory.tsx:133`) draws Slots on a plain box: Figma 20-536 shows the Room SVG with its Objects, room tabs and "Send to Mum's house". (3) Studio screens lack the 4-step stepper and family avatars of Figma; full list in `docs/DESIGN.md` §7.
 - 2026-11-14 22:00 — Raphaël → Yasir — Q4 found (House): Choose a room shows style ids ("garden", "living") instead of Room names; alone mode doesn't fade Stories that aren't OK alone (Figma 20-701). Details in `docs/DESIGN.md` §7.
@@ -71,6 +73,11 @@ _(newest first: date — from → to — what)_
 - ~~2026-11-14 — Raphaël → Timoté — The Tasks workflow rejected `(ID-wip)` PR titles although its error message recommends them (`.github/workflows/tasks.yml:47`). Fixed in `fix/shared-tasks-wip-title`; please review. Not registered as a B task because `tasks.mjs add` needs Node, which is not set up on my machine yet: please add it if you want it on the board.~~ Resolved by #9.
 
 ## Log
+
+### 2026-11-15 09:35 — Timoté (pipeline, B17)
+- Done: #7 placeholder clip = mock fixture only (live writes `scene.outputs.clip`, Studio reads `/api/files/...`). #4 movement checked: custom text → `applyCustomMotion` in prompt-compiler, `duration: "10"` reaches Kling and mmaudio, cache key includes params.
+- Done: B17 room from a description — `roomGenerate` = `fal-ai/nano-banana-2` (verified on fal 15 Nov, $0.08), `compileRoomPrompt` (realistic like the standard photo Rooms, no people), `lib/ai/room-generate.ts`, route `app/api/houses/[id]/rooms/generate`, mock fixture, tests, TECHNICAL §7.1. Failure → closest standard Room. Synchronous in the request like `cleanRoomPhoto` (simplest; no job/pending flow).
+- Outside my zone: `app/api/houses/_room-ops.ts` (cleanup checks `source !== "style"` so generated pictures are deleted too), `lib/copy.ts` (`rooms.describeInvalid`). UI not done: see Requests (Alexandre).
 
 ### 2026-11-15 09:40 — Raphaël (design, B16)
 - Done: the Object library offers only the 3 committed 3D defaults (armchair, record player, teapot); old SVG Stories still render. The demo garden Story is now the 3D armchair (seed + export + `demo:check` green).
