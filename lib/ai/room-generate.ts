@@ -20,7 +20,8 @@ export async function generateRoomPhoto(
   const fal = opts.fal ?? getFal(aiMode());
   const requestId = await fal.submit("roomGenerate", { prompt: compileRoomPrompt(description) });
   let done = false;
-  for (let i = 0; i < 100 && !done; i++) {
+  // ~60 s at most (a live run takes ~13 s): past that the family gets the standard Room.
+  for (let i = 0; i < 30 && !done; i++) {
     done = (await fal.status("roomGenerate", requestId)) === "COMPLETED";
     if (!done) await sleep(opts.pollMs ?? 2000);
   }

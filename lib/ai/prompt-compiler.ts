@@ -42,7 +42,7 @@ export async function compilePrompts(
 /**
  * The family's own motion words ("running on the beach") may only move what is
  * already in the photo. A request to add or change something is dropped and
- * explained gently; the gentle prompt stays (AGENTS.md §3.1).
+ * explained gently and the gentle prompt is used instead (AGENTS.md §3.1).
  */
 export function applyCustomMotion(
   base: string,
@@ -53,8 +53,10 @@ export function applyCustomMotion(
   if (detectRefusedRequests(text).length > 0) {
     return { motionPrompt: base, motionRefused: MOTION_REFUSED };
   }
+  // The family's words replace the "almost static" base: appending them to it gave the
+  // video model two contradicting instructions (live test, 15 Nov). The guardrails stay.
   return {
-    motionPrompt: `${base} The family also describes this movement, only for people and things already in the photo, never adding anyone or anything: ${text}.`,
+    motionPrompt: `${text}. Only the people and things already in the photo move, naturally and realistically. Every person, object and place stays exactly as in the photo: never add or remove anyone or anything. Static camera, no cuts.`,
   };
 }
 

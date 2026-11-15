@@ -15,7 +15,8 @@ import {
   type SceneOutputs,
 } from "@/lib/contracts";
 import { db } from "@/lib/db/collections";
-import { openReadStream, saveFile, sha256File } from "@/lib/storage";
+import { openReadStream, resolveStoragePath, saveFile, sha256File } from "@/lib/storage";
+import { compressClip } from "./compress-clip";
 import { compressGlb, GLB_TARGET_BYTES } from "./compress-glb";
 import { isFinalStatus } from "./engine";
 import { mongoGenerationStore, refreshMemoryStatusById } from "./generation";
@@ -203,10 +204,12 @@ export const defaultHandlers: StepHandlers = {
       const seconds = (scene ? resolveSceneMotion(scene) : DEFAULT_SCENE_MOTION).durationSec;
       const params = ambienceParams(prompts, seconds);
       const clip = ctx.outputs.animate;
-      if (!clip) return { model: "ambienceStill", params };
+      // `seconds` sizes the cost estimate: a 10 s sound was counted as the 5 s default.
+      if (!clip) return { model: "ambienceStill", params, seconds };
       return {
         model: "ambienceClip",
         params,
+        seconds,
         input: { field: "video_url", sha256: await sha256File(clip), read: () => blobOf(clip, "") },
       };
     },
@@ -307,7 +310,10 @@ export async function storeOutput(
   if (!res.ok || !res.body) {
     throw new AiRequestError("request_failed", `Download failed (${res.status})`, true);
   }
-  return (await saveFile(job.houseId, name, res.body)).path;
+  const saved = await saveFile(job.houseId, name, res.body);
+  // Raw clips are ~30 MB for 10 s: shrink them for the tablet before anyone plays them.
+  if (mime.startsWith("video/")) await compressClip(resolveStoragePath(saved.path));
+  return saved.path;
 }
 
 /** Scene outputs from the steps that finished, whatever the final status. */

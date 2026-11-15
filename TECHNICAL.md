@@ -413,6 +413,7 @@ All model IDs and default params live in `lib/ai/models.ts`. Verify each ID and 
 | ambience (still) | `fal-ai/mmaudio-v2/text-to-audio` | `prompt`, duration = scene length | $0.001 / s | silence (song only) |
 | cutout | a background-removal model (e.g. BiRefNet on fal — verify ID) | `image_url` | measure | send photo as is |
 | model3d | `fal-ai/hyper3d/rodin/v2.5/fast` | cutout as `image_urls: [url]`, tier `Gen-2.5-Extreme-Low`, GLB | $0.10 / generation (20K faces max; measured in Test 4) | `fal-ai/trellis-2` (texture 1024, decimation 20000; $0.30 / run, weaker on busy photos, Test 4) → library SVG |
+| compress clip | local `ffmpeg` (in `storeOutput`, every video output) | ≤ 1280 px, H.264 CRF 24, `+faststart`; 30 MB → 1.4 MB for a 10 s clip | free | keep the raw clip |
 | compress | local `@gltf-transform/functions` in process (dedup, prune, weld, textures ≤ 1024 px WebP) | target < 3 MB per GLB | free | keep raw GLB |
 | room_edit | `fal-ai/nano-banana-2/edit` | family room photo + "warm, tidy, soft light, keep the room" | $0.08 / image | default illustrated style |
 | room_generate (B17) | `fal-ai/nano-banana-2` (text-to-image) | `prompt` = `compileRoomPrompt(description)` (realistic, no people, free surfaces), `aspect_ratio: "3:2"`, `resolution: "1K"`, jpeg; cropped to 1194×834 | $0.08 / image (checked 15 Nov 2026) | closest standard Room (garden / kitchen / living) |
@@ -521,6 +522,8 @@ Rules: nothing secret in `NEXT_PUBLIC_*`; pre-commit secret scan (husky); Claude
 | Hydration mismatch on House | Random/Date in render | Generate random values in effects or seed them from ids |
 | `middleware.ts` ignored | Next 16 renamed it | Use `proxy.ts` |
 | Upload 413 | File over limit | Client resize; limits in §4.3 |
+| Upload > 10 MB fails (422/413), log "Request body exceeded 10MB" | `proxy.ts` runs on every route, so Next buffers bodies for it with a 10 MB cap and cuts the rest | `experimental.proxyClientMaxBodySize: "110mb"` in `next.config.ts` (B25) |
+| Clip in the House slow to start | Raw Kling clip ~30 MB / 10 s at 1660×1244 | Every video output is re-encoded by `lib/jobs/compress-clip.ts` (≤ 1280 px, H.264, fast start, ~1.5 MB / 10 s); needs `ffmpeg` on the server, else the original is kept |
 | Claude returns non-JSON | No tool schema | Use forced tool output; fallback templates |
 | CI fails on missing env | Env read at import time | Read env lazily in functions; dummy values in CI |
 

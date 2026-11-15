@@ -30,7 +30,8 @@ export async function POST(request: Request, context: { params: Promise<{ id: st
     try {
       form = await request.formData();
     } catch {
-      return fail("validation_failed", words.fileType, 422);
+      // An unreadable form is almost always a body cut at the size limit, not a wrong type.
+      return fail("file_too_large", words.fileSize, 413);
     }
     const fields = UploadAssetFields.safeParse({ kind: form.get("kind") });
     const file = form.get("file");

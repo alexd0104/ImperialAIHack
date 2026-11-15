@@ -959,6 +959,15 @@
       "deps": [],
       "soft": [],
       "note": ""
+    },
+    {
+      "id": "B25",
+      "title": "Live test fixes: 10 MB upload cap, clip compression, custom motion prompt, ambience cost, room generate timeout",
+      "owner": "timote",
+      "priority": "FIX",
+      "deps": [],
+      "soft": [],
+      "note": ""
     }
   ]
 }

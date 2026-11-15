@@ -172,7 +172,10 @@ describe("custom motion (P7)", () => {
       sheet,
       motion: { preset: "custom", text: "running on the beach", durationSec: 5 },
     });
-    expect(result.motionPrompt).toContain("running on the beach");
+    expect(result.motionPrompt).toMatch(/^running on the beach\./);
+    // It replaces the "almost static" base instead of contradicting it, guardrails kept.
+    expect(result.motionPrompt).not.toMatch(/very subtle|almost static/i);
+    expect(result.motionPrompt).toContain("never add or remove anyone or anything");
     expect(result.motionRefused).toBeUndefined();
   });
 

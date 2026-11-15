@@ -74,6 +74,12 @@ _(newest first: date — from → to — what)_
 
 ## Log
 
+### 2026-11-15 10:20 — Timoté (pipeline, B25: live test fixes)
+- Live test (AI_MODE=live): Room from description OK (13 s); Memory with custom motion 10 s OK (Kling followed "waving arms and laughing", 10.04 s clip, 10.06 s ambience); publish OK.
+- Fixed: uploads > 10 MB cut by the proxy body buffer (→ `proxyClientMaxBodySize: "110mb"`, clearer 413 message); every video output re-encoded for the tablet (`lib/jobs/compress-clip.ts`, 30 MB → 1.4 MB, needs ffmpeg, original kept on failure); custom motion text now replaces the "very subtle" base instead of contradicting it (guardrails kept); ambience cost counts the real 10 s; room generation gives up after ~60 s → standard Room.
+- Not fixed: room generation ($0.08) not counted in the fal budget (not a job); generated Rooms get the closest standard Slot layout; already generated clips stay uncompressed.
+- Outside my zone: `next.config.ts` (shared config), `app/api/memories/[id]/assets/route.ts` (Studio, one message/status).
+
 ### 2026-11-15 10:15 — Timoté (B24)
 - Done: shared `components/studio/FilePicker.tsx` (real "Choose a photo" button, preview, Remove). Used for a Room's background photo (Edit room: pick → preview → "Use this photo"; Add room) and the Object photo in New Story (choose / take a photo buttons; uploaded photo can be removed). Edit room lists each Object with its picture: library 3D Objects by their thumbnail, photo-made 3D Objects by a cube icon (no more blank square).
 - Outside my zone: `components/studio/{FilePicker,RoomManager,CreateStoryForm,RoomPages}.tsx`, `lib/copy.ts` (`studio.filePicker`). Alexandre / Raphaël: small edits only, no layout or motion changed.
