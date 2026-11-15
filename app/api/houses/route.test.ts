@@ -75,7 +75,7 @@ describe("S1 House and style Room routes", () => {
       const result = apiSuccess(Room).parse(await response.json()).data;
       expect(result.houseId).toBe(created.id);
       expect(result.backgroundPath).toBe(
-        `/rooms/${style === "living" ? "living-room" : style}.svg`,
+        `/rooms/${style === "living" ? "living-room.jpg" : `${style}.svg`}`,
       );
       expect(result.slots.length).toBeGreaterThan(0);
       expect(result.slots.every((slot) => slot.storyId === undefined)).toBe(true);

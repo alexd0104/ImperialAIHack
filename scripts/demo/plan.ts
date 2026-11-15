@@ -29,9 +29,9 @@ export const PRESET_SLOTS: Record<RoomStyle, Slot[]> = {
     { id: "table", x: 0.5, y: 0.58, scale: 0.16 },
   ],
   living: [
-    { id: "shelf", x: 0.2, y: 0.71, scale: 0.18 },
-    { id: "side-table", x: 0.79, y: 0.675, scale: 0.18 },
-    { id: "coffee-table", x: 0.5, y: 0.79, scale: 0.18 },
+    { id: "shelf", x: 0.13, y: 0.43, scale: 0.12 },
+    { id: "side-table", x: 0.47, y: 0.5, scale: 0.12 },
+    { id: "coffee-table", x: 0.74, y: 0.71, scale: 0.14 },
   ],
 };
 
@@ -45,7 +45,7 @@ export const ROOM_NAMES: Record<RoomStyle, string> = {
 export const PRESET_BACKGROUNDS: Record<RoomStyle, string> = {
   garden: "/rooms/garden.svg",
   kitchen: "/rooms/kitchen.svg",
-  living: "/rooms/living-room.svg",
+  living: "/rooms/living-room.jpg",
 };
 
 const LIBRARY_OBJECTS = [

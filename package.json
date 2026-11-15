@@ -21,6 +21,7 @@
     "seed:demo": "node --conditions=react-server --env-file-if-exists=.env.local scripts/seed-demo.mts",
     "export:demo": "node --conditions=react-server --env-file-if-exists=.env.local scripts/export-demo.mts",
     "prepare": "husky",
+    "rooms:make": "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --import ./scripts/ts-resolve.mjs --conditions=react-server --env-file-if-exists=.env.local scripts/make-rooms.mts",
     "scene:run": "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --import ./scripts/ts-resolve.mjs --conditions=react-server --env-file-if-exists=.env.local scripts/run-scene.mts"
   },
   "dependencies": {
