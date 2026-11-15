@@ -18,6 +18,7 @@ import { copy } from "@/lib/copy";
 import { estimateMinutes } from "@/lib/job-estimates";
 import { cn } from "@/lib/utils";
 import { postStudio, requestStudio, StudioApiError } from "./api";
+import { MotionPicker } from "./MotionPicker";
 import { fetchMemory, memoryKey } from "./memory-client";
 import { StudioQuery } from "./StudioQuery";
 
@@ -268,6 +269,8 @@ function SceneApproval({
           )}
         </div>
       )}
+
+      <MotionPicker scene={scene} onSaved={refresh} />
 
       {error && (
         <p role="alert" className="rounded-lg bg-warning-surface p-4 text-16">

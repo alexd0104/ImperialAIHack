@@ -135,3 +135,28 @@ describe("compilePrompts", () => {
     expect(result.refusedRequests).toEqual([]);
   });
 });
+
+describe("custom motion (P7)", () => {
+  it("adds the family's motion text for something that can move", async () => {
+    const result = await compilePrompts({
+      sheet,
+      motion: { preset: "custom", text: "running on the beach", durationSec: 5 },
+    });
+    expect(result.motionPrompt).toContain("running on the beach");
+    expect(result.motionRefused).toBeUndefined();
+  });
+
+  it("refuses a request to add something that is not in the photo", async () => {
+    const result = await compilePrompts({
+      sheet,
+      motion: { preset: "custom", text: "add a dog", durationSec: 5 },
+    });
+    expect(result.motionPrompt).not.toContain("dog");
+    expect(result.motionRefused).toMatch(/only bring to life what is in the photo/);
+  });
+
+  it("keeps the gentle prompt for the default motion", async () => {
+    const result = await compilePrompts({ sheet, motion: { preset: "gentle", durationSec: 10 } });
+    expect(result.motionRefused).toBeUndefined();
+  });
+});

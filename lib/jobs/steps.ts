@@ -5,11 +5,20 @@ import { AiRequestError } from "@/lib/ai/errors";
 import { getFal, isMockUrl } from "@/lib/ai/fal";
 import { compilePrompts } from "@/lib/ai/prompt-compiler";
 import { CompiledPrompts } from "@/lib/ai/prompt-types";
-import type { Asset, Job, JobStep, MemorySheet, SceneOutputs } from "@/lib/contracts";
+import {
+  type Asset,
+  DEFAULT_SCENE_MOTION,
+  type Job,
+  type JobStep,
+  type MemorySheet,
+  resolveSceneMotion,
+  type SceneOutputs,
+} from "@/lib/contracts";
 import { db } from "@/lib/db/collections";
 import { openReadStream, saveFile, sha256File } from "@/lib/storage";
 import { compressGlb, GLB_TARGET_BYTES } from "./compress-glb";
 import { mongoGenerationStore, refreshMemoryStatusById } from "./generation";
+import { animateParams } from "./plans";
 import type { FalPlan, StepContext, StepHandlers } from "./types";
 
 // Default step handlers (TECHNICAL.md §5.1). P2 refines model params once each
@@ -117,7 +126,11 @@ export const defaultHandlers: StepHandlers = {
   compile: {
     kind: "local",
     async run({ job }) {
-      const prompts = await compilePrompts({ sheet: await loadSheet(job) });
+      const scene = job.sceneId ? await db.scenes.findById(job.sceneId) : null;
+      const prompts = await compilePrompts({
+        sheet: await loadSheet(job),
+        motion: scene ? resolveSceneMotion(scene) : undefined,
+      });
       const saved = await saveFile(
         job.houseId,
         `${job.id}/prompts.json`,
@@ -167,9 +180,15 @@ export const defaultHandlers: StepHandlers = {
     kind: "fal",
     async plan(ctx): Promise<FalPlan> {
       const prompts = await loadPrompts(ctx);
+      const scene = ctx.job.sceneId ? await db.scenes.findById(ctx.job.sceneId) : null;
+      const { params, seconds } = animateParams(
+        prompts,
+        scene ? resolveSceneMotion(scene) : DEFAULT_SCENE_MOTION,
+      );
       return {
         model: "animate",
-        params: { prompt: prompts.motionPrompt, negative_prompt: prompts.negativePrompt },
+        params,
+        seconds,
         input: await imageInput(ctx, "colourise", "restore"),
       };
     },

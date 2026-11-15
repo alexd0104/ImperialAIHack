@@ -2,6 +2,7 @@ import "server-only";
 import { type ClaudePromptClient, getClaude } from "./claude";
 import {
   DEFAULT_NEGATIVE_PROMPT,
+  MOTION_REFUSED,
   MOTION_TEMPLATE,
   NO_MUSIC,
   templatePrompts,
@@ -36,13 +37,32 @@ export async function compilePrompts(
   }
 }
 
+/**
+ * The family's own motion words ("running on the beach") may only move what is
+ * already in the photo. A request to add or change something is dropped and
+ * explained gently; the gentle prompt stays (AGENTS.md §3.1).
+ */
+export function applyCustomMotion(
+  base: string,
+  motion: PromptCompilerInput["motion"],
+): { motionPrompt: string; motionRefused?: string } {
+  const text = motion?.preset === "custom" ? motion.text?.trim() : undefined;
+  if (!text) return { motionPrompt: base };
+  if (detectRefusedRequests(text).length > 0) {
+    return { motionPrompt: base, motionRefused: MOTION_REFUSED };
+  }
+  return {
+    motionPrompt: `${base} The family also describes this movement, only for people and things already in the photo, never adding anyone or anything: ${text}.`,
+  };
+}
+
 // Keeps the video model's negative prompt within input limits.
 const MAX_NEGATIVE_PROMPT_CHARS = 500;
 
 /** Guarantees that hold whatever the model (or the mock fixture) wrote. */
 function enforce(
   prompts: CompiledPrompts,
-  { sheet }: PromptCompilerInput,
+  { sheet, motion }: PromptCompilerInput,
   source: PromptSource,
 ): CompiledPromptsResult {
   const extraNegative = prompts.negativePrompt.trim().slice(0, MAX_NEGATIVE_PROMPT_CHARS);
@@ -56,10 +76,12 @@ function enforce(
   const ambiencePrompt = /\bno music\b/i.test(ambience)
     ? ambience
     : [ambience, NO_MUSIC].filter(Boolean).join(", ");
+  const custom = applyCustomMotion(prompts.motionPrompt.trim() || MOTION_TEMPLATE, motion);
   return {
     ...prompts,
     // An empty motion prompt would let the video model improvise.
-    motionPrompt: prompts.motionPrompt.trim() || MOTION_TEMPLATE,
+    motionPrompt: custom.motionPrompt,
+    motionRefused: custom.motionRefused ?? prompts.motionRefused,
     negativePrompt,
     ambiencePrompt,
     // The family's choice decides colourisation, never the model.

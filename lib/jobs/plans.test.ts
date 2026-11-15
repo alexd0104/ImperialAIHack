@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { Job } from "@/lib/contracts";
 import { cacheKey, stableStringify } from "./cache";
-import { newJob, object3dPlan, roomBackgroundPlan, scenePlan } from "./plans";
+import { animateParams, newJob, object3dPlan, roomBackgroundPlan, scenePlan } from "./plans";
 import { briaColour, extensionOf, sceneOutputsOf } from "./steps";
 import { makeJob } from "./test-fakes";
 
@@ -94,6 +94,18 @@ describe("sceneOutputsOf", () => {
   it("keeps ambience as separate audio for a still scene", () => {
     const job = makeJob("6650a1f0c0ffee0000000031", [done("ambience", "h/j/ambience.wav")]);
     expect(sceneOutputsOf(job)).toMatchObject({ clip: undefined, ambience: "h/j/ambience.wav" });
+  });
+});
+
+describe("animateParams (P7)", () => {
+  const prompts = { motionPrompt: "m", negativePrompt: "n" };
+  it('sets duration "10" and 10 s of cost for a 10 s scene', () => {
+    const out = animateParams(prompts, { preset: "gentle", durationSec: 10 });
+    expect(out.params.duration).toBe("10");
+    expect(out.seconds).toBe(10);
+  });
+  it('defaults to "5"', () => {
+    expect(animateParams(prompts, { preset: "gentle", durationSec: 5 }).params.duration).toBe("5");
   });
 });
 

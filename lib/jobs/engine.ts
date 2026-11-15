@@ -190,7 +190,8 @@ async function submitFalStep(
   step.model = MODELS[plan.model].id;
   step.cacheHit = false;
   // Counted at submit so concurrent jobs cannot overshoot the budget; mock spends nothing.
-  step.costUsd = gateway.mode === "live" ? estimateCostUsd(plan.model) : 0;
+  step.costUsd =
+    gateway.mode === "live" ? estimateCostUsd(plan.model, { seconds: plan.seconds }) : 0;
   step.error = state.notice;
   return { kind: "progressed" };
 }

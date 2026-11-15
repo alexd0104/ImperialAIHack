@@ -50,6 +50,8 @@ export interface FalPlan {
   model: FalModelKey;
   /** Model params without the input URL (prompts included: they are part of the cache key). */
   params: Record<string, unknown>;
+  /** Seconds of output, for the cost estimate of per-second models (animate). */
+  seconds?: number;
   /** The file sent to the model; uploaded to the fal CDN only on a cache miss. */
   input?: {
     field: string;

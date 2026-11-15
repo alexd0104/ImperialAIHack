@@ -1,5 +1,5 @@
 import { z } from "zod";
-import type { MemorySheet } from "@/lib/contracts";
+import type { MemorySheet, SceneMotion } from "@/lib/contracts";
 
 /**
  * Output of the prompt compiler (TECHNICAL.md §7.2). Kept in lib/ai: only the
@@ -26,4 +26,6 @@ export interface PromptCompilerInput {
   sheet: MemorySheet;
   /** Short neutral description of what the photo shows (who, where, objects). */
   photoDescription?: string;
+  /** The family's per-photo motion choice (P7). Absent → gentle. */
+  motion?: SceneMotion;
 }

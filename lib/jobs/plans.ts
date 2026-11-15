@@ -1,5 +1,5 @@
 import "server-only";
-import type { Job, JobStep, JobType, MemorySheet, StepName } from "@/lib/contracts";
+import type { Job, JobStep, JobType, MemorySheet, SceneMotion, StepName } from "@/lib/contracts";
 import type { NewEntity } from "@/lib/db/collections";
 
 type PlannedStep = { name: StepName; enabled: boolean };
@@ -76,4 +76,20 @@ export function newObjectJob(input: {
   now: string;
 }): NewEntity<Job> {
   return newJob({ ...input, type: "object_3d", steps: object3dPlan() });
+}
+
+/** Animate-step params for one scene (P7): the compiled prompts plus the family's length. */
+export function animateParams(
+  prompts: { motionPrompt: string; negativePrompt: string },
+  motion: SceneMotion,
+): { params: Record<string, unknown>; seconds: number } {
+  return {
+    params: {
+      prompt: prompts.motionPrompt,
+      negative_prompt: prompts.negativePrompt,
+      // The video model takes the duration as the string "5" | "10".
+      duration: String(motion.durationSec),
+    },
+    seconds: motion.durationSec,
+  };
 }
