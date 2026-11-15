@@ -77,7 +77,9 @@ _(newest first: date — from → to — what)_
 ### 2026-11-15 09:40 — Alexandre (Studio, B18 B19 B20)
 - Done: B18 Studio home Room picker: Room cards (tap → new Story there, Edit → rename/background/delete) + "+ Add room" card (name + photo or familiar Room). B19 review: one main "Keep and continue" saves every scene's choice then opens Place; "Keep the original photo" / "Use the new version" and "Try again" are secondary. B20: "Add a Memory to this Story" on Place (before and after sending); Vitest + Q2 e2e cover it. Movement on review (preset/custom, text, 5/10 s) was already in `MotionPicker`, unchanged.
 - In progress: nothing.
-- Blocked: describe-to-generate a Room waits for the pipeline endpoint; the field is ready behind `ROOM_FROM_DESCRIPTION` in `components/studio/RoomManager.tsx` (send `description` in `AddRoom`'s mutation).
+- Done: B18 also wires Timoté's B17 `POST /api/houses/:id/rooms/generate`: "Or describe the room" in Add room and in each Room's Edit ("Make this background"). Offline mock `houseDetail` now lists Rooms/Stories/Memories from the studio-mock store (it returned `rooms: []`, so the picker was empty without Mongo).
+- Blocked: nothing. Not done: describe field in Create House; no notice when generation falls back to a standard Room.
+- Outside zone: `e2e/{room-picker,create-publish-play,create-story,studio-auth}.spec.ts` (new spec + Teapot instead of the removed Flower after B16).
 - Deviations: publish (and Place's Send button) now skips Memories that are still empty drafts, so one abandoned Memory doesn't block re-publishing a Story. No contract change.
 
 ### 2026-11-15 09:35 — Timoté (pipeline, B17)

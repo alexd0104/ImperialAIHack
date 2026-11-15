@@ -111,7 +111,7 @@ test("Q2 create a Memory, approve, publish, then the House plays a Story", async
   await page.getByRole("button", { name: "Send to Frank’s house" }).click();
   await expect(page.getByRole("heading", { name: "Sent with love" })).toBeVisible();
 
-  // B19: add a second Memory to the Story that is already in the House.
+  // B20: add a second Memory to the Story that is already in the House.
   await page.getByRole("link", { name: "Add a Memory to this Story" }).click();
   await page.getByLabel("Name this Memory").fill("The garden");
   await page.getByRole("button", { name: "Start this Memory" }).click();

@@ -129,6 +129,19 @@ function RoomCard({ room, editing, onEdit }: { room: Room; editing: boolean; onE
   );
 }
 
+/** B17 pipeline route: generates in the request (~10–20 s live); a failure returns a standard Room. */
+function generateRoom(
+  houseId: string,
+  body: { name?: string; description: string; roomId?: string },
+) {
+  return requestStudio(`/api/houses/${houseId}/rooms/generate`, Room, {
+    method: "POST",
+    headers: { ...json, "Idempotency-Key": crypto.randomUUID() },
+    body: JSON.stringify(body),
+  });
+}
+const DESCRIPTION_MIN = 3;
+
 async function uploadPhoto(houseId: string, file: File) {
   const body = new FormData();
   body.set("file", file);
@@ -185,11 +198,20 @@ function RoomRow({
     },
     onSuccess: onChanged,
   });
+  const [description, setDescription] = useState("");
+  const describe = useMutation({
+    mutationFn: () =>
+      generateRoom(room.houseId, { roomId: room.id, description: description.trim() }),
+    onSuccess: () => {
+      setDescription("");
+      onChanged();
+    },
+  });
   const remove = useMutation({
     mutationFn: () => requestStudio(`/api/rooms/${room.id}`, DeletedResponse, { method: "DELETE" }),
     onSuccess: onDeleted,
   });
-  const busy = patch.isPending || photo.isPending || remove.isPending;
+  const busy = patch.isPending || photo.isPending || describe.isPending || remove.isPending;
   return (
     <Card className="space-y-3 p-4">
       <div className="flex flex-wrap items-end gap-3">
@@ -228,12 +250,31 @@ function RoomRow({
         />
         <p className="text-14 text-ink/70">{words.photoHint}</p>
       </div>
-      {photo.isPending && (
+      <div className="space-y-1">
+        <Label htmlFor={`describe-${room.id}`}>{words.describeLabel}</Label>
+        <Textarea
+          id={`describe-${room.id}`}
+          value={description}
+          maxLength={300}
+          placeholder={words.describePlaceholder}
+          disabled={busy}
+          onChange={(event) => setDescription(event.target.value)}
+        />
+        <Button
+          size="sm"
+          variant="secondary"
+          disabled={busy || description.trim().length < DESCRIPTION_MIN}
+          onClick={() => describe.mutate()}
+        >
+          {words.describeSubmit}
+        </Button>
+      </div>
+      {(photo.isPending || describe.isPending) && (
         <p role="status" className="flex items-center gap-2 text-16">
           <MovingDots /> {words.working}
         </p>
       )}
-      {(patch.isError || photo.isError || remove.isError) && (
+      {(patch.isError || photo.isError || describe.isError || remove.isError) && (
         <p role="alert" className="rounded-lg bg-warning-surface p-3 text-16">
           {words.error}
         </p>
@@ -259,21 +300,21 @@ function RoomRow({
   );
 }
 
-/**
- * Generating a background from a description needs the pipeline's room endpoint (not on main
- * yet). Flip this once it lands and send `description` in `create` below.
- */
-const ROOM_FROM_DESCRIPTION = false;
-
-type Background = { kind: "photo"; file: File } | { kind: "style"; style: RoomStyle } | null;
+type Background =
+  | { kind: "photo"; file: File }
+  | { kind: "style"; style: RoomStyle }
+  | { kind: "description"; text: string };
 
 function AddRoom({ houseId, onCreated }: { houseId: string; onCreated: () => void }) {
   const [name, setName] = useState("");
-  const [background, setBackground] = useState<Background>(null);
+  // A photo or a familiar Room wins; otherwise a description long enough is used.
+  const [picked, setBackground] = useState<Background | null>(null);
   const [description, setDescription] = useState("");
   const [tried, setTried] = useState(false);
   const create = useMutation({
-    mutationFn: async (input: { name: string; background: NonNullable<Background> }) => {
+    mutationFn: async (input: { name: string; background: Background }) => {
+      if (input.background.kind === "description")
+        return generateRoom(houseId, { name: input.name, description: input.background.text });
       const body =
         input.background.kind === "photo"
           ? {
@@ -291,6 +332,9 @@ function AddRoom({ houseId, onCreated }: { houseId: string; onCreated: () => voi
     onSuccess: onCreated,
   });
   const trimmed = name.trim();
+  const text = description.trim();
+  const background: Background | null =
+    picked ?? (text.length >= DESCRIPTION_MIN ? { kind: "description", text } : null);
   const missing = !trimmed ? words.needName : !background ? words.needBackground : null;
   const busy = create.isPending;
   return (
@@ -325,15 +369,15 @@ function AddRoom({ houseId, onCreated }: { houseId: string; onCreated: () => voi
         <legend className="text-16 font-bold">{words.newStyleLabel}</legend>
         <div className="flex flex-wrap gap-2">
           {RoomStyle.options.map((style) => {
-            const picked = background?.kind === "style" && background.style === style;
+            const chosen = picked?.kind === "style" && picked.style === style;
             return (
               <Button
                 key={style}
                 size="sm"
-                variant={picked ? "primary" : "secondary"}
-                aria-pressed={picked}
-                disabled={busy || background?.kind === "photo"}
-                onClick={() => setBackground(picked ? null : { kind: "style", style })}
+                variant={chosen ? "primary" : "secondary"}
+                aria-pressed={chosen}
+                disabled={busy || picked?.kind === "photo"}
+                onClick={() => setBackground(chosen ? null : { kind: "style", style })}
               >
                 {roomStyles[style].name}
               </Button>
@@ -341,19 +385,18 @@ function AddRoom({ houseId, onCreated }: { houseId: string; onCreated: () => voi
           })}
         </div>
       </fieldset>
-      {ROOM_FROM_DESCRIPTION && (
-        <div className="space-y-1">
-          <Label htmlFor="new-room-description">{words.describeLabel}</Label>
-          <Textarea
-            id="new-room-description"
-            value={description}
-            maxLength={300}
-            placeholder={words.describePlaceholder}
-            disabled={busy}
-            onChange={(event) => setDescription(event.target.value)}
-          />
-        </div>
-      )}
+      <div className="space-y-1">
+        <Label htmlFor="new-room-description">{words.describeLabel}</Label>
+        <Textarea
+          id="new-room-description"
+          value={description}
+          maxLength={300}
+          placeholder={words.describePlaceholder}
+          disabled={busy || picked !== null}
+          onChange={(event) => setDescription(event.target.value)}
+        />
+        <p className="text-14 text-ink/70">{words.describeHint}</p>
+      </div>
       {tried && missing && (
         <p role="alert" className="text-16">
           {missing}
