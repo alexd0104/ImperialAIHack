@@ -74,6 +74,12 @@ _(newest first: date — from → to — what)_
 
 ## Log
 
+### 2026-11-15 09:40 — Alexandre (Studio, B18 B19 B20)
+- Done: B18 Studio home Room picker: Room cards (tap → new Story there, Edit → rename/background/delete) + "+ Add room" card (name + photo or familiar Room). B19 review: one main "Keep and continue" saves every scene's choice then opens Place; "Keep the original photo" / "Use the new version" and "Try again" are secondary. B20: "Add a Memory to this Story" on Place (before and after sending); Vitest + Q2 e2e cover it. Movement on review (preset/custom, text, 5/10 s) was already in `MotionPicker`, unchanged.
+- In progress: nothing.
+- Blocked: describe-to-generate a Room waits for the pipeline endpoint; the field is ready behind `ROOM_FROM_DESCRIPTION` in `components/studio/RoomManager.tsx` (send `description` in `AddRoom`'s mutation).
+- Deviations: publish (and Place's Send button) now skips Memories that are still empty drafts, so one abandoned Memory doesn't block re-publishing a Story. No contract change.
+
 ### 2026-11-15 09:35 — Timoté (pipeline, B17)
 - Done: #7 placeholder clip = mock fixture only (live writes `scene.outputs.clip`, Studio reads `/api/files/...`). #4 movement checked: custom text → `applyCustomMotion` in prompt-compiler, `duration: "10"` reaches Kling and mmaudio, cache key includes params.
 - Done: B17 room from a description — `roomGenerate` = `fal-ai/nano-banana-2` (verified on fal 15 Nov, $0.08), `compileRoomPrompt` (realistic like the standard photo Rooms, no people), `lib/ai/room-generate.ts`, route `app/api/houses/[id]/rooms/generate`, mock fixture, tests, TECHNICAL §7.1. Failure → closest standard Room. Synchronous in the request like `cleanRoomPhoto` (simplest; no job/pending flow).
