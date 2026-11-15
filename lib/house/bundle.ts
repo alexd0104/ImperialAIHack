@@ -1,3 +1,4 @@
+import { bedUrl, isBedId, pickBed } from "@/lib/ai/beds";
 import type {
   Asset,
   BundleMemory,
@@ -76,16 +77,25 @@ function buildMemory(
   for (const scene of approved) {
     const still = stillPath(scene, assetById.get(scene.assetId));
     polaroid ??= still;
+    // Library bed: the stored choice wins, else pick from the sound events; none is fine.
+    const bedId = isBedId(scene.bedId) ? scene.bedId : pickBed(scene.soundEvents);
+    const bed = bedId ? { bedUrl: bedUrl(bedId) } : {};
     if (scene.choice?.use === "animated" && scene.outputs.clip) {
       bundleScenes.push({
         kind: "clip",
+        ...bed,
         url: fileUrl(scene.outputs.clip, token),
         durationMs: CLIP_MS,
         // This scene's own still, so a failed clip never shows another photo.
         ...(still ? { stillUrl: fileUrl(still, token) } : {}),
       });
     } else if (still) {
-      bundleScenes.push({ kind: "photo", url: fileUrl(still, token), durationMs: PHOTO_MS });
+      bundleScenes.push({
+        kind: "photo",
+        url: fileUrl(still, token),
+        durationMs: PHOTO_MS,
+        ...bed,
+      });
     }
   }
   for (const video of own.filter((a) => a.kind === "video")) {
@@ -198,6 +208,7 @@ export function collectFiles(bundle: Pick<HouseBundle, "rooms">): string[] {
         for (const scene of memory.scenes) {
           add(scene.url);
           add(scene.stillUrl);
+          add(scene.bedUrl);
         }
         add(memory.songUrl);
         add(memory.ambienceUrl);

@@ -180,3 +180,19 @@ describe("buildMemory stillUrl (B10)", () => {
     expect(raw).toBe(still);
   });
 });
+
+describe("bedUrl (P9)", () => {
+  const [first] = scenes;
+  const pick = (extra: Record<string, unknown>) =>
+    buildBundle(
+      source({ scenes: [Scene.parse({ ...first, ...extra })] }),
+    ).bundle.rooms[0]?.slots.find((s) => s.id === "bench")?.story?.memories[0]?.scenes[0];
+
+  it("maps sound events to a static bed", () => {
+    expect(pick({ soundEvents: ["waves breaking"] })?.bedUrl).toBe("/beds/beach.mp3");
+  });
+  it("prefers the stored bedId and omits the field without a match", () => {
+    expect(pick({ bedId: "rain", soundEvents: ["waves"] })?.bedUrl).toBe("/beds/rain.mp3");
+    expect(pick({})?.bedUrl).toBeUndefined();
+  });
+});
