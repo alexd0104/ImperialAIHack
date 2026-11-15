@@ -74,6 +74,10 @@ _(newest first: date — from → to — what)_
 
 ## Log
 
+### 2026-11-15 13:30 — Raphaël (design, B32)
+- Fix: the Room photo picker accepted `image/jpeg` only, so PNG/HEIC/WebP photos were greyed out ("it doesn't let me upload"). Room and Object pickers now offer any photo (`PHOTO_ACCEPT` in `components/studio/photo.ts`); the photo is shrunk to 2048 px and sent as JPEG from the device, as the route requires. Originals up to 60 MB are fine since only the shrunk JPEG is uploaded. A HEIC that the browser can't decode (Chrome) shows a clear message asking for JPEG or PNG.
+- Outside my zone (Studio): `components/studio/{photo.ts,RoomManager.tsx,CreateStoryForm.tsx}`, `lib/copy.ts` (`createStory.fileSize/fileType`). Checked in the browser: a PNG room photo uploads (201) and the Room is created. `pnpm verify` green.
+
 ### 2026-11-15 13:00 — Raphaël (design, B31)
 - Demo House (Rose) now holds everything in `pregen/`, on top of Garden / Kitchen / Living room: **Bedroom** (`Room1.jpg`) with compass → "Road trips" (Car clip) and flower → "Dancing" (Dance clip); **Guest room** (`Room2.jpg`) with cake → "The family" (Family clip). Each clip's first frame is its still (polaroid and fallback).
 - Seed manifest: a Room may now take `photo` (its own background, saved as a photo Room) and a Story may take `position` (free placement). `scripts/demo/plan.ts` + test. Local only (gitignored): `demo-assets/demo.json`, `demo-assets/pregen/`, re-seeded into `mh_demo` and exported to `bundle.json`.

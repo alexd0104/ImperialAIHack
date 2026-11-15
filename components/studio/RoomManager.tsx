@@ -18,6 +18,7 @@ import {
 import { copy } from "@/lib/copy";
 import { requestStudio } from "./api";
 import { FilePicker } from "./FilePicker";
+import { PHOTO_ACCEPT, resizeObjectPhoto } from "./photo";
 import { RoomDoors } from "./RoomDoors";
 import { roomStyles } from "./room-styles";
 import { useStudioHouseId } from "./studio-house";
@@ -114,9 +115,10 @@ function RoomMaking({ kind }: { kind: Background["kind"] }) {
   );
 }
 
+/** Shrunk and turned into a JPEG on the device first: the route accepts JPEG only. */
 async function uploadPhoto(houseId: string, file: File) {
   const body = new FormData();
-  body.set("file", file);
+  body.set("file", await resizeObjectPhoto(file), "room.jpg");
   return requestStudio(`/api/houses/${houseId}/assets`, AssetView, { method: "POST", body });
 }
 
@@ -227,7 +229,7 @@ export function RoomRow({
         <Label htmlFor={`photo-${room.id}`}>{words.photoLabel}</Label>
         <FilePicker
           id={`photo-${room.id}`}
-          accept="image/jpeg"
+          accept={PHOTO_ACCEPT}
           file={chosen}
           disabled={busy}
           onChange={setChosen}
@@ -348,7 +350,7 @@ export function AddRoom({ houseId, onCreated }: { houseId: string; onCreated: ()
         <Label htmlFor="new-room-photo">{words.newPhotoLabel}</Label>
         <FilePicker
           id="new-room-photo"
-          accept="image/jpeg"
+          accept={PHOTO_ACCEPT}
           file={picked?.kind === "photo" ? picked.file : null}
           disabled={busy}
           onChange={(file) => setBackground(file ? { kind: "photo", file } : null)}

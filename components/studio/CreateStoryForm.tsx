@@ -15,7 +15,7 @@ import { cn } from "@/lib/utils";
 import { postStudio, requestStudio, StudioApiError } from "./api";
 import { ChosenPhoto, PickPhotoButton } from "./FilePicker";
 import { type LibraryName, libraryImage, objectLabel, objectLibrary } from "./object-library";
-import { resizeObjectPhoto } from "./photo";
+import { PHOTO_ACCEPT, resizeObjectPhoto } from "./photo";
 import { roomBackgroundUrl } from "./RoomDoors";
 
 const words = copy.studio.createStory;
@@ -447,7 +447,7 @@ function StoryForm({
                 <div className="flex flex-wrap gap-3">
                   <PickPhotoButton
                     id="object-photo"
-                    accept="image/jpeg,image/png"
+                    accept={PHOTO_ACCEPT}
                     label={copy.studio.filePicker.choose}
                     disabled={upload.isPending}
                     onPick={(file) => {
@@ -458,7 +458,7 @@ function StoryForm({
                   <PickPhotoButton
                     id="object-camera"
                     camera
-                    accept="image/jpeg,image/png"
+                    accept={PHOTO_ACCEPT}
                     label={words.takePhoto}
                     disabled={upload.isPending}
                     onPick={(file) => {

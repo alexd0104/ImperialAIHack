@@ -1,11 +1,24 @@
 import { ASSET_LIMITS } from "@/lib/contracts";
 import { copy } from "@/lib/copy";
 
+/** What the photo pickers offer: any photo the device may be able to open (B32). */
+export const PHOTO_ACCEPT = "image/*,.heic,.heif";
+
+/**
+ * The original may be large (a phone photo): it is shrunk to 2048 px and re-encoded as
+ * JPEG on the device, so the upload stays far under the server limit.
+ */
+const MAX_ORIGINAL_BYTES = 4 * ASSET_LIMITS.photo.maxBytes;
+
+function looksLikePhoto(file: File): boolean {
+  // Some browsers give HEIC files an empty type; fall back to the extension.
+  return file.type.startsWith("image/") || /\.(heic|heif)$/i.test(file.name);
+}
+
 export async function resizeObjectPhoto(file: File): Promise<Blob> {
-  if (!file.size || file.size > ASSET_LIMITS.photo.maxBytes)
+  if (!file.size || file.size > MAX_ORIGINAL_BYTES)
     throw new Error(copy.studio.createStory.fileSize);
-  if (!["image/jpeg", "image/png"].includes(file.type))
-    throw new Error(copy.studio.createStory.fileType);
+  if (!looksLikePhoto(file)) throw new Error(copy.studio.createStory.fileType);
   let bitmap: ImageBitmap;
   try {
     bitmap = await createImageBitmap(file);

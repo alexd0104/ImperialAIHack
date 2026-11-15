@@ -1022,6 +1022,15 @@
       "deps": [],
       "soft": [],
       "note": ""
+    },
+    {
+      "id": "B32",
+      "title": "Room and Object photo pickers accept any photo (PNG, HEIC, WebP), converted to JPEG on the device",
+      "owner": "raphael",
+      "priority": "FIX",
+      "deps": [],
+      "soft": [],
+      "note": ""
     }
   ]
 }
