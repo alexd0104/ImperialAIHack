@@ -74,6 +74,12 @@ _(newest first: date — from → to — what)_
 
 ## Log
 
+### 2026-11-15 10:30 — Yasir (SUB)
+- Done: submission docs. `README.md` rewritten (problem, Studio/House, Mermaid flow, principles, APIs/models table from `lib/ai/models.ts`, libraries, run locally, team); `docs/submission/{DEVPOST,DEMO-SCRIPT,QA-PREP}.md` added. No code changed.
+- **README.md is a shared file:** keep edits small; if you change a model in `lib/ai/models.ts`, update its README row too.
+- Open: every `[TODO: confirm]` and `[VIDEO_URL]` / `[DEVPOST_URL]` placeholder in those files; Adaption prize has no evidence in the repo (listed under Open questions in DEMO-SCRIPT.md).
+- Outside my zone: `README.md` (shared), `docs/submission/` (new).
+
 ### 2026-11-15 10:20 — Timoté (pipeline, B25: live test fixes)
 - Live test (AI_MODE=live): Room from description OK (13 s); Memory with custom motion 10 s OK (Kling followed "waving arms and laughing", 10.04 s clip, 10.06 s ambience); publish OK.
 - Fixed: uploads > 10 MB cut by the proxy body buffer (→ `proxyClientMaxBodySize: "110mb"`, clearer 413 message); every video output re-encoded for the tablet (`lib/jobs/compress-clip.ts`, 30 MB → 1.4 MB, needs ffmpeg, original kept on failure); custom motion text now replaces the "very subtle" base instead of contradicting it (guardrails kept); ambience cost counts the real 10 s; room generation gives up after ~60 s → standard Room.
