@@ -74,6 +74,12 @@ _(newest first: date — from → to — what)_
 
 ## Log
 
+### 2026-11-15 14:00 — Raphaël (design, B33)
+- Demo House now follows the Studio live: in demo mode `/house/<DEMO_HOUSE_TOKEN>` reads the DB first (2.5 s limit) and only plays `demo-assets/bundle.json` when the DB doesn't answer, so the offline fallback stays. Hearts and views from the demo House are saved when the DB answers (Hear back shows them), dropped silently otherwise.
+- **Outside my zone:** `lib/house/load-bundle.ts` (+ new `load-bundle.test.ts`) (House, Yasir) and `app/api/h/[token]/events/route.ts` (House). Normal tokens unchanged.
+- Still run `pnpm export:demo` before going on stage so the offline copy matches the latest Studio state. Requires `MONGODB_DB=mh_demo` (now in Raphaël's `.env.local`).
+- Checked: with bundle.json moved aside the demo House still loads (new Memories and moved Objects show); `pnpm demo:check` and `pnpm verify` green.
+
 ### 2026-11-15 13:30 — Raphaël (design, B32)
 - Fix: the Room photo picker accepted `image/jpeg` only, so PNG/HEIC/WebP photos were greyed out ("it doesn't let me upload"). Room and Object pickers now offer any photo (`PHOTO_ACCEPT` in `components/studio/photo.ts`); the photo is shrunk to 2048 px and sent as JPEG from the device, as the route requires. Originals up to 60 MB are fine since only the shrunk JPEG is uploaded. A HEIC that the browser can't decode (Chrome) shows a clear message asking for JPEG or PNG.
 - Outside my zone (Studio): `components/studio/{photo.ts,RoomManager.tsx,CreateStoryForm.tsx}`, `lib/copy.ts` (`createStory.fileSize/fileType`). Checked in the browser: a PNG room photo uploads (201) and the Room is created. `pnpm verify` green.

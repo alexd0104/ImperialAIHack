@@ -1031,6 +1031,15 @@
       "deps": [],
       "soft": [],
       "note": ""
+    },
+    {
+      "id": "B33",
+      "title": "Demo House reads the DB live (Studio changes and hearts show at once), saved bundle.json as offline fallback",
+      "owner": "raphael",
+      "priority": "FIX",
+      "deps": [],
+      "soft": [],
+      "note": ""
     }
   ]
 }
