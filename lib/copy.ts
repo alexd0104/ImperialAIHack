@@ -4,6 +4,7 @@ export const copy = {
   app: {
     name: "memorAI",
     tagline: "Real family photos, gently brought to life, to share with someone you love.",
+    openStudio: "Open the Studio",
   },
   // Messages carried in API error envelopes; the Studio may show them as they are.
   auth: {

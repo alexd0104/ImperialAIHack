@@ -968,6 +968,15 @@
       "deps": [],
       "soft": [],
       "note": ""
+    },
+    {
+      "id": "B26",
+      "title": "Landing page button to open the Studio",
+      "owner": "timote",
+      "priority": "FIX",
+      "deps": [],
+      "soft": [],
+      "note": ""
     }
   ]
 }
