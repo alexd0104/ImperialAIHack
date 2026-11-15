@@ -2,7 +2,7 @@
 
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Check, RotateCcw } from "lucide-react";
-import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -27,6 +27,26 @@ const words = copy.studio.approve;
 const progress = copy.studio.progress;
 const POLL_MS = 2000;
 const working = (scene: SceneView) => scene.status === "pending" || scene.status === "generating";
+/** Nothing usable came back: the family can only keep the original photo or try again. */
+const isFallback = (scene: SceneView) =>
+  scene.status === "fallback" ||
+  scene.status === "failed" ||
+  !(scene.urls.colourised ?? scene.urls.restored ?? scene.originalUrl);
+const keptOriginal = (scene: SceneView) => Boolean(scene.choice && !scene.choice.restored);
+
+type ScenePick = Pick<SceneChoiceRequest, "use" | "colour">;
+/** What the family sees first: their saved choice, else colour and movement when available. */
+const defaultPick = (scene: SceneView): ScenePick => ({
+  colour: scene.choice?.colour ?? (scene.urls.colourised ? "colour" : "bw"),
+  use: scene.choice?.use ?? (scene.urls.clip ? "animated" : "still"),
+});
+/** The one main action saves this for every scene; "keep original" is saved on its own. */
+const finalChoice = (scene: SceneView, pick: ScenePick): SceneChoiceRequest | null => {
+  // A failed scene can only be tried again (the route refuses a choice); publishing waits for it.
+  if (keptOriginal(scene) || scene.status === "failed") return null;
+  if (isFallback(scene)) return { use: "still", colour: "bw", restored: false };
+  return { ...pick, restored: true };
+};
 
 export function ReviewMemory({ memoryId }: { memoryId: string }) {
   return (
@@ -37,11 +57,28 @@ export function ReviewMemory({ memoryId }: { memoryId: string }) {
 }
 
 function Review({ memoryId }: { memoryId: string }) {
+  const router = useRouter();
+  const client = useQueryClient();
+  const [picks, setPicks] = useState<Record<string, ScenePick>>({});
   const memory = useQuery({
     queryKey: memoryKey(memoryId),
     queryFn: () => fetchMemory(memoryId),
     // Poll only while something is still being made.
     refetchInterval: (query) => (query.state.data?.scenes.some(working) ? POLL_MS : false),
+  });
+  const keepAll = useMutation({
+    mutationFn: async (scenes: SceneView[]) => {
+      // One by one, each with its own idempotency key: the store writes one scene at a time.
+      for (const scene of scenes) {
+        const choice = finalChoice(scene, picks[scene.id] ?? defaultPick(scene));
+        if (choice)
+          await postStudio(`/api/scenes/${scene.id}/choice`, choice, Scene, crypto.randomUUID());
+      }
+    },
+    onSuccess: async () => {
+      await client.invalidateQueries({ queryKey: memoryKey(memoryId) });
+      if (memory.data) router.push(`/studio/stories/${memory.data.storyId}/place`);
+    },
   });
   if (memory.isError)
     return (
@@ -51,9 +88,8 @@ function Review({ memoryId }: { memoryId: string }) {
     );
   if (!memory.data) return null;
   const scenes = [...memory.data.scenes].sort((a, b) => a.order - b.order);
-  const chosen = scenes.filter((scene) => scene.choice).length;
-  const allChosen = scenes.length > 0 && chosen === scenes.length;
   const anyWorking = scenes.some(working);
+  const canContinue = scenes.length > 0 && !anyWorking;
 
   return (
     <div className="space-y-6">
@@ -75,25 +111,36 @@ function Review({ memoryId }: { memoryId: string }) {
             {working(scene) ? (
               <SceneProgress scene={scene} index={index} />
             ) : (
-              <SceneApproval scene={scene} index={index} memoryId={memoryId} />
+              <SceneApproval
+                scene={scene}
+                index={index}
+                memoryId={memoryId}
+                pick={picks[scene.id] ?? defaultPick(scene)}
+                onPick={(pick) => setPicks((all) => ({ ...all, [scene.id]: pick }))}
+              />
             )}
           </li>
         ))}
       </ol>
-      <div className="flex flex-wrap items-center gap-4">
-        {allChosen ? (
-          <Button asChild>
-            <Link href={`/studio/stories/${memory.data.storyId}/place`}>{words.next}</Link>
-          </Button>
-        ) : (
-          <Button disabled>{words.next}</Button>
-        )}
-        <MemoryPreview memory={memory.data} />
-        <p role="status" className="text-16 text-ink/70">
-          {allChosen
-            ? words.allApproved
-            : `${chosen} / ${scenes.length} ${words.progress}. ${words.waiting}`}
+      {keepAll.isError && (
+        <p role="alert" className="rounded-lg bg-warning-surface p-4 text-16">
+          {errorText(keepAll.error)}
         </p>
+      )}
+      <div className="flex flex-wrap items-center gap-4">
+        <Button
+          type="button"
+          disabled={!canContinue || keepAll.isPending}
+          onClick={() => keepAll.mutate(scenes)}
+        >
+          {keepAll.isPending ? words.saving : words.keepAndContinue}
+        </Button>
+        <MemoryPreview memory={memory.data} />
+        {anyWorking && (
+          <p role="status" className="text-16 text-ink/70">
+            {progress.waiting}
+          </p>
+        )}
       </div>
     </div>
   );
@@ -146,21 +193,22 @@ function SceneApproval({
   scene,
   index,
   memoryId,
+  pick,
+  onPick,
 }: {
   scene: SceneView;
   index: number;
   memoryId: string;
+  pick: ScenePick;
+  onPick: (pick: ScenePick) => void;
 }) {
   const client = useQueryClient();
   const refresh = () => client.invalidateQueries({ queryKey: memoryKey(memoryId) });
   const hasColour = Boolean(scene.urls.colourised);
   const hasClip = Boolean(scene.urls.clip);
-  const [colour, setColour] = useState<SceneChoiceRequest["colour"]>(
-    scene.choice?.colour ?? (hasColour ? "colour" : "bw"),
-  );
-  const [use, setUse] = useState<SceneChoiceRequest["use"]>(
-    scene.choice?.use ?? (hasClip ? "animated" : "still"),
-  );
+  const { colour, use } = pick;
+  const setColour = (value: ScenePick["colour"]) => onPick({ ...pick, colour: value });
+  const setUse = (value: ScenePick["use"]) => onPick({ ...pick, use: value });
   const [split, setSplit] = useState(50);
 
   const choose = useMutation({
@@ -178,9 +226,9 @@ function SceneApproval({
     colour === "colour" && scene.urls.colourised
       ? scene.urls.colourised
       : (scene.urls.restored ?? scene.originalUrl);
-  const fallback = scene.status === "fallback" || scene.status === "failed" || !after;
+  const fallback = isFallback(scene);
   const error = choose.error ?? retry.error;
-  const keptOriginal = scene.choice && !scene.choice.restored;
+  const kept = keptOriginal(scene);
 
   return (
     <Card className="space-y-4 p-5">
@@ -189,7 +237,7 @@ function SceneApproval({
         {scene.choice && (
           <span className="flex items-center gap-2 text-16 font-bold text-success-strong">
             <Check aria-hidden className="size-5" />
-            {keptOriginal ? words.keptOriginal : words.approved}
+            {kept ? words.keptOriginal : words.approved}
           </span>
         )}
       </div>
@@ -283,23 +331,11 @@ function SceneApproval({
 
       {error && (
         <p role="alert" className="rounded-lg bg-warning-surface p-4 text-16">
-          {error instanceof StudioApiError && error.code === "rate_limited"
-            ? words.rateLimited
-            : error instanceof StudioApiError
-              ? error.message
-              : words.error}
+          {errorText(error)}
         </p>
       )}
+      {/* The main "Keep and continue" sits under all scenes; here only the alternatives. */}
       <div className="flex flex-wrap gap-3">
-        {!fallback && (
-          <Button
-            type="button"
-            disabled={choose.isPending}
-            onClick={() => choose.mutate({ use, colour, restored: true })}
-          >
-            {words.approve}
-          </Button>
-        )}
         <Button
           type="button"
           variant="secondary"
@@ -309,17 +345,36 @@ function SceneApproval({
           <RotateCcw aria-hidden />
           {retry.isPending ? words.trying : words.tryAgain}
         </Button>
-        <Button
-          type="button"
-          variant="secondary"
-          disabled={choose.isPending}
-          onClick={() => choose.mutate({ use: "still", colour: "bw", restored: false })}
-        >
-          {words.keepOriginal}
-        </Button>
+        {kept && !fallback ? (
+          <Button
+            type="button"
+            variant="secondary"
+            disabled={choose.isPending}
+            onClick={() => choose.mutate({ use, colour, restored: true })}
+          >
+            {words.useNew}
+          </Button>
+        ) : (
+          !kept && (
+            <Button
+              type="button"
+              variant="secondary"
+              disabled={choose.isPending}
+              onClick={() => choose.mutate({ use: "still", colour: "bw", restored: false })}
+            >
+              {words.keepOriginal}
+            </Button>
+          )
+        )}
       </div>
     </Card>
   );
+}
+
+function errorText(error: unknown) {
+  if (error instanceof StudioApiError)
+    return error.code === "rate_limited" ? words.rateLimited : error.message;
+  return words.error;
 }
 
 function Choice<T extends string>(props: {

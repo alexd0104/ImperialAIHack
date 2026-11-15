@@ -102,13 +102,12 @@ test("Q2 create a Memory, approve, publish, then the House plays a Story", async
     }),
   );
 
-  // S7: approve the scene.
+  // S7: one main action approves every scene and moves on to Place.
   await page.goto(`/studio/memories/${memoryId}/review`);
-  await page.getByRole("button", { name: "Use this version" }).click();
-  await expect(page.getByText("Every scene is approved.")).toBeVisible();
+  await page.getByRole("button", { name: "Keep and continue" }).click();
+  await expect(page).toHaveURL(/\/place$/);
 
   // S8: publish.
-  await page.getByRole("link", { name: "Continue to place" }).click();
   await page.getByRole("button", { name: "Send to Frank’s house" }).click();
   await expect(page.getByRole("heading", { name: "Sent with love" })).toBeVisible();
 
